@@ -1,0 +1,25 @@
+
+========================================
+1.
+modify ~/.bashrc
+to change:
+ls ll color or something like that
+
+2.
+in linux: /etc/vimrc
+in cygwin: /usr/share/vim/vim73/vimrc_example
+modify ~/.vimrc
+to change:
+vim attribute,like:
+
+" add by cgm
+set nu					"行号
+set tabstop=4			"一个tab占的空格数
+set shiftwidth=4		"自动缩进时的长度
+colorscheme evening		"颜色主题
+set autoindent			"自动对齐
+syntax on				"语法高亮
+
+3.
+对于外部，在窗口点右键，
+Option -> Terminal -> Type 选择 xterm 可以彩色显示vim
