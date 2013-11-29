@@ -452,8 +452,11 @@ void endianJdg(int hint=0)
 #ifdef __C8_
 #include <stdarg.h>
 #define FUNC_TRACER CFuncTracer log(__FUNCTION__)
-#define INFO_LOG(format, args...)  log.print("[INFO_]", format, ##args)
-#define ERROR_LOG(format, args...) log.print("[ERROR]", format, ##args)
+// linux gcc pattern
+//#define INFO_LOG(format, args...)  log.print("[INFO_]", format, ##args)
+// for compatibility of windows, write like this...
+#define INFO_LOG(format, ...)  log.print("[INFO_]", format, ##__VA_ARGS__)
+#define ERROR_LOG(format, ...) log.print("[ERROR]", format, ##__VA_ARGS__)
 class CFuncTracer
 {
 public:
