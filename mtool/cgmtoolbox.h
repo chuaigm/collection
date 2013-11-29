@@ -6,19 +6,31 @@
 // CentOS 6.3(linux) |    g++ 4.4.6
 // HP-UX             |    aCC A.06.05
 // windows 7         |    VS2005
-// history:  2013-3-19   add delaySf,RandomSeed function
-// history:  2013-3-21   redo some method, order
+// history:  2013-03-19   add delaySf,RandomSeed function
+// history:  2013-03-21   redo some method, order
+// history:  2013-11-28   tidy up, make menu, func trace
 
-// stander lib
+/* -----[Option]------ MENU -----------------*/
+#define __C1_  // print Debugging information(file,line,func...)
+#define __C2_  // print when you Compile, version display
+#define __C3_  // Time statistics
+#define __C4_  // Use select to sleep a while(LINUX only)
+#define __C5_  // set random seed
+#define __C6_  // Color character output
+#define __C7_  // judge endian
+#define __C8_  // function tracer
+
+/* -----[Option]------ INCLUDE --------------*/
+// you can't open both
+//#define __WIN32__
+#define __LINUX__
+
+/* ----------------------------------------- */
+// standard lib
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
-
-// macro switch, close all if you like
-// but you can't open both
-//#define __WIN32__
-#define __LINUX__
 
 #ifdef __WIN32__
 #include <windows.h>
@@ -31,31 +43,35 @@
 #endif
 
 /*=================================================*\
- *    c1. this macro is for DEBUGing
+ *    C1. this macro is for DEBUGing
 \*=================================================*/
+#ifdef __C1_
 // change the Macro name if you like
+// in windows, no __func__ macro, so use __FUNCTION__ instead...
 #define MMMM \
 	do {\
-	printf ("|%24s|%8d|%24s|\n",__FILE__,__LINE__,__func__); \
+	printf ("|%24s|%8d|%24s|\n",__FILE__,__LINE__,__FUNCTION__); \
 	} while (0)
-#define MMM printf("|%24s|%8d|%24s|\n",__FILE__,__LINE__,__func__)
+#define MMM printf("|%24s|%8d|%24s|\n",__FILE__,__LINE__,__FUNCTION__)
 #define MMTOFILE \
 	{\
 		FILE *cgmtfp;\
 		if((cgmtfp=fopen("cgmDebugFile.txt","a"))==NULL) exit(0);\
-		fprintf(cgmtfp,"|%24s|%8d|%24s|\n",__FILE__,__LINE__,__func__);\
+		fprintf(cgmtfp,"|%24s|%8d|%24s|\n",__FILE__,__LINE__,__FUNCTION__);\
 		if(cgmtfp != NULL) fclose(cgmtfp);\
 	}
 // some times, you just want to execute once
 // you may write like this to debug
-#if 0
+	/*
 	static int ctsi=0;
 	(0==ctsi)?({MMTOFILE;ctsi=0;}):(ctsi=ctsi);
-#endif
+	*/
+#endif // for __C1_
 
 /*=================================================*\
- *    c2. this is for debug, give version info
+ *    C2. this is for debug, give version info
 \*=================================================*/
+#ifdef __C2_
 // display when you compile
 #define CGM_VER_INFO \
 	do {\
@@ -64,11 +80,12 @@
 	printf ("|== Compile Time : %s\n", __TIME__); \
 	printf ("|========== cgm ver ==========|\n"); \
 	} while (0)
+#endif // end of __C2_
 
 /*=================================================*\
- *    c3. this charpter is for TIME CALCULTE
+ *    C3. this charpter is for TIME CALCULTE
 \*=================================================*/
-#if 1 // close this (time calc) if you have to 
+#ifdef __C3_ 
 #ifdef __WIN32__
 int gettimeofday(struct timeval *tp, void *tzp)
 {
@@ -77,25 +94,25 @@ int gettimeofday(struct timeval *tp, void *tzp)
 	SYSTEMTIME wtm;
 
 	GetLocalTime(&wtm);
-	tm.tm_year     = wtm.wYear - 1900;
+	tm.tm_year    = wtm.wYear - 1900;
 	tm.tm_mon     = wtm.wMonth - 1;
-	tm.tm_mday     = wtm.wDay;
-	tm.tm_hour     = wtm.wHour;
+	tm.tm_mday    = wtm.wDay;
+	tm.tm_hour    = wtm.wHour;
 	tm.tm_min     = wtm.wMinute;
 	tm.tm_sec     = wtm.wSecond;
-	tm.tm_isdst    = -1;
+	tm.tm_isdst   = -1;
 	clock = mktime(&tm);
 	tp->tv_sec = clock;
 	tp->tv_usec = wtm.wMilliseconds * 1000;
 	// this func is used in windows,may cause Accuracy lost
 	return (0);
 }
-#endif
+#endif // end of __WIN32__
 
 // static var to record time mark
 static struct timeval tm_begin, tm_end;
 
-// use this
+// use this!!
 #define BEGIN_CALC_TIME gettimeofday (&tm_begin, NULL)
 #define END_CALC_TIME gettimeofday (&tm_end, NULL)
 #define SHOW_TIME_US \
@@ -128,12 +145,12 @@ public:
 	}
 };
 #endif // for cplusplus
-#endif // for if 1
+#endif // for __C3_
 
 /*=================================================*\
- *    c4. this function is for sleep a while
+ *    C4. this function is for sleep a while
 \*=================================================*/
-#ifdef __LINUX__
+#ifdef __C4_
 // Func | delay function creat by chuaiGM
 // secf = the "seconds" you want to delay(double)
 void delaySf(double secf)
@@ -147,12 +164,12 @@ void delaySf(double secf)
 
 	select(0,NULL,NULL,NULL,&tv);
 }
-#endif	// for __LINUX__
+#endif	// for __C4_
 
 /*=================================================*\
- *    c5. this function is for initial random seed
+ *    C5. this function is for initial random seed
 \*=================================================*/
-#ifdef __LINUX__
+#ifdef __C5_
 // Func | Random seed by chuaiGM
 long plantRandomSeed(bool useuser=0, long usrseed=0, bool bHint=0)
 {
@@ -178,13 +195,13 @@ long plantRandomSeed(bool useuser=0, long usrseed=0, bool bHint=0)
 	}
 	return seed;
 }
-#endif	// __LINUX__
+#endif	// for __C5_
 
 /*=================================================*\
- *    c6. this charpter is for COLOR output 
+ *    C6. this charpter is for COLOR output 
 \*=================================================*/
+#ifdef __C6_
 #ifdef __LINUX__
-#if 1 // the Macro name maybe conflict, then change it!
 // color word
 #define gm_NONE      "\033[m"
 #define gm_BLACK     "\033[0;30m"
@@ -224,6 +241,7 @@ long plantRandomSeed(bool useuser=0, long usrseed=0, bool bHint=0)
 // and these color can be combine like: "\033[1;31;44m"
 // but should be define by yourself
 #define RED_ON_BLUE  "\033[0;31;44m"
+#endif // for __LINUX__
 ////////////////////////////////////////////////////////////////
 // next I packaging some class and ostream
 class SingleColorOutStream
@@ -233,7 +251,12 @@ public:
 	int color;
 	static int sleepms;
 	// construct
-	SingleColorOutStream(int c = 0)
+#ifdef __LINUX__
+	SingleColorOutStream( int c = 0 )
+#endif
+#ifdef __WIN32__
+	SingleColorOutStream( unsigned int c = 7 )
+#endif
 	{
 		color = c;
 		sleepms = 0;
@@ -297,7 +320,8 @@ public:
 		return *this;
 	}
 private:
-	void SetColor( int c = 0) const
+#ifdef __LINUX__
+	void SetColor( int c = 0 ) const
 	{
 		switch(c) {
 		case 0:
@@ -350,10 +374,19 @@ private:
 			break;
 		}
 	}
+#endif
+
+#ifdef __WIN32__
+	void SetColor( unsigned int c = 7 ) const
+	{
+		HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(h,c);
+	}
+#endif
 };
-#define __USE_OS_COLOR__
-#ifdef __USE_OS_COLOR__
 int SingleColorOutStream::sleepms = 0;
+
+#ifdef __LINUX__
 // front color
 SingleColorOutStream red(1);
 SingleColorOutStream green(2);
@@ -370,25 +403,104 @@ SingleColorOutStream blue_bk(14);
 SingleColorOutStream purple_bk(15);
 SingleColorOutStream cyan_bk(16);
 SingleColorOutStream white_bk(17);
-#endif // for __USE_OS_COLOR__
-#endif // for if 1
-#endif // for if __LINUX__
+#endif // for __LINUX__
+
+#ifdef __WIN32__
+// front color
+SingleColorOutStream red(FOREGROUND_RED|FOREGROUND_INTENSITY);
+SingleColorOutStream green(FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+SingleColorOutStream yellow(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY);
+SingleColorOutStream blue(FOREGROUND_BLUE|FOREGROUND_INTENSITY);
+SingleColorOutStream purple(FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_INTENSITY);
+SingleColorOutStream cyan(FOREGROUND_INTENSITY);
+SingleColorOutStream white(15);
+// background color
+SingleColorOutStream red_bk(BACKGROUND_RED|BACKGROUND_INTENSITY);
+SingleColorOutStream green_bk(BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+SingleColorOutStream yellow_bk(BACKGROUND_RED|BACKGROUND_GREEN|BACKGROUND_INTENSITY);
+SingleColorOutStream blue_bk(BACKGROUND_BLUE|BACKGROUND_INTENSITY);
+SingleColorOutStream purple_bk(BACKGROUND_RED|BACKGROUND_BLUE|BACKGROUND_INTENSITY);
+SingleColorOutStream cyan_bk(BACKGROUND_INTENSITY);
+SingleColorOutStream white_bk(0x10|0x20|0x40|0x80);
+#endif // for __WIN32__
+/*!
+ * caution! do not use "std::endl" follow the end of the line
+ * write another line, like: std::cout<<std::endl;
+ */
+#endif // for __C6_
 
 /*=================================================*\
- *    c7. judge little endian or big endian
+ *    C7. judge little endian or big endian
 \*=================================================*/
+#ifdef __C7_
 void endianJdg(int hint=0)
 {
 	int x = 0x0102;
 	char x0 = ((char*)&x)[0];
 	char x1 = ((char*)&x)[1];
 	if (x0 == 0x02 && x1 == 0x01) {
-		0==hint?:printf("\n[ little endian ]\n");
-#define _LITTLE_ENDIAN_
+		0==hint?NULL:printf("\n[ Little Endian ]\n");
 	} else {
-		0==hint?:printf("\n[  big   endian ]\n");
-#define _BIG_ENDIAN_
+		0==hint?NULL:printf("\n[   Big  Endian ]\n");
 	}
 }
+#endif // for __C7_
+
+/*=================================================*\
+ *    C8. function tracer
+\*=================================================*/
+#ifdef __C8_
+#include <stdarg.h>
+#define FUNC_TRACER CFuncTracer log(__FUNCTION__)
+#define INFO_LOG(format, args...)  log.print("[INFO_]", format, ##args)
+#define ERROR_LOG(format, args...) log.print("[ERROR]", format, ##args)
+class CFuncTracer
+{
+public:
+	CFuncTracer(const char* func_name)
+	{
+		++indent;
+		memset(_name, 0, 256);
+		memcpy(_name, func_name, strlen(func_name));
+		printf("%d: ", indent);
+		for(int i=0; i<indent; ++i) {
+			printf("  ");
+		}
+		printf("Entering %s()\n", _name);
+	}
+	~CFuncTracer()
+	{
+		printf("%d: ", indent);
+		for(int i=0; i<indent; ++i) {
+			printf("  ");
+		}
+		printf("Leaving  %s()\n", _name);
+		--indent;
+	}
+	void print(const char* level, const char *fmt, ...)
+	{
+		char buf[1024]={0};
+		va_list ap;
+		va_start(ap, fmt);
+		vsnprintf(buf, 1024, fmt, ap);
+		va_end(ap);
+		printf("%d: ", indent);
+		for(int i=0; i<indent; ++i) {
+			printf("  ");
+		}
+		printf("%s: %s", level, buf);
+	}
+private:
+	CFuncTracer();
+	CFuncTracer(const CFuncTracer &);
+	const CFuncTracer &operator=(const CFuncTracer &);
+
+	char _name[256]; //length of function name should not longer than 256
+	static unsigned int indent;
+};
+// initial
+unsigned int CFuncTracer::indent=0;
+#endif // for __C8_
 
 #endif	// for __CHUAI_TOOL_BOX_H__
+
