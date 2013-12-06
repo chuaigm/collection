@@ -82,7 +82,7 @@
 //²Ëµ¥×ø±ê
 #define XMENU 150
 #define YMENU 100
-#define WIDTH_MENU 200
+#define WIDTH_MENU 160
 #define HEIGHT_MENU 60
 #define MENU_NUM 3
 #define Y_2MENU 100

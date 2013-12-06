@@ -181,8 +181,8 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	hWnd = CreateWindowEx(NULL,
 		cc,
 		"CS : 加油中国 自强不息",
-		//WS_POPUP,	
-		WS_OVERLAPPEDWINDOW,
+		WS_POPUP,	
+		//WS_OVERLAPPEDWINDOW,
 		nX, nY,
 		WinWidth, 
 		WinHeight,
@@ -191,8 +191,8 @@ int APIENTRY WinMain(HINSTANCE hInst,
 
 // 显示方式
 	//ShowWindow( hWnd, SW_SHOWDEFAULT );	//默认大小
-	//ShowWindow( hWnd, SW_MAXIMIZE );	//最大化显示
-	ShowWindow( hWnd, SW_SHOWNORMAL );	// 正常
+	ShowWindow( hWnd, SW_MAXIMIZE );	//最大化显示
+	//ShowWindow( hWnd, SW_SHOWNORMAL );	// 正常
 	UpdateWindow( hWnd );	
 
 	// init开屏动画计时

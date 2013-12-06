@@ -12,6 +12,15 @@
 //font
 #include "GLFont.h"		//
 
+// OpenGLÄ¬ÈÏ×ø±êÏµ
+//          Y ^
+//            |
+//            |
+//            |--------> X
+//           /
+//          /
+//       Z V
+
 class OpenGL  
 {
 public:	
