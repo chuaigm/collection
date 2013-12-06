@@ -1,8 +1,6 @@
 //
-// 制作  programking 2009年3月
-// 博客  http://blog.csdn.net/programking
-//=======================================
-// cs1.cpp : Defines the entry point for the application.
+// 2013-12-6
+// 修改自网上流行的cs1的opengl的实例程序
 //
 
 #include "stdafx.h"

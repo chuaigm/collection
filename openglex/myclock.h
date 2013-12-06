@@ -7,7 +7,6 @@
 #define __MYCLOCK
 
 #include "stdio.h"
-
 #include "time.h"
 
 class MYCLOCK

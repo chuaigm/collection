@@ -39,6 +39,8 @@
 #include "MDLFormat.h"//
 #include "MDLModel.h"//
 
+// ÆÁ±Î±àÒë¾¯¸æ
+#pragma warning (disable:4996)
 
 #pragma comment( lib, "winmm.lib")
 #pragma comment( lib, "opengl32.lib")
