@@ -85,7 +85,7 @@ void anmobj::drawModel(int id,float x,float y,float z,int iframe,int iAngle)
 
 	glTranslatef(x,y,z);
 	//Ðý×ª
-	glRotatef(iAngle*90,0,1,0);
+	glRotatef(iAngle*90.0f,0,1.0,0);
 	//ËõÐ¡
 	glScaled(.06f,.06f,.06f);
 

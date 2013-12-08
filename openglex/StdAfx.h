@@ -60,8 +60,8 @@
 #define MAP			MAP_W*MAP_SCALE/2
 
 // window
-#define WINH 800
-#define WINW 600
+#define WIN_WIDTH 800
+#define WIN_HEIGHT 600
 
 #define GAME_NULL -1
 #define GAME_PRE_ANI 0
@@ -82,8 +82,8 @@
 //²Ëµ¥×ø±ê
 #define XMENU 150
 #define YMENU 100
-#define WIDTH_MENU 160
-#define HEIGHT_MENU 60
+#define WIDTH_MENU 200
+#define HEIGHT_MENU 70
 #define MENU_NUM 3
 #define Y_2MENU 100
 

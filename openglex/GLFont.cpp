@@ -28,14 +28,14 @@ CGLFont::CGLFont()
 	//inti font
 	int i=0;
 
-	for(i=0;i<5;i++)
+	for(i=0;i<6;i++)
 	{
-		hFontAr[i]=CreateFont(-12-i*12,0,0,0,800,0,0,0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
+		hFontAr[i]=CreateFont(-12-i*12, 0, 0, 0, 800, 0, 0, 0,
+			GB2312_CHARSET,0,0,0,FF_MODERN,"黑体");
 	}
 
-	hFontAr[5]=CreateFont(-18,0,0,0,800,0,0,0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
+	hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,
+			GB2312_CHARSET,0,0,0,FF_MODERN,"黑体");
 }
 CGLFont::~CGLFont()
 {
@@ -43,33 +43,35 @@ CGLFont::~CGLFont()
 
 //在光栅位置xy处，输出文字
 // 由于光栅定位到z=0处，在gluPerspective投影下需要后移
-void CGLFont::settextTest(int x,int y,CString str,int ifont,float r,float g,float b)
+void CGLFont::settextTest(int x,int y,const char* str,int ifont,float r,float g,float b)
 {
 	glLoadIdentity();		
 
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING); 
+	//glDisable(GL_LIGHTING); 
 	/////////////////////////
 	//指定颜色
 	glColor3f(r,g,b);             
 	//输出文字
 	Printftext (x,y, str,hFontAr[ifont]);   
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
 }
 
-void CGLFont::settext(float x,float y,CString str,int ifont,float r,float g,float b)
+void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,float b)
 {
+	glPushMatrix();
+
 	glLoadIdentity();
 
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
-	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING);      
+	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_LIGHTING);
 	
 	//指定颜色
 	glColor3f(r,g,b);             
@@ -80,10 +82,11 @@ void CGLFont::settext(float x,float y,CString str,int ifont,float r,float g,floa
 	Printftext (0,0, str,hFontAr[ifont]);   
 
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
+	glPopMatrix();
 }
 
 void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)

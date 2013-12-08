@@ -15,9 +15,9 @@ struct ROLE
 {
 	int id;	//ID
 	//×ø±ê
-	int x;
-	int y;
-	int z;
+	float x;
+	float y;
+	float z;
 
 	int w;
 	int h;
@@ -75,8 +75,8 @@ public:
 	void texture0(UINT textur);			
 	//ÏÔÊ¾Í¼Æ¬
 	void tPic(float e);
-	void tPic(int x,int y,int w,int h);
-	void tPicButton(int x,int y,int w,int h,float ytex);
+	void tPic(float x,float y,float w,float h);
+	void tPicButton(float x,float y,float w,float h,float ytex);
 	void tSquare(float x, float y, float z, float a);
 	//fire
 	void showFire();

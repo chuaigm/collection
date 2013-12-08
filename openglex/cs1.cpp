@@ -21,8 +21,8 @@ CGLFont myfont;
 HDC		hDC;
 HWND	hWnd=NULL;
 //´°¿Ú¿í¸ß
-int		WinWidth = WINH;
-int		WinHeight= WINW;
+int WinWidth = WIN_WIDTH;
+int WinHeight= WIN_HEIGHT;
 
 GAMEMAP gm;
 
@@ -99,7 +99,7 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
         case WM_KEYUP:	
             switch (wParam)
             {
-			case 0x70:	//F1
+			case 0x70:	// F1
 				ShowWindow(hWnd, SW_MINIMIZE);	
 				break;		
 

@@ -35,7 +35,7 @@ void mdlobj::DrawModels(float x,float y,float z,int a,float size,float rz,float 
 {
 	glPushMatrix();
 
-	glEnable(GL_LIGHTING);            
+	//glEnable(GL_LIGHTING);            
 	glEnable(GL_TEXTURE_2D);     
 	//移动到指定坐标
 	glTranslatef(x, y, z);

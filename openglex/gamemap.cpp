@@ -161,8 +161,12 @@ void GAMEMAP::init()
 	//启动贴图
 	glEnable(GL_TEXTURE_2D);
 
+	//启动深度检测
+	glEnable(GL_DEPTH_TEST);
+
 	//游戏状态
-	iGameState=GAME_PRE_ANI;
+//	iGameState=GAME_PRE_ANI;
+	iGameState=1;
 	iMatch=0;
 	//参数
 	param1=0;
@@ -191,11 +195,11 @@ void GAMEMAP::showInfo()
 	{
 		glLoadIdentity();
 		//画头像图标
-		glDisable(GL_LIGHTING);				
+		//glDisable(GL_LIGHTING);				
 		texture0(g_cactus[10]);	
 		glTranslatef(-0.14,0.15,-1.0);
 		tPic(0.04f);
-		glEnable(GL_LIGHTING);
+		//glEnable(GL_LIGHTING);
 		//画生命值		
 		showEnemyHp();
 	}
@@ -245,7 +249,7 @@ void GAMEMAP::showEnemyHp()
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING);      	
+	//glDisable(GL_LIGHTING);      	
 	//颜色条
 	//坐标移动
 	glTranslatef(-0.1f, 0.15, -1.0);
@@ -266,7 +270,7 @@ void GAMEMAP::showEnemyHp()
 	}
 
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
@@ -284,7 +288,7 @@ void GAMEMAP::showTarget()
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING);      	
+	//glDisable(GL_LIGHTING);      	
 	//指定颜色
 	glColor3f(0.0,1.0,0.0f);             
 	//坐标转换，移动
@@ -300,7 +304,7 @@ void GAMEMAP::showTarget()
 	glBitmap (12, 2, 0.0, 0.0, 0.0, 0.0, rasterallf);
 
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
@@ -312,7 +316,7 @@ void GAMEMAP::drawMouse()
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING);      	
+	//glDisable(GL_LIGHTING);      	
 	
 	glTranslatef(xmouse,WinHeight-ymouse,0.1);
 
@@ -330,7 +334,7 @@ void GAMEMAP::drawMouse()
 	glEnd();
 
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 }
@@ -354,7 +358,7 @@ void GAMEMAP::showFire()
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
-	glDisable(GL_LIGHTING);      	
+	//glDisable(GL_LIGHTING);      	
 	//指定颜色
 	glColor3f(0.0,0.0,0.0f);             
 	//坐标转换，移动
@@ -382,7 +386,7 @@ void GAMEMAP::showFire()
 	glBitmap (4, 3, 0.0, 0.0, 0.0, 0.0, rasterallf);	
 
 	/////////////////////////
-	glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
@@ -522,7 +526,7 @@ void GAMEMAP::tPic(float e)
 }
 
 //画矩形，左下角坐标xy，宽度w，高h
-void GAMEMAP::tPic(int x,int y,int w,int h)
+void GAMEMAP::tPic(float x,float y,float w,float h)
 { 
 	glPushMatrix();
 
@@ -546,7 +550,7 @@ void GAMEMAP::tPic(int x,int y,int w,int h)
 	glPopMatrix();
 }
 //画按钮
-void GAMEMAP::tPicButton(int x,int y,int w,int h,float ytex)
+void GAMEMAP::tPicButton(float x,float y,float w,float h,float ytex)
 { 
 	glPushMatrix();
 
@@ -577,8 +581,8 @@ void GAMEMAP::light0()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
 	
 	//启动深度检测
 	glEnable(GL_DEPTH_TEST);
@@ -588,12 +592,14 @@ void GAMEMAP::light0()
 //开屏动画
 void GAMEMAP::showpreani()
 {
+	glPushMatrix();
 	//移动到当前位置
 	glTranslatef(0,0,-8.0);
 	texture0(g_cactus[0]);	
 	tPic(2.0f);
 	//移动动画
 	tSquare(param1*0.2, 0.0, 0.1, 3.0);
+	glPopMatrix();
 }
 
 //指定位置画一个正方形
@@ -601,7 +607,7 @@ void GAMEMAP::tSquare(float x, float y, float z, float a)
 {
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
-	glPushMatrix();							
+	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);
 
 	glTranslatef(x,y,z);
@@ -611,10 +617,10 @@ void GAMEMAP::tSquare(float x, float y, float z, float a)
 		glVertex3f( a, -a,  0.0f);
 		glVertex3f( a,  a,  0.0f);
 		glVertex3f(-a,  a,  0.0f);
-	glEnd();	
+	glEnd();
 
 	glEnable(GL_TEXTURE_2D);
-	glPopMatrix();							
+	glPopMatrix();
 	glPopAttrib();
 }
 
@@ -760,7 +766,7 @@ void GAMEMAP::showmenu()
 		//文字
 		myfont.settextTest(XMENU+30,YMENU+15+i*Y_2MENU,menustr[i],2,1,1,1);
 		//取消光照
-		glDisable(GL_LIGHTING);
+		//glDisable(GL_LIGHTING);
 		//图片
 		texture0(g_cactus[9]);
 		if(iMenu==i)
@@ -788,7 +794,7 @@ void GAMEMAP::showmenu()
 		}
 	}
 	
-	glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHTING);
 }
 
 //键盘处理

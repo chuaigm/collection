@@ -19,7 +19,9 @@ extern GAMEMAP gm;
 
 extern CGLFont myfont;
 
-CString	strTest;  
+extern int WinWidth;
+extern int WinHeight;
+
 //////////////////////////////////////////////////////////////////////
 OpenGL::OpenGL()
 {
@@ -28,7 +30,6 @@ OpenGL::OpenGL()
 
 OpenGL::~OpenGL()
 {
-
 	CleanUp();
 }
 
@@ -44,10 +45,10 @@ BOOL OpenGL::SetupPixelFormat(HDC hDC0)
 	    PFD_SUPPORT_OPENGL | 
 	    PFD_DOUBLEBUFFER, 
 	    PFD_TYPE_RGBA,  
-	    16,  
-	    0, 0, 0, 0, 0, 0, 
-	    0,     
-	    0, 
+	    24,
+	    0, 0, 0, 0, 0, 0,
+	    0,
+	    0,
 	    0,
 	    0, 0, 0, 0, 
 	    16,   
@@ -58,12 +59,40 @@ BOOL OpenGL::SetupPixelFormat(HDC hDC0)
 	    0, 0, 0 
 	}; 
 	if (!(nPixelFormat = ChoosePixelFormat(hDC, &pfd)))
-		{ MessageBox(NULL,"没找到合适的显示模式","Error",MB_OK|MB_ICONEXCLAMATION);
-	      return FALSE;
-		}
+	{ MessageBox(NULL,"没找到合适的显示模式","Error",MB_OK|MB_ICONEXCLAMATION);
+		return FALSE;
+	}
 	SetPixelFormat(hDC,nPixelFormat,&pfd);
 	hRC = wglCreateContext(hDC);
-	wglMakeCurrent(hDC, hRC);   
+	wglMakeCurrent(hDC, hRC);
+
+	// 开启深度测试
+	glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LEQUAL);
+	//多边形填充方式
+	glShadeModel(GL_SMOOTH); //or GL_FLAT
+	//混合
+	glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_NORMALIZE);
+
+	//不画多边形的反面
+	//	glFrontFace(GL_CCW);
+	//	glEnable(GL_CULL_FACE);
+	//	glCullFace(GL_BACK);
+
+	glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+	glHint(GL_POLYGON_SMOOTH_HINT,GL_DONT_CARE);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
+	glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
+	/////////////////////////////////////////////////////////反走样
+	//	  glEnable(GL_SCISSOR_TEST);
+	//	  glDisable(GL_DEPTH_TEST);
+	//glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_POLYGON_SMOOTH);
+	//glPolygonOffset(0.01f,0.002f);
+	//glPolygonMode(GL_FRONT,GL_FILL);
 	
 	return TRUE;
 }
@@ -87,8 +116,10 @@ void OpenGL::init()
 	glMatrixMode(GL_MODELVIEW);	
 	glLoadIdentity();
 
+	//启动颜色材质
+	glEnable(GL_COLOR_MATERIAL);
 	//初始化灯光
-	gm.light0();
+	//gm.light0();
 
 //====================================================
 }
@@ -111,7 +142,8 @@ void OpenGL::initMenu()
 //渲染输出
 void OpenGL::Render()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);	
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();		
@@ -132,7 +164,8 @@ void OpenGL::text()
 {
 	char str[128];
 
-	sprintf(str, "C %d ",c1.iNumClip);
+	sprintf(str, "C %d/%d ",c1.iNumDest, c1.expire_time);
+	//myfont.settext(WinWidth/2,WinHeight*7/8,str,FONT0,1,1,1.0f);
 	myfont.settext(400,550,str,FONT0,1,1,1.0f);
 }
 
