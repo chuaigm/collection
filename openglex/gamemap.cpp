@@ -292,7 +292,7 @@ void GAMEMAP::showTarget()
 	//指定颜色
 	glColor3f(0.0,1.0,0.0f);             
 	//坐标转换，移动
-	glTranslatef(0.0,-0.033,-1.0f);
+	glTranslatef(0.0,0.0,-1.0f);
 
 	//在RC中输出
 	glPixelStorei(GL_UNPACK_ALIGNMENT ,1);
@@ -312,9 +312,11 @@ void GAMEMAP::showTarget()
 //绘制鼠标
 void GAMEMAP::drawMouse()
 {
-	glLoadIdentity();
+	glPushMatrix();
+	//glLoadIdentity();
 	//属性进栈
-	glPushAttrib(GL_CURRENT_BIT);
+	//glPushAttrib(GL_CURRENT_BIT);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glDisable(GL_TEXTURE_2D);    
 	//glDisable(GL_LIGHTING);      	
 	
@@ -337,6 +339,7 @@ void GAMEMAP::drawMouse()
 	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
+	glPopMatrix();
 }
 
 //画两个黑色方块
