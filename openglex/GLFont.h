@@ -13,6 +13,7 @@ public:
 	void Printftext(int x, int y, LPCTSTR lpszText,HFONT hFont);
 	//根据字体输出文字
 	void settext(float x,float y,const char* str,int ifont,float r,float g,float b);
+	void Print2D(float x,float y,const char* str,int ifont,float r,float g,float b);
 	//
 	void settextTest(int x,int y,const char* str,int ifont,float r,float g,float b);
 

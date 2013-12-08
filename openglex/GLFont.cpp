@@ -45,8 +45,7 @@ CGLFont::~CGLFont()
 // 由于光栅定位到z=0处，在gluPerspective投影下需要后移
 void CGLFont::settextTest(int x,int y,const char* str,int ifont,float r,float g,float b)
 {
-	glLoadIdentity();		
-
+	glPushMatrix();
 	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);    
 	//glDisable(GL_LIGHTING); 
@@ -59,7 +58,7 @@ void CGLFont::settextTest(int x,int y,const char* str,int ifont,float r,float g,
 	//glEnable(GL_LIGHTING);         
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
-
+	glPopMatrix();
 }
 
 void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,float b)
@@ -87,6 +86,32 @@ void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,
 	glPopAttrib();
 
 	glPopMatrix();
+}
+void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,float b)
+{
+	//glDisable(GL_DEPTH_TEST);
+
+	glPushMatrix();
+
+	//属性进栈
+	//glPushAttrib(GL_CURRENT_BIT);
+	glDisable(GL_TEXTURE_2D);
+
+	//指定颜色
+	glColor3f(r,g,b);             
+	//坐标转换，移动
+	glTranslatef(0.0,0.0,-0.5f);
+	//输出文字
+	Printftext (0,0, str,hFontAr[ifont]);   
+
+	/////////////////////////
+	//glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);          
+	//glPopAttrib();
+
+	glPopMatrix();
+
+	//glEnable(GL_DEPTH_TEST);
 }
 
 void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)

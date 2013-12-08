@@ -779,8 +779,8 @@ void GAMEMAP::showmenu()
 		}
 	}
 	//»­±³¾°Í¼Æ¬
-	glLoadIdentity();
-	glTranslatef(0.0,0.0,-0.1f);
+	//glLoadIdentity();
+	//glTranslatef(0.0,0.0,-0.1f);
 	texture0(g_cactus[1]);
 	tPic(0,0,WinWidth,WinHeight);	
 

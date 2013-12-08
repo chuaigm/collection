@@ -165,8 +165,11 @@ void OpenGL::text()
 	char str[128];
 
 	sprintf(str, "C %d/%d ",c1.iNumDest, c1.expire_time);
+	
 	//myfont.settext(WinWidth/2,WinHeight*7/8,str,FONT0,1,1,1.0f);
-	myfont.settext(400,550,str,FONT0,1,1,1.0f);
+	myfont.Print2D(400,550,str,FONT0,0.8f,0.8f,0.8f);
+	
+	//myfont.settext(400,550,str,FONT0,1,1,1.0f);
 }
 
 
