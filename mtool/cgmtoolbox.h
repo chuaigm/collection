@@ -466,7 +466,7 @@ public:
 		memset(_name, 0, 256);
 		memcpy(_name, func_name, strlen(func_name));
 		printf("%d: ", indent);
-		for(int i=0; i<indent; ++i) {
+		for(unsigned int i=0; i<indent; ++i) {
 			printf("  ");
 		}
 		printf("Entering %s()\n", _name);
@@ -474,7 +474,7 @@ public:
 	~CFuncTracer()
 	{
 		printf("%d: ", indent);
-		for(int i=0; i<indent; ++i) {
+		for(unsigned int i=0; i<indent; ++i) {
 			printf("  ");
 		}
 		printf("Leaving  %s()\n", _name);
@@ -488,7 +488,7 @@ public:
 		vsnprintf(buf, 1024, fmt, ap);
 		va_end(ap);
 		printf("%d: ", indent);
-		for(int i=0; i<indent; ++i) {
+		for(unsigned int i=0; i<indent; ++i) {
 			printf("  ");
 		}
 		printf("%s: %s", level, buf);
