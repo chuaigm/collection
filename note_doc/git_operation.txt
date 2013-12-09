@@ -1,0 +1,13 @@
+
+1. 建立文件夹，在文件夹内执行
+  git init       // 初始化
+
+2. git remote -v 查看远程仓库路径url
+3. // 加入远程仓库路径
+                 本地命名 远程仓库url
+   git remote add [name] [URL] 
+4. // 从远程仓库拉数据，更新当前
+   git pull [name] master
+5. // 提交master分支
+   git push [name] master
+6. 

@@ -13,11 +13,19 @@
 #                   lang=en
 
 echo "--------------------------------------------------"
+excompany=zhongtong
+exnumber=718314357432
+
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
+echo " "
+echo "--------------------------------------------------"
+
+<<"XXX"
+echo "--------------------------------------------------"
 excompany=shentong
 exnumber=668350684182
 
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
-
 echo "--------------------------------------------------"
 excompany=zhaijisong
 exnumber=8075377575
@@ -25,6 +33,7 @@ exnumber=8075377575
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
 
 echo "--------------------------------------------------"
+XXX
 
 
 
