@@ -10,4 +10,5 @@
    git pull [name] master
 5. // 提交master分支
    git push [name] master
-6. 
+6. // 查看那些文件有变动
+   git whatchanged

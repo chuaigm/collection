@@ -984,7 +984,7 @@ void GAMEMAP::DisplayScene()
 	g_Angle +=  (xmouse-xmouseOld)*.2f;            
 	g_elev  += -(ymouse-ymouseOld)*.2f;          
 
-	if(xmouse<50 || xmouse>750 || ymouse<50 || ymouse>550)
+	if(xmouse<1 || xmouse>799 || ymouse<1 || ymouse>599)
 	{
 		SetCursorPos(400,300);
 	}
@@ -1339,12 +1339,11 @@ int GAMEMAP::RoleInMap(float x,float y,float z)
 //初始化某一关地图 游戏数据
 void GAMEMAP::initMap()
 {
-
 	//camera
-	g_eye[0]=50;//
-	g_eye[2]=5;//
-	g_Angle=0;
-	g_elev=0;
+	g_eye[0]=50.0f;//
+	g_eye[2]=5.0f;//
+	g_Angle=0.0;
+	g_elev=0.0;
 
 	//fire
 	IsFire=0;
