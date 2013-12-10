@@ -1,13 +1,8 @@
 //
-// 制作  programking 2009年3月
-// 博客  http://blog.csdn.net/programking
-//=======================================
-// OpenGL.cpp: implementation of the OpenGL class.
-// 学程序编游戏系列丛书
-// 唐明理 E_mail: cqtmL@163.com
+// OpenGL基础类，opengl对外接口与封装
 //====================================================================
 #include "stdafx.h"
-#include "OpenGL.h"
+#include "OpenGLbase.h"
 #include "myclock.h"
 #include "gamemap.h"
 
@@ -23,18 +18,18 @@ extern int WinWidth;
 extern int WinHeight;
 
 //////////////////////////////////////////////////////////////////////
-OpenGL::OpenGL()
+COpenGLbase::COpenGLbase()
 {
 	
 }
 
-OpenGL::~OpenGL()
+COpenGLbase::~COpenGLbase()
 {
 	CleanUp();
 }
 
 //设置像素格式，创建RC，选择RC
-BOOL OpenGL::SetupPixelFormat(HDC hDC0)
+BOOL COpenGLbase::SetupPixelFormat(HDC hDC0)
 {
 	int nPixelFormat;
 	hDC=hDC0;
@@ -99,7 +94,7 @@ BOOL OpenGL::SetupPixelFormat(HDC hDC0)
 
 //建立视口
 //设置映射方式
-void OpenGL::init()
+void COpenGLbase::init()
 {
 	glViewport(0,0,RCwidth,RCheight);
 
@@ -124,13 +119,13 @@ void OpenGL::init()
 //====================================================
 }
 
-void OpenGL::SetViewSize(int w,int h)
+void COpenGLbase::SetViewSize(int w,int h)
 {
 	RCwidth=w;
 	RCheight=h;
 }
 
-void OpenGL::initMenu()
+void COpenGLbase::initMenu()
 {
 	glViewport(0, 0, RCwidth, RCheight);
 	glMatrixMode(GL_PROJECTION);
@@ -140,7 +135,7 @@ void OpenGL::initMenu()
 	glLoadIdentity();
 }
 //渲染输出
-void OpenGL::Render()
+void COpenGLbase::Render()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
@@ -154,13 +149,13 @@ void OpenGL::Render()
 	SwapBuffers(hDC);	
 }
 
-void OpenGL::CleanUp()
+void COpenGLbase::CleanUp()
 { 
 	wglMakeCurrent(hDC, NULL);
 	wglDeleteContext(hRC);
 }
 
-void OpenGL::text()
+void COpenGLbase::text()
 {
 	char str[128];
 

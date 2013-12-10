@@ -7,7 +7,7 @@
 #include "gamemap.h"
 #include "myclock.h"
 #include "glfont.h"
-#include "opengl.h"
+#include "OpenGLbase.h"
 #include "mykey.h"
 
 //font
@@ -19,7 +19,7 @@ extern MYCLOCK c1;
 //mouse
 extern int Lbutdown;
 
-extern OpenGL* m_OpenGL;
+extern COpenGLbase* m_OpenGL;
 
 extern int WinWidth;
 extern int WinHeight;

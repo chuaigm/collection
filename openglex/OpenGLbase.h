@@ -21,11 +21,11 @@
 //          /
 //       Z V
 
-class OpenGL  
+class COpenGLbase
 {
 public:	
-	OpenGL();
-	virtual ~OpenGL();
+	COpenGLbase();
+	virtual ~COpenGLbase();
 	
 public:
 

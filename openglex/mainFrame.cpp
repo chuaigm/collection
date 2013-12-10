@@ -6,7 +6,7 @@
 #include "stdafx.h"
 
 #include "myclock.h"
-#include "opengl.h"
+#include "OpenGLbase.h"
 #include "gamemap.h"
 #include "glfont.h"
 
@@ -15,7 +15,7 @@
 //时钟
 MYCLOCK c1;
 
-OpenGL* m_OpenGL;
+COpenGLbase * m_OpenGL;
 CGLFont myfont;
 
 HDC		hDC;
@@ -129,27 +129,14 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
 
 	return (DefWindowProc(hWnd, message, wParam, lParam));
 }
- 
+
+// 主函数main
 int APIENTRY WinMain(HINSTANCE hInst,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
-	DWORD	dwStyle;
-
-	int	nX=0;
-	int nY=0;
-// 窗体风格
-	//dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;
-	dwStyle=WS_OVERLAPPEDWINDOW;			
-
-	int wid=GetSystemMetrics(SM_CXSCREEN);
-	int hei=GetSystemMetrics(SM_CYSCREEN);
-
-	nX=(wid-WinWidth)/2;
-	nY=(hei-WinHeight)/2;	
-
-	//-------------------------------------------------------------------
+	//--------------------------------------------------
 	//begin 文件检查
 	char errstr[]="缺少数据文件，请修复后重启游戏";
 	if(!gm.haveDataFile())
@@ -159,30 +146,41 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	}
 	//end 文件检查
 
-	char cc[]="cs";
-
+	//--------------------------------------------------
+	char cc[]="chuaiOpenGL";
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), 
 		CS_CLASSDC,
 		MsgProc,
 		0L, 0L, 
 		GetModuleHandle(NULL), 
-		//
 		LoadIcon(hInst, (LPCTSTR)IDI_ICON1),
 		LoadCursor(NULL, IDC_ARROW),
 		NULL, NULL,
         cc, 
 		LoadIcon(hInst, (LPCTSTR)IDI_ICON3)
 	};
-    
 	RegisterClassEx( &wc );
+	//--------------------------------------------------
+	m_OpenGL=new COpenGLbase();
 
-	m_OpenGL=new OpenGL();//
+	//--------------------------------------------------
+	// 窗体风格
+	//dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;
+	//dwStyle=WS_POPUP;
+	DWORD dwStyle=WS_OVERLAPPEDWINDOW;
+	//DWORD dwStyle=WS_DLGFRAME;
+
+	// 得到当前桌面分辨率
+	int wid=GetSystemMetrics(SM_CXSCREEN);
+	int hei=GetSystemMetrics(SM_CYSCREEN);
+	// 窗口左上角坐标
+	int nX=(wid-WinWidth)/2;
+	int nY=(hei-WinHeight)/2;	
 
 	hWnd = CreateWindowEx(NULL,
 		cc,
-		"CS : 加油中国 自强不息",
-		WS_POPUP,	
-		//WS_OVERLAPPEDWINDOW,
+		"chuai_OpenGL_Sample",
+		dwStyle,
 		nX, nY,
 		WinWidth, 
 		WinHeight,
