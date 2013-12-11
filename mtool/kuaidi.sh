@@ -1,7 +1,8 @@
-# 快递查询API申请
+# 快递查询API申请 2013-11-15
 # http://api.ickd.cn/users/
 # usr: chuai1609@163.com
 # passwd : 666666
+# 本文件编码: GB2312,GBK
 
 # http://api.ickd.cn/?id=102634 &
 #                 secret=14de636ea94ad80b3ec93ee821049fac &
@@ -12,29 +13,37 @@
 #                    ord=asc|desc &
 #                   lang=en
 
-echo "--------------------------------------------------"
-excompany=zhongtong
-exnumber=718314357432
+# if UTF8, assign =1
+iu8code=0
 
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
+# change your mail company and waybill here!!!
+excompany=zhongtong
+waybill=718314357432
+
+echo "--------------------------------------------------"
+echo "ex_company=[$excompany] waybill=[$waybill]"
+if [ $iu8code -eq 1 ]; then
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&encode=utf8&ord=asc'
+else
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
+fi
 echo " "
 echo "--------------------------------------------------"
 
 <<"XXX"
 echo "--------------------------------------------------"
 excompany=shentong
-exnumber=668350684182
+waybill=668350684182
 
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=desc'
 echo "--------------------------------------------------"
 excompany=zhaijisong
-exnumber=8075377575
+waybill=8075377575
 
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$exnumber'&type=text&ord=desc'
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=desc'
 
 echo "--------------------------------------------------"
 XXX
-
 
 
 # 快递公司列表
