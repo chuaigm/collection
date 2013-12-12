@@ -40,6 +40,8 @@
 
 using namespace std;
 
+typedef unsigned int UINT4;
+
 #ifdef __WIN32__
 //显示颜色方法,默认为graywhite
 void SetColor(unsigned short c=7)
@@ -100,7 +102,6 @@ SingleColorOutStream gray(8);			//灰色
 SingleColorOutStream crimson(4);		//深红色
 SingleColorOutStream yellow_under(14|COMMON_LVB_UNDERSCORE);//黄色加下划线
 
-
 //////////////////////////////////////////////////////////////////////////
 // 为了popstar项目定制
 
@@ -116,7 +117,7 @@ SingleColorOutStream yellow_bk_dark(8|BACKGROUND_GREEN|BACKGROUND_RED);
 SingleColorOutStream white_bk(8|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_BLUE|BACKGROUND_INTENSITY);
 SingleColorOutStream white_bk_dark(8|BACKGROUND_GREEN|BACKGROUND_RED|BACKGROUND_BLUE);
 
-#endif
+#endif  // end for __WIN32__
 
 //////////////////////////////////////////////////////////////////////////
 // 全局变量,常量
@@ -147,14 +148,22 @@ bool g_beGame = true;					// 是否可以继续游戏(!退出)
 bool g_bePlay = false;					// 是否在消去游戏状态
 bool g_beTurn = true;					// 本局游戏是否可以继续
 // 需要显示的数据----------------
-unsigned int g_highScore = 0;			// 最高得分
+unsigned int g_highScore = 0;			// 最高总得分
 unsigned int g_score = 0;				// 本局得分
 unsigned int g_elimi_score = 0;			// 本次消去得分
 unsigned int g_elimination = 0;			// 本次消去了多少块
 unsigned int g_level = 1;				// 关卡
 unsigned int g_target = 1000;			// 过关目标分数
+//
 unsigned int g_turnF_award = 0;			// 本局结束未消去块的奖励分数
 unsigned int g_RandomSeed = 0;			// 随机数种子
+// 需要记录的数据(还有上面的最高分)
+unsigned int f_max_elimi=0;
+unsigned int f_max_level=0;
+unsigned int f_max_single=0;
+
+// 函数声明
+void checkHigh(UINT4,UINT4,UINT4,UINT4);
 
 //////////////////////////////////////////////////////////////////////////
 // 绘制游戏屏幕
@@ -411,10 +420,8 @@ int GameAlgorithem()
 	g_elimi_score = 5 * g_elimination * g_elimination;
 	// 累计本局得分
 	g_score += g_elimi_score;
-	if(g_score > g_highScore)
-	{
-		g_highScore = g_score;
-	}
+	// 检查是否有更高的分数
+	checkHigh(g_highScore,g_level,0,g_elimination);
 	// 重绘屏幕，中间消去过程
 	GamePrintScreen();
 	//////////////////////////////////////////////////////////////////////////
@@ -615,14 +622,19 @@ void PrintPassScreen()
 	cout<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl<<endl;
 	red<<blanknum<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 	cout<<endl;
-	yellow<<blanknum<<"     **Congratulation!**";
-	cout<<endl;
+	yellow<<blanknum<<"     **Congratulation!**";cout<<endl;
 	purple<<blanknum<<"    You pass: ";
 	printf(gm_GREEN"%06d"gm_NONE,g_level);
 	purple<<" stage";
 	cout<<endl;
-	purple<<blanknum<<"  remanent award: ";
+	purple<<blanknum<<"  Remanent Award: ";
 	printf(gm_GREEN"%06d"gm_NONE,g_turnF_award);
+	cout<<endl<<endl;
+	purple<<blanknum<<"   Now Score: ";
+	printf(gm_YELLOW"%06d"gm_NONE,g_score);
+	cout<<endl;
+	purple<<blanknum<<"   Next Target: ";
+	printf(gm_RED"%06d"gm_NONE,g_target);
 	cout<<endl;
 	red<<blanknum<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 	cout<<endl;
@@ -684,6 +696,7 @@ void ad()
 	red<<"OO***************************************************************************OO";
 	cout<<endl<<endl;
 	printf("\tchuai God's POPstar Game!!! ------ have fun |OvO|!\n");
+	printf("\t ( PLease Make Sure, size upper than [80]X[25] )\n");
 	cout<<endl;
 	red<<"VV***************************************************************************VV";
 	cout<<endl;
@@ -694,10 +707,69 @@ void ad()
 	cout<<endl;
 	cout<<endl;
 }
+// 检查记录最高分数
+void checkHigh(UINT4 hisc, UINT4 hilv, UINT4 hisl, UINT4 hiel)
+{
+	if(hisc>g_highScore)
+	{
+		g_highScore=hisc;
+	}
+	if(hilv>f_max_level)
+	{
+		f_max_level=hilv;
+	}
+	if(hisl>f_max_single)
+	{
+		f_max_single=hisl;
+	}
+	if(hiel>f_max_elimi)
+	{
+		f_max_elimi=hiel;
+	}
+}
+// 读取游戏存档
+int loadSaveData()
+{
+	FILE *fp=fopen("./.rcdata","rb");
+	if(NULL==fp)
+	{
+		return -1;
+	}
+	else
+	{
+		fseek(fp,0,SEEK_SET);
+		fread(&g_highScore,sizeof(g_highScore),1,fp);
+		fread(&f_max_level,sizeof(f_max_level),1,fp);
+		fread(&f_max_single,sizeof(f_max_single),1,fp);
+		fread(&f_max_elimi,sizeof(f_max_elimi),1,fp);
+	}
+	fclose(fp);
+	return 0;
+}
+// 写入游戏存档
+int saveData()
+{
+	FILE *fp=fopen("./.rcdata","wb");
+	if(NULL==fp)
+	{
+		return -1;
+	}
+	else
+	{
+		fseek(fp,0,SEEK_SET);
+		fwrite(&g_highScore,sizeof(g_highScore),1,fp);
+		fwrite(&f_max_level,sizeof(f_max_level),1,fp);
+		fwrite(&f_max_single,sizeof(f_max_single),1,fp);
+		fwrite(&f_max_elimi,sizeof(f_max_elimi),1,fp);
+	}
+	fclose(fp);
+	return 0;
+}
 // 游戏主函数
 int GameMain()
 {
 	ad();
+	loadSaveData();
 #ifdef NO_DEBUG
 	// 初始化随机块
 	initialRandomData(0,0);
@@ -706,15 +778,13 @@ int GameMain()
 	g_bePlay = false;
 	g_beTurn = true;
 	// 游戏主循环
-	while (g_beGame)
+	while (g_beGame) // 游戏进程
 	{
-		if(g_bePlay)
+		if(g_bePlay) // 是否在游戏的状态(非菜单，等其他)
 		{
-			if(g_beTurn)
+			if(g_beTurn)  // 一局游戏是否结束
 			{
 				GamePrintScreen();
-				//cout<<usrInput[0]<<usrInput[1]<<endl;
-				//cout<<endl;
 				cout<<"Please Input the aix(xy): ";
 				cin.clear();
 				// 正确使用这句话，需要包含limits
@@ -758,33 +828,33 @@ int GameMain()
 				}
 				GameAlgorithem();
 			}
-			else
+			else // 描述通关之后的部分
 			{
-				// 刷新最高分
-				if(g_score > g_highScore)
-				{
-					g_highScore = g_score;
-				}
+				checkHigh(g_highScore, g_level,0,0);
 				// 如果分数不能达到过关要求
 				if(g_score < g_target)
 				{
 					g_bePlay = false;
 					// save
+					saveData();
 					break;
 				}
-				// 打印通关画面
-				PrintPassScreen();
-				// 对游戏难度做增量
-				// 1000, 3000, 6000, 8000
-				// 10000, 13000, 16000, 18000
+				// 对游戏难度做增量, 安卓版本如下
+				// 1000, 3000, 6000, 8000, 
+				// 10000, 13000, 15000, 17000
+				// 20000, 24000, 28000, 32000, 36000
 				// 原本应该先自增level再算分数，但是由于生成方法，还需要减一，所以用
 				// 上一个的level先生产分数
 				g_target = g_level/4*10000 + ((g_level%4==3)?8000:(g_level%4*3000));
+				// 打印通关画面
+				PrintPassScreen();
+
 				g_level++;
 				g_elimi_score = 0;
 				g_elimination = 0;
 				initialRandomData(0,0);
 				g_beTurn = true;
+				saveData();
 			}
 		}
 		else
@@ -794,7 +864,6 @@ int GameMain()
 			g_level = 1;
 			g_elimi_score = 0;
 			g_elimination = 0;
-			//g_highScore = 0;
 			g_score = 0;
 			g_turnF_award = 0;
 			

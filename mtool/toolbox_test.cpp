@@ -1,5 +1,6 @@
 
 #include "cgmtoolbox.h"
+#include <fcntl.h>
 
 void fun1()
 {
@@ -15,9 +16,35 @@ void fun2()
 	INFO_LOG("%d-test2\n", 56);
 	ERROR_LOG("%d-test2\n", 25);
 }
+void genRandHex(char *str, unsigned int len)
+{
+	char buf[len];
+	char tmp[2*len+1];
+	memset(buf,0,len);
+	memset(tmp,0,2*len+1);
+	//int fd=open("/dev/random", O_RDONLY);
+	//read(fd, buf, len);
+	//close(fd);
+	FILE *fp=fopen("/dev/random", "rb");
+	fread(buf,len,1,fp);
+	fclose(fp);
+
+	for(int i=0; i<len; ++i)
+	{
+		sprintf(&(tmp[i*2]), "%02X", (unsigned char)buf[i]);
+		//sprintf(&(tmp[i*2]), "%02X", buf[i]);
+	}
+	memcpy(str, tmp, len);
+}
 
 int main()
 {
+	char ar[100]={0};
+	genRandHex(ar, 8);
+
+	printf("%s", ar);
+
+/*
 	FUNC_TRACER;
 	BEGIN_CALC_TIME;
 	printf("C1---------------\n");
@@ -68,5 +95,5 @@ int main()
 	printf("big macro\n");
 #endif
 	printf("C8--------------\n");
-	
+*/	
 }
