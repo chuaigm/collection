@@ -27,9 +27,9 @@ echo "[桂圆，500g，18y]           [韵达]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
-excompany=yunda
-waybill=1201130565354
-echo "[葡萄干，800g，23.2y]       [韵达]"
+excompany=zhongtong
+waybill=728306387297
+echo "[葡萄干，800g，23.2y]       [中通]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
