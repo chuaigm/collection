@@ -7,9 +7,10 @@
 # if UTF8, assign =1
 iu8code=0
 <<"XXX"
+XXX
 # change your mail company and waybill here!!!
 excompany=shentong
-waybill=768209804337
+waybill=768262758964
 echo "--------------------------------------------------"
 #echo "ex_company=[$excompany] waybill=[$waybill]"
 echo "[µçÄÔ,750y]                 [ÉêÍ¨]"
@@ -19,15 +20,14 @@ else
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 fi
 echo " "
-XXX
 echo "--------------------------------------------------"
+<<"XXX"
 excompany=yunda
 waybill=1201120273178
 echo "[ÆÏÌÑ¸É£¬500g£¬14.8y]       [ÔÏ´ï]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
-<<"XXX"
 excompany=yunda
 waybill=1201130565354
 echo "[¹ðÔ²£¬500g£¬18y]           [ÔÏ´ï]"
