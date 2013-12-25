@@ -87,6 +87,7 @@ void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,
 
 	glPopMatrix();
 }
+
 void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,float b)
 {
 	//glDisable(GL_DEPTH_TEST);
@@ -94,28 +95,35 @@ void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,
 	glPushMatrix();
 
 	//属性进栈
-	//glPushAttrib(GL_CURRENT_BIT);
+	glPushAttrib(GL_CURRENT_BIT);
 	glDisable(GL_TEXTURE_2D);
 
 	//指定颜色
 	glColor3f(r,g,b);             
 	//坐标转换，移动
-	glTranslatef(0.0,0.0,-0.5f);
+	glTranslatef(x, y, -0.5f);
 	//输出文字
 	Printftext (0,0, str,hFontAr[ifont]);   
 
 	/////////////////////////
 	//glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);          
-	//glPopAttrib();
+	glPopAttrib();
 
 	glPopMatrix();
 
 	//glEnable(GL_DEPTH_TEST);
 }
 
+// 在屏幕光栅输出字符，默认灰色字体
+// int x, y [窗口左下角为起点位置的坐标]
+// LPCTSTR lpszText  [要输出的字符串]
+// HFONT hFont [字体]
 void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)
 {
+	glPushAttrib(GL_CURRENT_BIT);
+	glPushMatrix();
+	// 在屏幕上输出平面字符
 	CBitmap bitmap;						
 	BITMAP bm;                           
 	SIZE size;                          
@@ -169,5 +177,8 @@ void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)
 	
 	delete Bits;                            
 	SelectObject(MDC, oldBmp);           
-	::DeleteDC(MDC);                  
+	::DeleteDC(MDC);
+
+	glPopAttrib();
+	glPopMatrix();
 }

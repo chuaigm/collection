@@ -167,8 +167,8 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	// 窗体风格
 	//dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;
 	//dwStyle=WS_POPUP;
-	DWORD dwStyle=WS_OVERLAPPEDWINDOW;
-	//DWORD dwStyle=WS_DLGFRAME;
+	//DWORD dwStyle=WS_OVERLAPPEDWINDOW;
+	DWORD dwStyle=WS_DLGFRAME;
 
 	// 得到当前桌面分辨率
 	int wid=GetSystemMetrics(SM_CXSCREEN);
@@ -189,8 +189,8 @@ int APIENTRY WinMain(HINSTANCE hInst,
 
 // 显示方式
 	//ShowWindow( hWnd, SW_SHOWDEFAULT );	//默认大小
-	ShowWindow( hWnd, SW_MAXIMIZE );	//最大化显示
-	//ShowWindow( hWnd, SW_SHOWNORMAL );	// 正常
+	//ShowWindow( hWnd, SW_MAXIMIZE );	//最大化显示
+	ShowWindow( hWnd, SW_SHOWNORMAL );	// 正常
 	UpdateWindow( hWnd );	
 
 	// init开屏动画计时

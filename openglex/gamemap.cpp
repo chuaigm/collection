@@ -287,24 +287,24 @@ void GAMEMAP::showTarget()
 	glLoadIdentity();
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
-	glDisable(GL_TEXTURE_2D);    
+	glDisable(GL_TEXTURE_2D);
 	//glDisable(GL_LIGHTING);      	
 	//指定颜色
-	glColor3f(0.0,1.0,0.0f);             
+	glColor3f(0.0,1.0,0.0);             
 	//坐标转换，移动
 	glTranslatef(0.0,0.0,-1.0f);
 
 	//在RC中输出
 	glPixelStorei(GL_UNPACK_ALIGNMENT ,1);
 	//设置光栅位置
-	glRasterPos2i(0,0);                  
+	glRasterPos2i(0,0);
 	glBitmap (2, 12, 0.0, 0.0, 0.0, 23.0, rasterallf);
 	glBitmap (2, 12, 0.0, 0.0, -16.0, -6.0, rasterallf);
 	glBitmap (12, 2, 0.0, 0.0, 22.0, 0.0, rasterallf);
 	glBitmap (12, 2, 0.0, 0.0, 0.0, 0.0, rasterallf);
 
 	/////////////////////////
-	//glEnable(GL_LIGHTING);         
+	//glEnable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);          
 	glPopAttrib();
 
@@ -414,9 +414,9 @@ void GAMEMAP::show()
 		break;
 
 	case GAME_MENU:
-		glLoadIdentity();
+		//glLoadIdentity();
 		showmenu();		
-		glLoadIdentity();
+		//glLoadIdentity();
 		drawMouse();
 		break;
 
@@ -426,6 +426,7 @@ void GAMEMAP::show()
 	case GAME_PASS:
 		//初始化单位矩阵
 		glLoadIdentity();
+
 		showTarget();
 		showInfo();
 		showFire();
@@ -984,7 +985,7 @@ void GAMEMAP::DisplayScene()
 	g_Angle +=  (xmouse-xmouseOld)*.2f;            
 	g_elev  += -(ymouse-ymouseOld)*.2f;          
 
-	if(xmouse<1 || xmouse>799 || ymouse<1 || ymouse>599)
+	if(xmouse<10 || xmouse>790 || ymouse<10 || ymouse>590)
 	{
 		SetCursorPos(400,300);
 	}

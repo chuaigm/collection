@@ -162,7 +162,10 @@ void COpenGLbase::text()
 	sprintf(str, "C %d/%d ",c1.iNumDest, c1.expire_time);
 	
 	//myfont.settext(WinWidth/2,WinHeight*7/8,str,FONT0,1,1,1.0f);
-	myfont.Print2D(400,550,str,FONT0,0.8f,0.8f,0.8f);
+	myfont.Print2D(0.1,0.1,str,FONT1,0.0f,0.0f,0.0f);
+	//myfont.Print2D(400,450,str,FONT1,1.0f,0.0f,0.0f);
+	//myfont.Print2D(400,400,str,FONT1,0.0f,1.0f,0.0f);
+	//myfont.Print2D(400,300,str,FONT1,0.0f,0.0f,1.0f);
 	
 	//myfont.settext(400,550,str,FONT0,1,1,1.0f);
 }
