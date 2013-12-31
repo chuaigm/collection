@@ -10,10 +10,10 @@ iu8code=0
 XXX
 # change your mail company and waybill here!!!
 excompany=shentong
-waybill=768262758964
+waybill=668819650676
 echo "--------------------------------------------------"
 #echo "ex_company=[$excompany] waybill=[$waybill]"
-echo "[电脑,750y]                 [申通]"
+echo "[理发器, 88y]                [申通]"
 if [ $iu8code -eq 1 ]; then
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&encode=utf8&ord=asc'
 else
@@ -21,13 +21,13 @@ curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&c
 fi
 echo " "
 echo "--------------------------------------------------"
-<<"XXX"
-excompany=yunda
-waybill=1201120273178
-echo "[葡萄干，500g，14.8y]       [韵达]"
+waybill=668278183513
+echo "[登山鞋, 14.8y]              [申通]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
+<<"XXX"
+excompany=shentong
 excompany=yunda
 waybill=1201130565354
 echo "[桂圆，500g，18y]           [韵达]"
