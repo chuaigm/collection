@@ -21,13 +21,13 @@ curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&c
 fi
 echo " "
 echo "--------------------------------------------------"
-waybill=668278183513
-echo "[登山鞋, 14.8y]              [申通]"
+excompany=yunda
+waybill=1201152029178
+echo "[电脑退货, 14.8y]              [韵达]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
 <<"XXX"
-excompany=shentong
 excompany=yunda
 waybill=1201130565354
 echo "[桂圆，500g，18y]           [韵达]"

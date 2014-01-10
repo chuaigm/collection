@@ -6,7 +6,7 @@ echo "while start!"
 while true
 do
 	FLAG=`grep "xxx" test.log`
-	if [ x"$FLAG" != x ]; then
+	if [ x"$FLAG" != x ]; then  # 这里只是想做一个不为空的判断
 		break
 	fi
 	printf ">>$ta"

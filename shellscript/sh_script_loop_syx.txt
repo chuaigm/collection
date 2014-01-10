@@ -1,0 +1,145 @@
+Shell中有3中循环，分别是for,while,until，until与while正好相反，前者条件为假则执行，后者条件为真时执行。基本和C语言中额循环没什么区别。只是语法上有些差异。
+
+for循环
+格式：
+for var in word1 word2 ……
+do
+	command
+	command
+	……
+done
+
+谈到循环，就不得不说$@变量，它代表该shell脚本的所有参数。所以，要写一个命令行中键入的所有参数的程序就应该向下面这样：
+
+for arg in "$@"
+do
+	echo $arg
+done
+
+说到$@就不得不说for循环的另一种形式，就是缺省参数
+
+for var
+in
+	command
+	command
+	……
+done
+
+上面的程序等价于：
+
+for var in "$@"
+in
+	command
+	command
+	……
+done
+
+下面的代码中，变量i在每次迭代的过程里都会保存一个字符，范围从a到z:
+for i in {a..z}; do actions; done;
+
+for 循环也可以采用C语言中的for循环格式。例如：
+
+for (( i=0; i<10; i++))
+{
+	commands;
+}
+
+until循环
+until很简单，只要记住它与while正好相反即可，即条件为假继续执行，条件为真，就跳出循环。
+
+while循环
+我们知道shell中的if语句结束标识是fi，与c语言相差很大。既然我们已经知道了for循环的形式，那while也就不难了，因为shell不能与它自己差别很大的。
+
+while command1
+do
+	command
+	command
+	……
+done
+
+示例：
+从1数到5的小程序
+
+i=1
+while[ "$i" -le 5 ]
+do
+	echo $i
+	i=$((i + 1 ))
+done
+
+正如for循环中，我们穿插介绍了$@一样，讲到while循环，可以顺便介绍一下shift，因为while循环经常跟shift结合使用。shift命令使位置变量下移，即使得$1=$2,$2=$3，最后$#还要减少1，也就是说把第一个参数删除了，而且找不回来了。如果我们要写一个打印所有参数的程序，就因该向这样的：
+
+while[ "$#" -ne 0 ]
+do
+	echo"$1"
+	shift
+done
+
+break和continue
+说到循环，肯定不能漏掉break和，continue，它们的作用和在C语言中一模一样，完。
+
+Example
+下面是一个综合的示例，用于打印从命令行输入的参数。
+
+#case1  
+k=1  
+echo "Case $k:"  
+j=0  
+for i in"$@"  
+do  
+j=$(( $j + 1))  
+	echo -e "$j\c"  
+echo $i  
+done  
+
+
+#case 2  
+k=$(( $k +1))  
+echo  
+echo "Case $k:"  
+j=0  
+for i  
+do  
+j=$(($j + 1))  
+	echo -e "$j \c"  
+echo$i  
+done  
+
+
+#case 3  
+#test continue  
+
+
+k=$(( $k +1))  
+echo  
+echo "Case $k:"  
+j=0  
+while [ $j -lt $#]  
+do  
+j=$(( $j + 1))  
+	if [ $j -eq 3 ]  
+	then  
+		continue  
+	fi  
+	echo -e "$j \c"  
+	eval echo "\$$j"  
+done  
+
+
+#case 4  
+k=$(( $k +1))  
+echo  
+echo "Case $k:"  
+j=0  
+until [ $j -eq $#]  
+do  
+	if [ $j -eq 3 ]  
+	then  
+		break  
+	fi  
+
+j=$(( $j +1))  
+	echo -e "$j \c"  
+	eval echo "\$$j"  
+done
+

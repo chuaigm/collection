@@ -8,6 +8,8 @@ ssh-host-config
 2.
 开启ssh服务
 net start sshd
+如果启动不成功，运行services.msc，在服务里找CYGWIN sshd服务，
+在第二个选项卡中，填写当前用户名与密码
 
 3.
 关闭ssh服务

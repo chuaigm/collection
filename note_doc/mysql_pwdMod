@@ -1,0 +1,9 @@
+
+use mysql    // use 接要修改的数据库名
+
+                                //这里写密码       // 这里写用户名
+update user set password=PASSWORD('hooray') where user='root';
+
+flush privileges;   //不执行这个的话，修改密码的操作不会生效的
+
+quit // 退出
