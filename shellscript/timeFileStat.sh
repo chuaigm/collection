@@ -6,6 +6,7 @@ F1="1.txt"
 F2="2.txt"
 TF1="tmpfile1"
 TF2="tmpfile2"
+TMF="tmpres"
 
 let total=0
 let n1=0
@@ -18,6 +19,20 @@ let senc=0 # 1 senc =    1000 ms
 let msen=0
 <<"ZZ"
 ZZ
+drawFunc_F() {
+# %5s can be change, circumstances alter cases
+	printf "%5s" "$1" | tee -a $TMF
+	printf ":" | tee -a $TMF
+# change the scale by this
+	divi=100
+	let tmp=$1/$divi
+	while [ $tmp -ge 0 ]
+	do
+		printf "|" | tee -a $TMF
+		let tmp=$tmp-1
+	done
+	printf "\n" | tee -a $TMF
+}
 
 # data select
 while read myline
@@ -54,8 +69,8 @@ if [ $n1 -ne $n2 ]; then
 	exit 0
 fi
 
-let i=1
 # calculate
+let i=1
 while [ $i -le $n1 ]
 do
 	# caution " and ' are quite different
@@ -63,24 +78,24 @@ do
 	d1=`sed -n "$i p" $TF1`
 	d2=`sed -n "$i p" $TF2`
 	let det=$d2-$d1
-if [ 1 -eq 1 ]; then
-	echo $det | tee -a tmpres
+if [ 0 -eq 1 ]; then
+	echo $det | tee -a $TMF
 else
-	printf "%5s" "$det"
-	printf ":"
+	drawFunc_F $det
 fi
 	let total=$total+$det
 
 	let i=$i+1
 done
 
-echo "----------------------------------------" | tee -a tmpres
-echo "Total:"$total"   Num:"$n1 | tee -a tmpres
+echo "----------------------------------------" | tee -a $TMF
 
 let avg=$total/$n1
-echo "Avg:"$avg | tee -a tmpres
+drawFunc_F $avg
+echo "Avg:"$avg | tee -a $TMF
+echo "Total:"$total"   Num:"$n1 | tee -a $TMF
 
 # delete tmp file
 rm -f $TF1 $TF2
-mv tmpres result.txt
+mv $TMF result.txt
 
