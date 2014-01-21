@@ -37,10 +37,21 @@ drawFunc_F() {
 # data select
 while read myline
 do
-	let hour=`echo $myline | awk '{sub(/^.*--/,"");sub(/:.*$/,"");print}'`
-	let mini=`echo $myline | awk -F ":|:" '{print $2}'`
-	let senc=`echo $myline | awk '{sub(/^.*:/,"");sub(/\..*$/,"");print}'`
-	let msen=`echo $myline | awk '{sub(/^.*\./,"");sub(/$/,"");print}'`
+	# method 1
+	#let hour=`echo $myline | awk '{sub(/^.*--/,"");sub(/:.*$/,"");print}'`
+	#let mini=`echo $myline | awk -F ":|:" '{print $2}'`
+	#let senc=`echo $myline | awk '{sub(/^.*:/,"");sub(/\..*$/,"");print}'`
+	#let msen=`echo $myline | awk '{sub(/^.*\./,"");sub(/$/,"");print}'`
+	# method 2
+	#echo $myline | cut -d '-' -f 3 | cut -d ':' -f 1
+	#echo $myline | cut -d ':' -f 2
+	#echo $myline | cut -d ':' -f 3 | cut -d '.' -f 1
+	#echo $myline | cut -d '.' -f 2
+	# method 3
+	let hour=`echo $myline | sed "s/^.*--\(.*\):.*:.*$/\1/"`
+	let mini=`echo $myline | sed "s/^.*:\(.*\):.*$/\1/"`
+	let senc=`echo $myline | sed "s/^.*:\(.*\)\..*$/\1/"`
+	let msen=`echo $myline | sed "s/^.*\.\(.*\)$/\1/"`
 	let hour=$hour*3600000
 	let mini=$mini*60000
 	let senc=$senc*1000
@@ -51,10 +62,10 @@ done < $F1
 
 while read myline
 do
-	let hour=`echo $myline | awk '{sub(/^.*--/,"");sub(/:.*$/,"");print}'`
-	let mini=`echo $myline | awk -F ":|:" '{print $2}'`
-	let senc=`echo $myline | awk '{sub(/^.*:/,"");sub(/\..*$/,"");print}'`
-	let msen=`echo $myline | awk '{sub(/^.*\./,"");sub(/$/,"");print}'`
+	let hour=`echo $myline | sed "s/^.*--\(.*\):.*:.*$/\1/"`
+	let mini=`echo $myline | sed "s/^.*:\(.*\):.*$/\1/"`
+	let senc=`echo $myline | sed "s/^.*:\(.*\)\..*$/\1/"`
+	let msen=`echo $myline | sed "s/^.*\.\(.*\)$/\1/"`
 	let hour=$hour*3600000
 	let mini=$mini*60000
 	let senc=$senc*1000
