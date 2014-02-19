@@ -35,6 +35,9 @@ fi
 let i=1
 while [ $i -le $n1 ]
 do
+	# if number display overflow, use this
+#	dx=`sed -n "$i p" $F1 | awk -F '[.]' '{$9=($1-int($1/100)*100)*1000+$2/1000;print $9}'`
+#	dx=`sed -n "$i p" $F1 | awk -F '[.]' '{$9=$1/$2;printf "%.2f\n", $9}'`
 	# caution " and ' are quite different
 	d1=`sed -n "$i p" $F1 | awk -F '[-:.]' '{$9=$3*3600000+$4*60000+$5*1000+$6;print $9}'`
 	d2=`sed -n "$i p" $F2 | awk -F '[-:.]' '{$9=$3*3600000+$4*60000+$5*1000+$6;print $9}'`
