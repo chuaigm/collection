@@ -1,6 +1,6 @@
 
 if [ -z $1 ]; then
-	echo Usage:$0 [log message]
+	echo "Usage:$0 [log message]"
 	exit 0
 fi
 git commit -a -m "$1"
