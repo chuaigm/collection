@@ -31,11 +31,11 @@ CGLFont::CGLFont()
 	for(i=0;i<6;i++)
 	{
 		hFontAr[i]=CreateFont(-12-i*12, 0, 0, 0, 800, 0, 0, 0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"黑体");
+			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
 	}
 
 	hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"黑体");
+			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
 }
 CGLFont::~CGLFont()
 {
@@ -95,15 +95,16 @@ void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,
 	glPushMatrix();
 
 	//属性进栈
-	glPushAttrib(GL_CURRENT_BIT);
+	//glPushAttrib(GL_CURRENT_BIT);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glDisable(GL_TEXTURE_2D);
 
 	//指定颜色
 	glColor3f(r,g,b);             
 	//坐标转换，移动
-	glTranslatef(x, y, -0.5f);
+	//glTranslatef(x, y, -0.5f);
 	//输出文字
-	Printftext (0,0, str,hFontAr[ifont]);   
+	Printftext ((int)x,(int)y, str,hFontAr[ifont]);   
 
 	/////////////////////////
 	//glEnable(GL_LIGHTING);

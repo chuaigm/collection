@@ -66,9 +66,9 @@ int GAMEMAP::haveDataFile()
 	FILE *fp;
 	char *fdata[]={
 		//map
-		"data/map/map.txt",
+//		"data/map/map.txt",
 		//mdl
-		"data/mdl/qian1.mdl",
+//		"data/mdl/qian1.mdl",
 		//bmp
 		"data/images/start1.bmp",
 		"data/images/start2.bmp",
@@ -84,8 +84,8 @@ int GAMEMAP::haveDataFile()
 		"data/images/button.bmp",
 		"data/images/h1.bmp",
 		//md2
-		"data/md2/role/tris.md2",
-		"data/md2/role/weapon.md2",
+//		"data/md2/role/tris.md2",
+//		"data/md2/role/weapon.md2",
 		//sound
 		"data/sound/explode1.wav"
 		};
@@ -125,8 +125,8 @@ int GAMEMAP::haveDataFile()
 void GAMEMAP::init()
 {
 	//mdl模型要最先初始化
-	m_mdlobj.InitGL(0,"data/mdl/qian1.mdl");	
-	
+//	m_mdlobj.InitGL(0,"data/mdl/qian1.mdl");	
+/*
 	//load images
 	LoadT8("data/images/start1.bmp", g_cactus[0]);
 	LoadT8("data/images/start2.bmp", g_cactus[1]);
@@ -146,17 +146,18 @@ void GAMEMAP::init()
 //	gluQuadricTexture(g_text, GL_TRUE);
 
 	LoadT8("data/images/TRIX1.bmp", g_cactus[8]);
+*/
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);
 
-	LoadT8("data/images/h1.bmp", g_cactus[10]);
-
+//	LoadT8("data/images/h1.bmp", g_cactus[10]);
+/*
 	//md2
 	m_anmobj=new anmobj;
 	m_anmobj->model[0]=NULL;
 	m_anmobj->model[1]=NULL;
 	m_anmobj->getobj("data/md2/role/");	
-	
+*/	
 	///////////////////////////////////////////
 	//启动贴图
 	glEnable(GL_TEXTURE_2D);
@@ -166,12 +167,13 @@ void GAMEMAP::init()
 
 	//游戏状态
 //	iGameState=GAME_PRE_ANI;
-	iGameState=1;
+	iGameState=GAME_MENU;
 	iMatch=0;
 	//参数
 	param1=0;
 }
 //游戏界面
+/*
 void GAMEMAP::showInfo()
 {
 	char info[50]={0};
@@ -235,7 +237,9 @@ void GAMEMAP::showInfo()
 		}
 	}
 }
+*/
 //敌人生命值
+/*
 void GAMEMAP::showEnemyHp()
 {
 	int i;
@@ -275,8 +279,9 @@ void GAMEMAP::showEnemyHp()
 	glPopAttrib();
 
 }
-
+*/
 //准心
+/*
 void GAMEMAP::showTarget()
 {
 	unsigned char rasterallf[12] = {
@@ -309,6 +314,7 @@ void GAMEMAP::showTarget()
 	glPopAttrib();
 
 }
+*/
 //绘制鼠标
 void GAMEMAP::drawMouse()
 {
@@ -320,18 +326,18 @@ void GAMEMAP::drawMouse()
 	glDisable(GL_TEXTURE_2D);    
 	//glDisable(GL_LIGHTING);      	
 	
-	glTranslatef(xmouse,WinHeight-ymouse,0.1);
+	glTranslatef(xmouse,WinHeight-ymouse,0.1f);
 
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.0,0.5,0.0f); 
+	glColor3f(0.0, 0.5, 0.0); 
 	glVertex3f(0.0,0.0,0.0);
 	glVertex3f(30.0, -15.0,0.0);
 
-	glColor3f(0.0,0.8,0.0f); 
+	glColor3f(0.0, 0.8, 0.0); 
 	glVertex3f(12.0, -12.0,0.0);
 	glVertex3f(6.0,-20.0,0.0);
 
-	glColor3f(0.0,0.0,0.0f); 
+	glColor3f(0.0, 0.0, 0.0); 
 	glVertex3f(3.0,-20.0,0.0);
 	glEnd();
 
@@ -341,7 +347,7 @@ void GAMEMAP::drawMouse()
 	glPopAttrib();
 	glPopMatrix();
 }
-
+/*
 //画两个黑色方块
 void GAMEMAP::showFire()
 {
@@ -400,12 +406,12 @@ void GAMEMAP::showFire()
 		iShowBombFrame=0;
 	}	
 }
+*/
 //屏幕刷新
 void GAMEMAP::show()
 {
-	int i;
-
-	float xx0,zz0;	//gun
+//	int i;
+//	float xx0,zz0;	//gun
 	
 	switch(iGameState)
 	{
@@ -415,7 +421,7 @@ void GAMEMAP::show()
 
 	case GAME_MENU:
 		//glLoadIdentity();
-		//showmenu();		
+		showmenu();		
 	// cgm test
 		show_2D_test();
 		//glLoadIdentity();
@@ -426,6 +432,7 @@ void GAMEMAP::show()
 	case GAME_WIN:
 	case GAME_FAIL:
 	case GAME_PASS:
+/*
 		//初始化单位矩阵
 		glLoadIdentity();
 
@@ -465,7 +472,7 @@ void GAMEMAP::show()
 		}
 
 		break;
-
+*/
 	case GAME_ERR:		
 		break;
 
@@ -682,7 +689,7 @@ void GAMEMAP::check()
 		//设置游戏投影
 		initView();
 		break;
-
+/*
 	case GAME_IN:
 		//计时
 		c1.clipcount();
@@ -744,7 +751,7 @@ void GAMEMAP::check()
 			initView();
 		}
 		break;
-
+*/
 	default:
 		break;
 	}
@@ -753,7 +760,32 @@ void GAMEMAP::check()
 void GAMEMAP::showmenu()
 {
 	int i;
-	char *menustr[]={"退    出","操作说明","开始游戏"};
+	char *menustr[]={"退    出","开始实验","开始游戏"};
+	//      imenu        0           1          2
+
+	glLoadIdentity();
+
+	//在glOrtho模式下绘制菜单
+	for(i=0;i<MENU_NUM;i++)
+	{
+		//文字
+		myfont.settextTest(XMENU+13,YMENU+8+i*Y_2MENU,menustr[i],FONT0,1,1,1);
+		//取消光照
+		//glDisable(GL_LIGHTING);
+		//图片
+		texture0(g_cactus[9]);
+		if(iMenu==i)
+		{
+			tPicButton(XMENU,YMENU+i*Y_2MENU,WIDTH_MENU,HEIGHT_MENU,0.0f);
+		}
+		else
+		{
+			tPicButton(XMENU,YMENU+i*Y_2MENU,WIDTH_MENU,HEIGHT_MENU,0.5f);
+		}
+	}
+
+// cgm test
+	/*
 	char *helpstr[]={
 		"http://blog.csdn.net/programking",
 		"制作: programking 2009年3月",
@@ -801,6 +833,7 @@ void GAMEMAP::showmenu()
 	}
 	
 	//glEnable(GL_LIGHTING);
+	*/
 }
 
 //键盘处理
@@ -937,6 +970,7 @@ void GAMEMAP::showmapBox(float *ppos, float *psize, float *ptex,int itex,int iHa
 		glEnd();
 	}
 }
+/*
 //画地图场景
 void GAMEMAP::showmap()
 {
@@ -974,6 +1008,7 @@ void GAMEMAP::showmap()
 		showmapBox(pmappos,pmapsize,pmaptex,iTex,0);
 	}	
 }
+*/
 //设置摄像机
 void GAMEMAP::DisplayScene()
 {
@@ -1458,7 +1493,8 @@ int GAMEMAP::LoadMap()
 //设置投影方式
 void GAMEMAP::initView()
 {
-	ShowCursor(false);
+	//ShowCursor(false);
+	ShowCursor(true);
 	switch(iGameState)
 	{
 	case GAME_MENU:
@@ -1473,20 +1509,83 @@ void GAMEMAP::initView()
 
 void GAMEMAP::show_2D_test()
 {
-	//glLoadIdentity();
-
 	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glDisable(GL_TEXTURE_2D);
 
+	glTranslatef(WIN_WIDTH/2-5,WIN_HEIGHT/2-20,-0.1f);
+
+	char tmpstr[32]={0};
+	// 一个刻度线代表的值
+	int scale=10;  // 100 pixel = scale
+
+	// draw aix---------------
+	// 坐标原点
+	//myfont.Print2D(0,0,"O",FONT1,1.0f,1.0f,0.0f);
+	// 设置点的尺寸
+	glPointSize(3);
+	for (int x=-4; x<5; x++)
+	{
+		glBegin(GL_POINTS);
+		glVertex3f( x*100.0, 0.0, 0.0);
+		glEnd();
+		//int ta=x*scale;
+		sprintf_s(tmpstr,"%d\n",x*scale);
+		myfont.Print2D(x*100.0,0,tmpstr,FONT0,1.0f,1.0f,1.0f);
+	}
+	for (int y=-3; y<4; y++)
+	{
+		glBegin(GL_POINTS);
+		glVertex3f( 0.0, y*100.0, 0.0);
+		glEnd();
+		sprintf_s(tmpstr,"%d\n",y*scale);
+		myfont.Print2D(0,y*100.0,tmpstr,FONT0,1.0f,1.0f,1.0f);
+	}
+	myfont.Print2D(0,0,"O",FONT0,1.0f,1.0f,0.0f);
 	glColor3f(1.0,1.0,1.0);
 	glBegin(GL_LINES);
-		glVertex3f(0.0,0.0,-0.2);
-		glVertex3f(1.0,1.0,-0.2);
-		//glVertex3f(0.0,0.0,0.0);
-		//glVertex3f(-1.0,-1.0,-1.0);
-		//glVertex3f(0.0,0.0,0.0);
-		//glVertex3f(1.0,-1.0,1.0);
+	// X aix
+	glVertex3f(-WIN_WIDTH/2, 0.0, 0.0);
+	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
+	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
+	glVertex3f( WIN_WIDTH/2-15,  5.0, 0.0);
+	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
+	glVertex3f( WIN_WIDTH/2-15, -5.0, 0.0);
+	// Y aix
+	glVertex3f( 0.0, -WIN_HEIGHT/2, 0.0);
+	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
+	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
+	glVertex3f( 5.0,  WIN_HEIGHT/2-15, 0.0);
+	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
+	glVertex3f(-5.0,  WIN_HEIGHT/2-15, 0.0);
 	glEnd();
 
+	// --------------------
+
+	// draw a func
+	glColor3f(1.0,0.0,0.0);
+	glBegin(GL_LINE_STRIP);
+	for (int x=-40; x<40; x++)
+	{
+		// y=kx+b
+		float y=0.6*x+5;
+		glVertex3f( x*scale,y*scale, 0.0);
+	}
+	glEnd();
+
+	// draw a func
+	glColor3f(0.0,1.0,0.0);
+	glBegin(GL_LINE_STRIP);
+	for (int x=-40; x<40; x++)
+	{
+		// y=ax*x+bx+c
+		float y=0.07*x*x+0.6*x-15;
+		glVertex3f( x*scale,y*scale, 0.0);
+	}
+	glEnd();
+
+	glEnable(GL_TEXTURE_2D);
+	glPopAttrib();
 	glPopMatrix();
 }
 

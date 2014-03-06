@@ -118,6 +118,19 @@ void COpenGLbase::init_3D()
 
 //====================================================
 }
+// 
+void COpenGLbase::init_2D()
+{
+	glViewport(0, 0, RCwidth, RCheight);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho (0, RCwidth, 0, RCheight, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	//启动颜色材质
+	//glEnable(GL_COLOR_MATERIAL);
+}
 
 void COpenGLbase::SetViewSize(int w,int h)
 {
@@ -125,15 +138,6 @@ void COpenGLbase::SetViewSize(int w,int h)
 	RCheight=h;
 }
 
-void COpenGLbase::init_2D()
-{
-	glViewport(0, 0, RCwidth, RCheight);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho (0, RCwidth, 0, RCheight, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
 //渲染输出
 void COpenGLbase::Render()
 {
@@ -157,11 +161,9 @@ void COpenGLbase::CleanUp()
 
 void COpenGLbase::text()
 {
-	char str[128];
-
+	//char str[128];
 	//sprintf(str, "C %d/%d ",c1.iNumDest, c1.expire_time);
 	//myfont.Print2D(0.1,0.1,str,FONT1,0.0f,0.0f,0.0f);
-
 	//myfont.settext(WinWidth/2,WinHeight*7/8,"111111",FONT0,1.0,1.0,1.0);
 
 	// Y /-------------\
@@ -169,13 +171,14 @@ void COpenGLbase::text()
 	//   |             |
 	//   |0         800|
 	//   \-------------/ X
-	myfont.Print2D(0,0,"0,0",FONT0,1.0f,1.0f,1.0f);
-	myfont.Print2D(100,100,"1,1",FONT1,1.0f,0.0f,0.0f);
-	myfont.Print2D(100,200,"1,2",FONT1,1.0f,1.0f,0.0f);
-	myfont.Print2D(200,200,"2,2",FONT2,1.0f,0.0f,1.0f);
-	myfont.Print2D(300,300,"3,3",FONT3,0.0f,0.0f,1.0f);
-	myfont.Print2D(400,200,"4,2",FONT4,0.0f,1.0f,0.0f);
-	myfont.Print2D(700,500,"7,5",FONT5,1.0f,1.0f,1.0f);
+
+	myfont.Print2D(0,2,"0,0",FONT0,1.0f,1.0f,1.0f);
+	myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
+	myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
+	myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
+	myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
+	myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
+	//myfont.Print2D(600,2,"6,0",FONT6,1.0f,1.0f,1.0f);
 	
 	
 }

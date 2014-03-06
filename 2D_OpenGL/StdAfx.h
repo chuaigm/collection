@@ -60,8 +60,8 @@
 #define MAP			MAP_W*MAP_SCALE/2
 
 // window
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
+#define WIN_WIDTH 1024
+#define WIN_HEIGHT 700
 
 #define GAME_NULL -1
 #define GAME_PRE_ANI 0
@@ -80,12 +80,12 @@
 #define TIME_PRE_ANI 4
 
 //菜单坐标
-#define XMENU 150
-#define YMENU 100
-#define WIDTH_MENU 200
-#define HEIGHT_MENU 70
-#define MENU_NUM 3
-#define Y_2MENU 100
+#define XMENU WIN_WIDTH-100
+#define YMENU 15
+#define WIDTH_MENU 80
+#define HEIGHT_MENU 30
+#define MENU_NUM 2
+#define Y_2MENU 40
 
 //MENU菜单项编号
 #define MENU_START 2
