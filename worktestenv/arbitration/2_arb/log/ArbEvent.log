@@ -1,0 +1,26 @@
+2014-1-2 11:51:56:008|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-2 12:58:46:802|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-2 12:59:36:326|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-2 15:30:45:786|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-3 10:02:45:454|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-3 10:51:38:757|400|103|ArbControl.cpp:24|||与节点IP[127.0.0.1]断开!!!
+
+2014-1-3 10:51:42:002|600|103|ArbHandler.cpp:335||Stat Aplly|节点[2137967322] 状态申请
+2014-1-3 10:51:42:004|600|103|ArbHandler.cpp:153||Stat Report|节点[1] 状态汇报=[单机状态] CurLogNo=[0]
+
+2014-1-3 10:51:49:219|400|103|ArbControl.cpp:24|||与节点IP[127.0.0.1]断开!!!
+
+2014-1-3 11:17:08:977|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-3 11:17:32:398|400|103|ArbControl.cpp:24|||与节点IP[127.0.0.1]断开!!!
+
+2014-1-3 11:17:36:011|600|103|ArbHandler.cpp:335||Stat Aplly|节点[2137967322] 状态申请
+2014-1-3 11:17:36:015|600|103|ArbHandler.cpp:153||Stat Report|节点[1] 状态汇报=[单机状态] CurLogNo=[0]
+
+2014-1-3 11:23:59:036|600|103|ArbHandler.cpp:153||Stat Report|节点[1] 状态汇报=[单机状态] CurLogNo=[0]
+
+2014-1-3 11:41:54:632|600|103|ArbServer.cpp:50||Begin Arb Process|------
+2014-1-3 11:41:57:685|600|103|ArbHandler.cpp:153||Stat Report|节点[1] 状态汇报=[单机状态] CurLogNo=[1080]
+
+2014-1-3 13:34:45:926|400|103|ArbControl.cpp:24|||与节点IP[127.0.0.1]断开!!!
+
+2014-1-3 16:34:44:064|600|103|ArbServer.cpp:50||Begin Arb Process|------

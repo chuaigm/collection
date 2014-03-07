@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="GB2312"?>
+<RouteGroups description="挂在该总线上的应用组" label="前置总线">
+	<Group GroupID="11"  GroupType="IMPORT" GroupName="交易前置机组" TwiDispatch="y">	</Group>
+	<Group GroupID="13"  GroupType="IMPORT" GroupName="老协议前置" TwiDispatch="n">	</Group>
+	<Group GroupID="20"  GroupType="HOT_BACKUP" GroupName="资金计算" TwiDispatch="n">	</Group>
+	<Group GroupID="21"  GroupType="HOT_BACKUP" GroupName="检查组" TwiDispatch="n">	</Group>
+	<Group GroupID="22"  GroupType="HOT_BACKUP" GroupName="查询服务组" TwiDispatch="n">	</Group>
+	<Group GroupID="100"  GroupType="GATE"  GroupName="连接撮合总线网关" TwiDispatch="n">	</Group>
+</RouteGroups>
+
+<MsgRoute description="应用组对消息的订阅">
+	<GroupSubscribeMsgs  GroupName="交易前置机组", GroupID="11" >
+		<Msg MsgName="交易员定单确认" MsgID="0x000000E2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员定单状态确认"   MsgID="0x000000F3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="直接市场最优行情通知"   MsgID="0x000001B3"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="套利最优行情通知"   MsgID="0x000001C3"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="交易员成交通知"   MsgID="0x00000103"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员撤销定单应答"   MsgID="0x00000112"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="踢席位"   MsgID="0x00000513"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="市场状态通知"   MsgID="0x00000293"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位状态通知"   MsgID="0x000002A3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员禁用CA通知"   MsgID="0x00000373"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员向席位发送通知"   MsgID="0x00000383"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="客户实时上场通知"   MsgID="0x000004E3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="期权执行申请应答"   MsgID="0x00000122"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="撤销期权执行申请应答"   MsgID="0x00000132"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="资金持仓通知"   MsgID="0x000005E3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="生成强平单过程通知"   MsgID="0x000002D3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="启用前置发送行情通知"   MsgID="0x000006C3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="流量控制阀值修改通知"   MsgID="0x000006F3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位密码重置通知"  MsgID="0x000004F3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="用户密码重置请求"   MsgID="0x00000651"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易核心状态通知"   MsgID="0x00000633"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易前置是否发送行情查询应答"  MsgID="0x000006B2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="用户列表查询应答" 	MsgID="0x000006D2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位列表查询应答"   MsgID="0x000005C2"  MsgLabel=""  StoreFlag="y"> </Msg>
+	</GroupSubscribeMsgs>
+	
+	<GroupSubscribeMsgs  GroupName="老协议前置", GroupID="13" >
+		<Msg MsgName="交易员定单确认" MsgID="0x000000E2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员定单状态确认"   MsgID="0x000000F3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="直接市场最优行情通知"   MsgID="0x000001B3"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="套利最优行情通知"   MsgID="0x000001C3"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="交易员成交通知"   MsgID="0x00000103"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员撤销定单应答"   MsgID="0x00000112"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="踢席位"   MsgID="0x00000513"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="市场状态通知"   MsgID="0x00000293"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位状态通知"   MsgID="0x000002A3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员禁用CA通知"   MsgID="0x00000373"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员向席位发送通知"   MsgID="0x00000383"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="资金持仓通知"   MsgID="0x000005E3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位密码重置通知"  MsgID="0x000004F3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易核心状态通知"   MsgID="0x00000633"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="用户列表查询应答" 	MsgID="0x000006D2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="席位列表查询应答"   MsgID="0x000005C2"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="盘后最优行情应答"       MsgID="0x00000642"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="客户实时上场通知"   MsgID="0x000004E3"  MsgLabel=""  StoreFlag="y"> </Msg>
+	</GroupSubscribeMsgs>
+	
+	<GroupSubscribeMsgs  GroupName="检查组", GroupID="21" >
+		<Msg MsgName="交易员定单请求"   MsgID="0x000000E1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员撤销定单"   MsgID="0x00000111"  MsgLabel=""  StoreFlag="y"> </Msg>
+	</GroupSubscribeMsgs>
+	
+	<GroupSubscribeMsgs  GroupName="查询组", GroupID="22" >
+		<Msg MsgName="查询期货品种" 	MsgID="0x00000061"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询期权品种" 	MsgID="0x00000071"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询期货合约" 	MsgID="0x00000081"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询期权合约" 	MsgID="0x00000091"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询套利合约" 	MsgID="0x000000A1"  MsgLabel=""  StoreFlag="n"> </Msg>  
+		<Msg MsgName="询行情订阅权限" MsgID="0x00000211"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询套利策略规则" MsgID="0x000000B1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询客户请求" MsgID="0x000000C1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询会员资金请求" MsgID="0x00000191"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询会员持仓请求" MsgID="0x00000181"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询客户持仓请求" MsgID="0x00000171"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询委托请求" 	MsgID="0x00000151"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询成交请求" 	MsgID="0x00000161"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="交易控制员监控席位状态查询请求"  MsgID="0x00000341" MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="技术控制员场上入金查询请求"   MsgID="0x000003A1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="交易参数查询请求"   MsgID="0x000001A1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="技术控制员向席位发通知查询请求"   MsgID="0x00000391"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="席位列表查询"   MsgID="0x000005C1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易会员结算帐号查询"   MsgID="0x00000601"  MsgLabel=""  StoreFlag="n"> </Msg>	
+		<Msg MsgName="强平委托查询"   MsgID="0x00000691"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询期权执行申请" 	MsgID="0x00000141"  MsgLabel=""  StoreFlag="n"> </Msg>	
+		<Msg MsgName="用户列表查询请求" 	MsgID="0x000006D1"  MsgLabel=""  StoreFlag="y"> </Msg>	
+		<Msg MsgName="常量行情查询请求" 	MsgID="0x000005F1"  MsgLabel=""  StoreFlag="n"> </Msg>	
+	</GroupSubscribeMsgs>
+	
+	<GroupSubscribeMsgs  GroupName="连接撮合总线网关", GroupID="100" >
+		<Msg MsgName="CA会话请求"   MsgID="0x00000471"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="CA认证请求"   MsgID="0x00000481"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="授权码认证请求"   MsgID="0x00000491"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="查询业务提示请求"   MsgID="0x00000461"  MsgLabel=""  StoreFlag="n"> </Msg>		
+		<Msg MsgName="交易员内部登录请求" MsgID="0x00000521"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易员内部退出请求"   MsgID="0x00000541"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="控制模式查询请求"   MsgID="0x00000251"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="市场状态查询请求"   MsgID="0x00000261"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="控制模式改变请求"   MsgID="0x00000271"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="市场状态改变请求"   MsgID="0x00000281"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员超级登录请求"   MsgID="0x00000361"  MsgLabel=""  StoreFlag="n"> </Msg>		
+		<Msg MsgName="技术控制员禁用CA请求"   MsgID="0x00000371"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="是否已经禁用ca查询"   MsgID="0x000003D1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="技术控制员踢除席位请求"   MsgID="0x000003B1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="内部密码更新请求"   MsgID="0x00000591"  MsgLabel=""  StoreFlag="n"> </Msg>		
+		<Msg MsgName="技术控制员场上入金请求"   MsgID="0x000003C1"  MsgLabel=""  StoreFlag="n"> </Msg>			
+		<Msg MsgName="审计通知"   MsgID="0x00000563"  MsgLabel=""  StoreFlag="n"> </Msg>	
+		<Msg MsgName="技术控制员向席位发通知请求"   MsgID="0x00000381"  MsgLabel=""  StoreFlag="n"> </Msg>	
+		<Msg MsgName="期权执行申请"   MsgID="0x00000121"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="撤销期权执行申请"   MsgID="0x00000131"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="快照行情申请"   				MsgID="0x000001D3"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="交易控制员手动生成强平单"   MsgID="0x000002C1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="撤销自动手动强平单"   MsgID="0x000002F1"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="改变强平单的顺序"   MsgID="0x00000311"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="强平单查询请求"   MsgID="0x00000321"  MsgLabel=""  StoreFlag="n"> </Msg>
+		<Msg MsgName="交易前置是否发送行情查询请求"   MsgID="0x000006B1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="启用前置发送行情请求"   MsgID="0x000006C1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		
+		<Msg MsgName="修改客户保值额度"   MsgID="0x000004D1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="添加会员客户对照表"   MsgID="0x000004E1"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="修改会员合约权限"   MsgID="0x00000571"  MsgLabel=""  StoreFlag="y"> </Msg>
+		<Msg MsgName="修改客户合约权限"   MsgID="0x00000581"  MsgLabel=""  StoreFlag="y"> </Msg>
+	</GroupSubscribeMsgs>                   
+</MsgRoute>
+	
