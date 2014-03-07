@@ -16,3 +16,9 @@ int main()
 		printf("is last\n");
 	}
 }
+
+int add(int a, int b)
+{
+	int c=a+b;
+	return c;
+}
