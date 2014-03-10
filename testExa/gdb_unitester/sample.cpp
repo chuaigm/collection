@@ -19,6 +19,16 @@ int main()
 
 int add(int a, int b)
 {
-	int c=a+b;
-	return c;
+	int re=0;
+	re=a+b;
+	return re;
 }
+
+int sp_mod(int var)
+{
+	int re=0;
+	// re=var%61;
+	re=var-(((unsigned long long)var*0x4325c53fu)>>36)*61; 
+	return re;
+}
+
