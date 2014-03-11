@@ -1,5 +1,12 @@
 #include <cstdio>
 
+struct ts
+{
+	int ssa;
+	char ssb;
+	double ssc;
+};
+
 int main()
 {
 	int a=7;
@@ -32,3 +39,9 @@ int sp_mod(int var)
 	return re;
 }
 
+int st_test(ts var)
+{
+	int ta=0;
+	ta=var.ssa;
+	return ta;
+}

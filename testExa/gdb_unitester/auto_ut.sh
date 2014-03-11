@@ -11,6 +11,7 @@ ut_scheme=./target.ut
 right_answer=right_answer1
 tmp_file=./tmp.tmp
 tmp_result=re.log
+result_report_file=./report_result.txt
 
 # load target file
 # $1 : patch of the scheme file
@@ -24,7 +25,7 @@ load_cfg_file()
 	ut_exe=$exe_file
 }
 
-# 1. load cfg
+# 1. load exe file name
 eval $(sed -n "1 p" $ut_scheme)
 ut_exe=$exe_file
 # 2. from to
@@ -35,97 +36,55 @@ while (($ln<=$lines))
 do
 	# tl means "this line"
 	tl=`sed -n "$ln p" $ut_scheme`
-	# 1. get file and function name, b this
-	ff=`echo $tl | cut -d ',' -f 1`
-	func=`echo $ff | cut -d ':' -f 2`
-	if [ -z $ff ]; then
+	# 1. get total segment number
+	sgn=`echo tl | awk -F '|' '{print NF}'`
+	# 2. get 6 control words.
+	# filename, function, breakpoint1, breakpoint2
+	# user change var, check result
+	cppfile=`echo $tl | cut -d '|' -f 1`
+	if [ -z $cppfile ]; then
 		break
 	fi
-	echo $ff -----$func
-<<ZZZ
-gdb <<GDB_CMD 
-file $ut_exe
-GDB_CMD 
-ZZZ
+	func=`echo $tl | cut -d '|' -f 2`
+	eval $(echo $tl | cut -d '|' -f 3)
+	eval $(echo $tl | cut -d '|' -f 4)
+	user_var=`echo $tl | cut -d '|' -f 5`
+	ckre=`echo $tl | cut -d '?' -f 2 | cut -d '=' -f 1`
+	# 3. if the function can be called in code
+	if [ -z $func ]; then
+gdb << GDB_NO_FUNC
+GDB_NO_FUNC
+	else
+gdb << GDB_FUNC_CALLED
+	file $ut_exe
+	set height 0
+	set logging file $tmp_result
+	b main
+	b $cppfile:$b1
+	b $cppfile:$b2
+	r
+	call $func
+	set var $user_var
+	c
+	set logging on
+	p $ckre
+	set logging off
+GDB_FUNC_CALLED
+	fi
+	# 4. check the answer
+	expect=`echo $tl | cut -d '?' -f 2 | cut -d '=' -f 2`
+	result=`head -n 1 $tmp_result | cut -d '=' -f 2`
+	# 5. output a report file
+	if [ $expect = $result ]; then
+		printf "O|" >> $result_report_file
+	else
+		printf "X|" >> $result_report_file
+	fi
+	echo $tl >> $result_report_file
+	#printf "\n"  >> $result_report_file
+	# 6. clean tmp file
+	rm $tmp_result
+
 	let "ln++"
 done
-
-exit 0
-
-load_cfg_file $1
-echo $ut_exe
-
-exit 0
-
-# breakpoint in which line?
-bl1=6
-b_func1=sp_mod
-case1a=4
-case1b=5
-case1c=9
-case2a=1234
-case2b=5432
-case2c=9
-case3a=204
-case3b=512
-case3c=9
-
-gdb <<GDBCMD
-file $ut_exe
-set height 0
-set logging file $tmp_result
-b main
-b $b_func1
-r
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-call $b_func1(100)
-s
-s
-set logging on
-p re
-set logging off
-GDBCMD
-
-re=`diff $tmp_result right_answer1`
-if [ -z $re ]; then
-	echo "--------------------"
-	echo "      right!"
-	echo "--------------------"
-	# clean?
-	#rm -f ./$ut_name
-	rm -f ./$tmp_result
-else
-	echo "--------------------"
-	echo "      ERROR!"
-	echo "--------------------"
-fi
 

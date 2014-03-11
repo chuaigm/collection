@@ -1,7 +1,7 @@
 exe_file=./a
-sample.cpp:add, end_line=24, a=2, b=3, check:re=5
-sample.cpp:add, end_line=24, a=222, b=321, check:re=543
-sample.cpp:add, end_line=24, a=21, b=39, check:re=60
-sample.cpp:sp_mod, end_line=31, var=100, re=39
-sample.cpp:sp_mod, end_line=31,  var=61, re=0
+sample.cpp| add(1,1)| b1=29| b2=31| a=2, b=3| ?re=5
+sample.cpp| add(1,1)| b1=29| b2=31| a=222, b=321| ?re=543
+sample.cpp| add(1,1)| b1=29| b2=31| a=222, b=321| ?re=543
+sample.cpp| sp_mod(9)| b1=36| b2=39| var=100| ?re=39
+sample.cpp| sp_mod(9)| b1=36| b2=39| var=61| ?re=1
 
