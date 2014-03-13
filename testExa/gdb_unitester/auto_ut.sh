@@ -53,6 +53,17 @@ do
 	# 3. if the function can be called in code
 	if [ -z $func ]; then
 gdb << GDB_NO_FUNC
+	file $ut_exe
+	set height 0
+	set logging file $tmp_result
+	b $cppfile:$b1
+	b $cppfile:$b2
+	r
+	set var $user_var
+	c
+	set logging on
+	p $ckre
+	set logging off
 GDB_NO_FUNC
 	else
 gdb << GDB_FUNC_CALLED

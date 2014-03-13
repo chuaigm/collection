@@ -6,10 +6,16 @@ struct ts
 	char ssb;
 	double ssc;
 };
+int st_test(ts var);
 
 int main()
 {
 	int a=7;
+	ts cc;
+	cc.ssa=1;
+	cc.ssb=2;
+	cc.ssc=3;
+
 	if(4==a)
 	{
 		printf("is 4\n");
@@ -22,6 +28,11 @@ int main()
 	{
 		printf("is last\n");
 	}
+
+	int ti=0;
+	ti=st_test(cc);
+	printf("ti=%d\n",ti);
+
 }
 
 int add(int a, int b)
