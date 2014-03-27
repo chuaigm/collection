@@ -36,13 +36,28 @@ void genRandHex(char *str, unsigned int len)
 	}
 	memcpy(str, tmp, len);
 }
+void fun_test(int * &fp)
+{
+	fp=new int;
+	printf("i-func:%X\n", fp);
+}
 
 int main()
 {
+/* 
 	char ar[100]={0};
 	genRandHex(ar, 8);
+	printf("%s\n", ar);
+*/
 
-	printf("%s", ar);
+	int a=-13341;
+	printf("!a=%d\n",!a);
+
+	int *p;
+	printf("o-func:%X\n", p);
+	fun_test(&p);
+	printf("o-func:%X\n", p);
+
 
 /*
 	FUNC_TRACER;
