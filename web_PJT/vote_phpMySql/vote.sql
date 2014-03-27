@@ -29,10 +29,10 @@ CREATE TABLE `vote` (
 -- ----------------------------
 -- Records of vote
 -- ----------------------------
-INSERT INTO vote VALUES ('24', '1', 'åŠŸèƒ½', '8');
-INSERT INTO vote VALUES ('25', '1', 'é¢œè‰²', '12');
-INSERT INTO vote VALUES ('26', '1', 'ç‰ˆé¢', '12');
-INSERT INTO vote VALUES ('27', '1', 'æ ç›®', '22');
+INSERT INTO vote VALUES ('24', '1', '¹¦ÄÜ', '1');
+INSERT INTO vote VALUES ('25', '1', 'ÑÕÉ«', '1');
+INSERT INTO vote VALUES ('26', '1', '°æÃæ', '1');
+INSERT INTO vote VALUES ('27', '1', 'À¸Ä¿', '1');
 
 -- ----------------------------
 -- Table structure for `votetitle`
@@ -46,4 +46,4 @@ CREATE TABLE `votetitle` (
 -- ----------------------------
 -- Records of votetitle
 -- ----------------------------
-INSERT INTO votetitle VALUES ('1', 'æ‚¨è®¤ä¸ºæœ¬ç½‘ç«™è¿˜æœ‰é‚£äº›è¦åšè°ƒæ•´ï¼Ÿ');
+INSERT INTO votetitle VALUES ('1', 'ÄúÈÏÎª±¾ÍøÕ¾»¹ÓÐÄÇÐ©Òª×öµ÷Õû£¿');
