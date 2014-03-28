@@ -24,15 +24,15 @@ CREATE TABLE `vote` (
   `item` varchar(50) default NULL,
   `count` int(10) default NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=gb2312;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=gb2312;
 
 -- ----------------------------
 -- Records of vote
 -- ----------------------------
-INSERT INTO vote VALUES ('24', '1', '功能', '1');
-INSERT INTO vote VALUES ('25', '1', '颜色', '1');
-INSERT INTO vote VALUES ('26', '1', '版面', '1');
-INSERT INTO vote VALUES ('27', '1', '栏目', '1');
+INSERT INTO vote VALUES ('1', '1', '功能', '0');
+INSERT INTO vote VALUES ('2', '1', '颜色', '0');
+INSERT INTO vote VALUES ('3', '1', '版面', '0');
+INSERT INTO vote VALUES ('4', '1', '栏目', '0');
 
 -- ----------------------------
 -- Table structure for `votetitle`
@@ -47,3 +47,14 @@ CREATE TABLE `votetitle` (
 -- Records of votetitle
 -- ----------------------------
 INSERT INTO votetitle VALUES ('1', '您认为本网站还有那些要做调整？');
+
+-- ----------------------------
+-- Table structure for `voter_ip`
+-- ----------------------------
+DROP TABLE IF EXISTS `voter_ip`;
+CREATE TABLE `voter_ip` (
+  `id` int(10) default NULL auto_increment,
+  `v_count` int(10) default NULL,
+  `user_ip` varchar(50) default NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=gb2312;
