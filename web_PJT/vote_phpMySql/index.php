@@ -57,8 +57,7 @@ a:active { font-size: 9pt; color: #333333; text-decoration: none}
 	$remote_ip=$_SERVER["REMOTE_ADDR"];
 	$sql="select * from voter_ip";
 	$rs=mysql_query($sql);
-	$row=mysql_fetch_assoc($rs);
-	while($row)
+	while($row=mysql_fetch_assoc($rs))
 	{
 		if($row["user_ip"]==$remote_ip)
 		{
@@ -71,7 +70,7 @@ a:active { font-size: 9pt; color: #333333; text-decoration: none}
 		exit();
 		}
 	}
-	$sql="insert into voter_ip (id, v_count, user_ip) values (1, 1, '$remote_ip')";
+	$sql="insert into voter_ip (id, v_count, user_ip) values (NULL, 1, '$remote_ip')";
 	$rs=mysql_query($sql);
 // add end
 	$id=$_POST["itm"];
@@ -112,6 +111,7 @@ a:active { font-size: 9pt; color: #333333; text-decoration: none}
 	{
 	?>
 	<tr>
+		                             <!--checkbox-->
 	  <td bgcolor="#FFFFFF"><input type="radio" name="itm" value="<?php echo $rows["id"]?>" />&nbsp;&nbsp;<?php echo $rows["item"]?></td>
 	</tr>
 	<?php
