@@ -4,7 +4,8 @@ cc = g++
 obj_dir = ../obj
 lib_dir = ../lib
 target_dir = ../bin
-C++FLAGS = -w -g
+#C++FLAGS = -w -g
+C++FLAGS = -static
 
 # src directory
 src_dir   = ./
@@ -24,7 +25,7 @@ OBJ_OUT = $(addprefix $(obj_dir)/,$(OBJ_ALL))
 TARGET_FILE = 2048
 # all
 $(TARGET_FILE) : $(OBJ_ALL)
-	$(cc) -o $@ $(OBJ_OUT)
+	$(cc) $(C++FLAGS) -o $@ $(OBJ_OUT)
 	cp $(TARGET_FILE) $(target_dir)
 
 .PHONY : clean

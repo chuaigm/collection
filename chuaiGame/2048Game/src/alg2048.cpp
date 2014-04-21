@@ -26,7 +26,7 @@ Calg2048::~Calg2048()
 {
 }
 
-int Calg2048::Game2048Alg(char input)
+int Calg2048::Game2048Alg(vfk_btn input)
 {
 	//init();
 	//print();
@@ -35,16 +35,16 @@ int Calg2048::Game2048Alg(char input)
 	//	help();
 		switch (input)
 		{
-		case 'w':
+		case vfk_up:
 			up_do();
 			break;
-		case 'a':
+		case vfk_left:
 			left_do();
 			break;
-		case 's':
+		case vfk_down:
 			down_do();
 			break;
-		case 'd':
+		case vfk_right:
 			right_do();
 			break;
 		default:

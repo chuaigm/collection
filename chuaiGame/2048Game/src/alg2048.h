@@ -15,6 +15,13 @@
 ////////////////////////////////////////////////////////////////////////////////////
 
 const int MAX=4;
+typedef enum
+{
+	vfk_up,
+	vfk_down,
+	vfk_left,
+	vfk_right
+} vfk_btn;
 
 class Calg2048
 {
@@ -31,7 +38,7 @@ public:
 	// 是否游戏结束
 	bool IsGameOver(){return b_GameOver;};
 	// 游戏核心算法，需要放到一个循环中
-	int Game2048Alg(char input);
+	int Game2048Alg(vfk_btn input);
 private:
 	// 打印数组
 	void test_print();
