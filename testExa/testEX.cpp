@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <map>
 
 using namespace std;
 
@@ -31,18 +32,132 @@ typedef BA<8> Tba;
 
 int main()
 {
-#if 1
+#if 0
+	// 2014-5-9 map op
+	multimap<int, string> mmpp;
+	typedef multimap<int, string>::iterator mmitr;
+	typedef multimap<int, string>::reverse_iterator rmmitr;
+	// insert
+	// 默认升序
+	mmpp.insert(multimap<int,string>::value_type(1,"aaa"));
+	mmpp.insert(multimap<int,string>::value_type(1,"bbb"));
+	mmpp.insert(multimap<int,string>::value_type(1,"ccc"));
+	mmpp.insert(multimap<int,string>::value_type(2,"ddd"));
+	mmpp.insert(multimap<int,string>::value_type(2,"eee"));
+	mmpp.insert(multimap<int,string>::value_type(2,"fff"));
+	mmpp.insert(multimap<int,string>::value_type(3,"ggg"));
+	mmpp.insert(multimap<int,string>::value_type(3,"hhh"));
+	mmpp.insert(multimap<int,string>::value_type(3,"iii"));
+	// output
+	cout<<"------------------------------"<<endl;
+	cout<<" size="<<mmpp.size()<<endl;
+	cout<<"[Output a multimap]:"<<endl;
+	for(mmitr iter=mmpp.begin();iter!=mmpp.end();) {
+		cout<<setw(3)<<iter->first<<" : "<<iter->second<<endl;
+		++iter;
+	}
+	cout<<"------------------------------"<<endl;
+	// erase
+	for(mmitr iter=mmpp.begin();iter!=mmpp.end();) {
+		if( iter->first % 2==0){
+			mmpp.erase(iter++);
+		} else {
+			++iter;
+		}
+	}
+	// reverse_iterator 
+	cout<<"------------------------------"<<endl;
+	cout<<"[reverse_iter Output]:"<<endl;
+	for(rmmitr iter=mmpp.rbegin();iter!=mmpp.rend();) {
+		cout<<setw(3)<<iter->first<<" : "<<iter->second<<endl;
+		++iter;
+	}
+	cout<<"------------------------------"<<endl;
+	// find a key
+	int sfkey=3;
+	mmitr finditer=mmpp.find(sfkey);
+	cout<<finditer->first<<" : "<<finditer->second<<endl;
+	cout<<finditer->first<<" : "<<(finditer)->second<<endl;
+#endif	
+
+#if 0
+	// 2014-5-9 map op
+	map<int, string> mpp;
+	typedef map<int, string>::iterator mitr;
+	typedef map<int, string>::reverse_iterator rmitr;
+	// insert
+	#if 1
+	// 默认升序
+	mpp.insert(map<int,string>::value_type(1,"aaa"));
+	mpp.insert(map<int,string>::value_type(9,"iii"));
+	mpp.insert(map<int,string>::value_type(2,"bbb"));
+	mpp.insert(map<int,string>::value_type(4,"ddd"));
+	mpp.insert(map<int,string>::value_type(3,"ccc"));
+	mpp.insert(map<int,string>::value_type(7,"ggg"));
+	mpp.insert(map<int,string>::value_type(5,"eee"));
+	mpp.insert(map<int,string>::value_type(6,"fff"));
+	mpp.insert(map<int,string>::value_type(8,"hhh"));
+	#else
+	for(int i=1; i<=9; ++i){
+		char tmpc='a'+i-1;
+		string tmps;
+		tmps+=tmpc;
+		mpp.insert(map<int,string>::value_type(i,tmps));
+	}
+	#endif
+	// output
+	cout<<"------------------------------"<<endl;
+	cout<<" size="<<mpp.size()<<endl;
+	cout<<"[Output a map]:"<<endl;
+	for(mitr iter=mpp.begin();iter!=mpp.end();) {
+		cout<<setw(3)<<iter->first<<" : "<<iter->second<<endl;
+		++iter;
+	}
+	cout<<"------------------------------"<<endl;
+	// erase
+	#if 1
+	for(mitr iter=mpp.begin();iter!=mpp.end();) {
+		if( iter->first % 2==0){
+			mpp.erase(iter++);
+		} else {
+			++iter;
+		}
+	}
+	#else
+	// may crash ex
+	for(mitr iter=mpp.begin();iter!=mpp.end();++iter) {
+		if( iter->first % 2==0){
+			mpp.erase(iter);
+		}
+		// if access mpp here
+	}
+	#endif
+	// reverse_iterator 
+	cout<<"------------------------------"<<endl;
+	cout<<"[reverse_iter Output]:"<<endl;
+	for(rmitr iter=mpp.rbegin();iter!=mpp.rend();) {
+		cout<<setw(3)<<iter->first<<" : "<<iter->second<<endl;
+		++iter;
+	}
+	cout<<"------------------------------"<<endl;
+	// find a key
+	int sfkey=5;
+	mitr finditer=mpp.find(sfkey);
+	cout<<finditer->first<<" : "<<finditer->second<<endl;
+	cout<<finditer->first<<" : "<<(finditer)->second<<endl;
 
 #endif	
-#if 1
+
+#if 0
 	// 2014-5-8
 	AAA a[7];
 	AAA *p=a;
-	char *pc=new char[7];
+	char *pc=new char[13];
 	AAA *pn=new AAA[7];
 	int *pi=new int[7];
 	printf("sizeof(a)=%d\n", sizeof(a));
 	printf("sizeof(*p)=%d\n", sizeof(p));
+	printf("sizeof(AAA)=%d\n", sizeof(AAA));
 
 	printf("pc=%p\n", pc);
 	for(int i=8; i>0;i--) {
