@@ -6,9 +6,8 @@
 
 # if UTF8, assign =1
 iu8code=0
-<<"XXX"
-XXX
 # change your mail company and waybill here!!!
+<<"XXX"
 excompany=shentong
 waybill=668819650676
 echo "--------------------------------------------------"
@@ -20,10 +19,11 @@ else
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 fi
 echo " "
+XXX
 echo "--------------------------------------------------"
 excompany=yunda
-waybill=1201152029178
-echo "[电脑退货, 14.8y]              [韵达]"
+waybill=1600509220273
+echo "[沙发罩换货, ]              [韵达]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
