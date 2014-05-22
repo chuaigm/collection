@@ -3,12 +3,83 @@
    git init       // 初始化
 
 2. git remote -v 查看远程仓库路径url
+
 3. // 加入远程仓库路径
                  本地命名 远程仓库url
    git remote add [name] [URL] 
+   以上语句，加入一个本地的路径可以创建一个远程仓库
+   远程机器可以从这个URL来pull
+
 4. // 从远程仓库拉数据，更新当前
    git pull [name] master
+
 5. // 提交master分支
    git push [name] master
+
 6. // 查看那些文件有变动
    git whatchanged
+
+7. // 查看远程信息
+   git remote show [name]
+
+-----------------[一个例子]--------------------
+
+1 software@debian:~$ mkdir yafeng
+2 software@debian:~$ cd yafeng/
+3 software@debian:~/yafeng$ ls
+4 software@debian:~/yafeng$ git init
+5 Initialized empty Git repository in /home/software/yafeng/.git/
+6 software@debian:~/yafeng$ 
+
+
+1 software@debian:~/yafeng$ echo "our first git repository" >> file
+2 software@debian:~/yafeng$ ls
+3 file
+4 software@debian:~/yafeng$ git add file
+5 software@debian:~/yafeng$ git commit -m "the first file to commit" file
+6 [master (root-commit) 0c72641] the first file to commit
+7  1 files changed, 1 insertions(+), 0 deletions(-)
+8  create mode 100644 file
+9 software@debian:~/yafeng$
+
+
+1 software@debian:~/yafeng$ git remote add origin
+ssh://software@172.16.0.30/~/yafeng/.git
+2 software@debian:~/yafeng$ git push origin master
+3 software@172.16.0.30's password: 
+4 Everything up-to-date
+5 software@debian:~/yafeng$ 
+
+
+ 1 software@debian:~/yafeng$ git remote show origin
+ 2 software@172.16.0.30's password: 
+ 3 * remote origin
+ 4   Fetch URL: ssh://software@172.16.0.30/~/yafeng/.git
+ 5   Push  URL: ssh://software@172.16.0.30/~/yafeng/.git
+ 6   HEAD branch: master
+ 7   Remote branch:
+ 8     master tracked
+ 9   Local ref configured for 'git push':
+10     master pushes to master (up to date)
+11 software@debian:~/yafeng$ 
+
+
+ 1 root@yafeng-VirtualBox:~# ls
+ 2 bin  gittest  read_temp
+ 3 root@yafeng-VirtualBox:~# git clone ssh://software@172.16.0.30/~/yafeng/.git
+ 4 Cloning into yafeng...
+ 5 software@172.16.0.30's password: 
+ 6 remote: Counting objects: 9, done.
+ 7 remote: Compressing objects: 100% (3/3), done.
+ 8 remote: Total 9 (delta 0), reused 0 (delta 0)
+ 9 Receiving objects: 100% (9/9), done.
+10 root@yafeng-VirtualBox:~# ls
+11 bin  gittest  read_temp  yafeng
+12 root@yafeng-VirtualBox:~# cd yafeng/
+13 root@yafeng-VirtualBox:~/yafeng# ls
+14 file
+15 root@yafeng-VirtualBox:~/yafeng# 
+-----------------------------------------------
+
+
+
