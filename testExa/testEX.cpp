@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <vector>
 #include <map>
 
 using namespace std;
@@ -14,6 +15,7 @@ typedef struct {
 	char b;
 	short c;
 } AAA;
+
 void func(const int i)
 {
 	int ta = i;
@@ -30,8 +32,27 @@ public:
 };
 typedef BA<8> Tba;
 
+enum { _MAX_SIZE=8,
+	   _ttt
+	 };
+
 int main()
 {
+#if 0
+	// 枚举
+	printf("--%d\n", _MAX_SIZE);	
+	printf("--%d\n", _ttt);	
+#endif
+
+#if 0
+	//生病时，国庆微信发的讨论
+	vector<int> c;
+	c.push_back(1);
+	c.push_back(2);
+	vector<int>::iterator it=c.end()--;
+	cout<<*it<<endl;
+#endif
+
 #if 0
 	// 2014-5-9 map op
 	multimap<int, string> mmpp;
