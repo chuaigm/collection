@@ -21,9 +21,9 @@ fi
 echo " "
 XXX
 echo "--------------------------------------------------"
-excompany=yunda
-waybill=1600509220273
-echo "[沙发罩换货, ]              [韵达]"
+excompany=shunfeng
+waybill=199893352458
+echo "[小米, ]              [顺丰]"
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 echo " "
 echo "--------------------------------------------------"
