@@ -5,8 +5,63 @@
 # 本文件编码: GB2312,GBK
 
 # if UTF8, assign =1
-iu8code=0
-# change your mail company and waybill here!!!
+disp_code=0
+# config file name
+ini_file="./expressage.ini"
+# seperator
+sp="----------"
+
+if [ ! -f $ini_file ]; then
+	echo "Error: need [expressage.ini] file at local directory!"
+	exit 0
+fi
+
+bool_utf=`sed -n 1p $ini_file | cut -d '=' -f 2`
+if [ $bool_utf = 1 ]; then
+	disp_code=utf8
+else
+	disp_code=gbk
+fi
+
+let i=2
+while true
+do
+	#echo $i
+	line=`sed -n "$i p" $ini_file`
+	if [[ $line = $sp ]]; then
+echo "--------------------------------------------------"
+		let annot=$i+1
+		let exprs=$i+2
+		let wbill=$i+3
+		line=`sed -n "$annot p" $ini_file | cut -d '=' -f 1`
+		if [[ $line = "annotation" ]]; then
+			annotation=`sed -n "$annot p" $ini_file | cut -d '=' -f 2`
+echo [ $annotation ]
+			line=`sed -n "$exprs p" $ini_file | cut -d '=' -f 1`
+			if [[ $line = "exprs_corp" ]]; then
+				exprs_corp=`sed -n "$exprs p" $ini_file | cut -d '=' -f 2`
+echo [ $exprs_corp ]
+				line=`sed -n "$wbill p" $ini_file | cut -d '=' -f 1`
+				if [[ $line = "way_bill" ]]; then
+					way_bill=`sed -n "$wbill p" $ini_file | cut -d '=' -f 2`
+echo [ $way_bill ]
+curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$exprs_corp'&nu='$way_bill'&type=text&encode='$disp_code'&ord=asc'
+				else
+					exit 0
+				fi
+			else
+				exit 0
+			fi
+		else
+			exit 0
+		fi
+	else
+		exit 0
+	fi
+	let i=$i+4
+done
+
+#old_method
 <<"XXX"
 excompany=shentong
 waybill=668819650676
@@ -19,27 +74,6 @@ else
 curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
 fi
 echo " "
-XXX
-echo "--------------------------------------------------"
-excompany=shunfeng
-waybill=199893352458
-echo "[小米, ]              [顺丰]"
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
-echo " "
-echo "--------------------------------------------------"
-<<"XXX"
-excompany=yunda
-waybill=1201130565354
-echo "[桂圆，500g，18y]           [韵达]"
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
-echo " "
-echo "--------------------------------------------------"
-excompany=zhongtong
-waybill=761239806637
-echo "[帽子，29y]                 [中通]"
-curl -s 'http://api.ickd.cn/?id=102634&secret=14de636ea94ad80b3ec93ee821049fac&com='$excompany'&nu='$waybill'&type=text&ord=asc'
-echo " "
-echo "--------------------------------------------------"
 XXX
 
 
