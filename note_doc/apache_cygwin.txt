@@ -1,0 +1,83 @@
+cygwin搭建WEB服务环境(一)--安装Apache2
+
+一、安装
+
+ 我使用的是最新版的cygwin,需要附加安装如下的库或开发包:
+
+   1.crypt;
+
+   2.openssl -默认装的是环境,开发包也要装就是develop的;
+
+   3.apache2
+
+二、配置:
+
+    1、apache执行文件安装在 /usr/sbin/...
+
+         执行：./apachectl2 start...
+
+        此时可能会出现错误： ./apachectl2: line 78:  4092 Bad system call         $HTTPD -k $ARGV
+
+    2、执行cygserver-config
+
+ 
+
+    3、net start cygserver
+
+ 
+
+    4、再次执行 ./apachectl2 start
+
+        ps后看到，httpd等进程根本没有运行直接退出了。
+
+ 
+
+   5、看日志：/var/log/apache2/error_log
+
+     [warn] Init: Session Cache is not configured [hint: SSLSessionCache]
+
+    这是因为apache需要SSL支持。
+
+   6、打开/etc/apache2/httpd.conf进行编辑
+
+   找到：#Include /etc/apache2/extra/httpd-ssl.conf这一行，将注释符号去掉。
+
+ 
+
+   7、因为SSL需要证书支持，下面开始生成证书（如果你已正确安装好了OPENSSL）；
+
+   代码: 
+       cd /etc/apache2/ssl 
+
+   如果不存在这个目录，新建一个： 
+      mkdir /etc/apache2/ssl 
+
+   然后生成证书: 
+            openssl genrsa 2048 > server.key 
+            openssl req -new -x509 -nodes -sha1 -days 365 -key server.key > server.crt 
+
+   *注意生成证书的时候要输入相关注册信息，其中的common name务必留空
+
+   8、配置httpd-ssl.conf，在/etc/apache2/extra/httpd-ssl.conf
+
+      找到如下2段信息：
+
+      SSLCertificateFile "/etc/apache2/server.crt"
+
+      SSLCertificateKeyFile "/etc/apache2/server.key"
+
+    *确认该路径与你生成证书所在的路径一致，保存，至此OK。
+
+ 
+
+    9、注意apache的配置文件,httpd.conf中的端口和ServerName必须配置正确：
+
+           执行/usr/sbin/apachectl2 start...
+
+    10、打开浏览器，访问你的主机：
+
+        It works!  
+
+
+www路径，/srv/www
+
