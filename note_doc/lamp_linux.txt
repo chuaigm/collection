@@ -1,0 +1,42 @@
+用yum安装Apache,Mysql,PHP. 
+2.1安装Apache 
+yum install httpd httpd-devel 
+安装完成后，用/etc/init.d/httpd start 启动apache 
+(普通用户只有1024端口以后的权限，所以请用root用户启动)
+设为开机启动:chkconfig httpd on 
+
+2.2 安装mysql 
+2.2.1 yum install mysql mysql-server mysql-devel 
+同样，完成后，用/etc/init.d/mysqld start 启动mysql 
+2.2.2 设置mysql密码 
+
+启动mysql控制台：  mysql
+
+mysql>; USE mysql; 
+mysql>; UPDATE user SET Password=PASSWORD('newpassword') WHERE user='root'; 
+mysql>; FLUSH PRIVILEGES; 
+
+2.2.3 允许远程登录 
+mysql -u root -p 
+Enter Password: <your new password> 
+mysql>GRANT ALL PRIVILEGES ON *.* TO '用户名'@'%' IDENTIFIED BY '密码' WITH
+GRANT OPTION; 
+完成后就能用mysql-front远程管理mysql了。 
+
+2.2.4 设为开机启动 
+chkconfig mysqld on 
+
+3. 安装php 
+yum install php php-mysql php-common php-gd php-mbstring php-mcrypt php-devel
+php-xml 
+/etc/init.d/httpd start 
+在配置文件:
+/etc/httpd/conf/httpd.conf
+中, AddType application/x-gzip .gz .tgz  这行后，添加
+AddType application/x-httpd-php .php .phtml
+解析php
+然后，重启apache
+apachectl stop
+apachectl start
+
+
