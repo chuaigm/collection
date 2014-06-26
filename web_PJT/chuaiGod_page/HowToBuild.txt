@@ -1,0 +1,3 @@
+在mysql数据库中，执行
+source xxxx.sql 
+自动创建数据库，xxxx代表sql脚本的绝对路径全名
