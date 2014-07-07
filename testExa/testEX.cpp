@@ -36,8 +36,16 @@ enum { _MAX_SIZE=8,
 	   _ttt
 	 };
 
+union obj{
+	union obj * link;
+	char data[1];
+};
+
 int main()
 {
+	int si=sizeof(obj);
+	cout<<si<<endl;
+	cout<<"int*="<<sizeof(int*)<<endl;
 #if 0
 	// 枚举
 	printf("--%d\n", _MAX_SIZE);	
