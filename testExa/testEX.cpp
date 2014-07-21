@@ -43,9 +43,19 @@ union obj{
 
 int main()
 {
-	int si=sizeof(obj);
-	cout<<si<<endl;
-	cout<<"int*="<<sizeof(int*)<<endl;
+#if 0
+	// stl 中的联合体设计，allocator
+	char mem1[64]={0};
+	char mem2[128]={0};
+	union obj *p1=(union obj *)mem1;
+	p1->link=(union obj *)mem2;
+	cout<<"mem1="<<(void*)mem1<<endl;
+	cout<<"mem2="<<(void*)mem2<<endl;
+	cout<<"p1="<<(void*)p1<<endl;
+	cout<<"p1->link="<<(void*)(p1->link)<<endl;
+	cout<<"p1->data="<<(void*)(p1->data)<<endl;
+#endif
+	
 #if 0
 	// 枚举
 	printf("--%d\n", _MAX_SIZE);	
