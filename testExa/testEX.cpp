@@ -43,6 +43,44 @@ union obj{
 
 int main()
 {
+	// 2014-8-20 map op
+	map<string, AAA> mpp;
+	typedef map<string, AAA>::iterator mitr;
+//	typedef map<string, AAA>::reverse_iterator rmitr;
+	AAA sta[16];
+	sta[0].a=100;
+	sta[0].b='a';
+	sta[0].c=10;
+	sta[1].a=100;
+	sta[1].b='b';
+	sta[1].c=10;
+	sta[2].a=100;
+	sta[2].b='c';
+	sta[2].c=10;
+	sta[3].a=100;
+	sta[3].b='d';
+	sta[3].c=10;
+	// insert
+	// 默认升序
+	mpp.insert(map<string, AAA>::value_type("aaa", sta[0]));
+	mpp.insert(map<string, AAA>::value_type("bbb", sta[1]));
+	mpp.insert(map<string, AAA>::value_type("ccc", sta[2]));
+
+	mitr itor = mpp.find("zzz");
+
+	char a[]="aaa";
+	std::string sss=std::string(a);
+	std::string str="adsf";
+	
+	if(itor==mpp.end())
+	{
+		printf("not found_%s\n", a);
+	} else {
+		printf("found\n");
+	}
+
+
+
 #if 0
 	// stl 中的联合体设计，allocator
 	char mem1[64]={0};

@@ -1,4 +1,11 @@
 
+
+1. mysql> SET PASSWORD FOR 'root'@'localhost' = PASSWORD('newpass');
+
+
+
+
+
 use mysql    // use 接要修改的数据库名
 
                                 //这里写密码       // 这里写用户名
