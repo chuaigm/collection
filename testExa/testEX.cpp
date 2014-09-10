@@ -16,9 +16,30 @@ typedef struct {
 	short c;
 } AAA;
 
+map<string, AAA> ssmap;
+typedef map<string, AAA>::iterator ssmitor;
+
 void func(const int i)
 {
 	int ta = i;
+};
+
+void func1()
+{
+	AAA s1;
+	s1.a=2;
+	s1.b='b';
+	s1.c=2;
+	ssmap.insert(make_pair(string("2"),s1));
+};
+
+void func2()
+{
+	AAA s1;
+	s1.a=3;
+	s1.b='c';
+	s1.c=3;
+	ssmap.insert(make_pair(string("3"),s1));
 };
 
 template <int length>
@@ -43,9 +64,27 @@ union obj{
 
 int main()
 {
+	printf(" -- %f -- %.2f\n", 1.605,1.605);
+	printf(" -- %f -- %.2f\n", 1.615,1.615);
+	printf(" -- %f -- %.2f\n", 1.625,1.625);
+	printf(" -- %f -- %.2f\n", 1.635,1.635);
+	printf(" -- %f -- %.2f\n", 1.645,1.645);
+	printf(" -- %f -- %.2f\n", 1.655,1.655);
+	printf("----------\n");
+	
+	double di=1.60;
+	while(di<1.70)
+	{
+		printf(" -- %f -- %.2f\n", di,di);
+		di+=0.005;
+	}
+
+
+#if 0
 	// 2014-8-20 map op
 	map<string, AAA> mpp;
 	typedef map<string, AAA>::iterator mitr;
+	pair<map<string, AAA>::iterator, bool> insert_stat;
 //	typedef map<string, AAA>::reverse_iterator rmitr;
 	AAA sta[16];
 	sta[0].a=100;
@@ -62,13 +101,37 @@ int main()
 	sta[3].c=10;
 	// insert
 	// 默认升序
-	mpp.insert(map<string, AAA>::value_type("aaa", sta[0]));
-	mpp.insert(map<string, AAA>::value_type("bbb", sta[1]));
-	mpp.insert(map<string, AAA>::value_type("ccc", sta[2]));
+	insert_stat=mpp.insert(map<string, AAA>::value_type("aaa", sta[0]));
+	if(!insert_stat.second)
+	{
+		printf("insert fail...1\n");
+	}
+	insert_stat=mpp.insert(map<string, AAA>::value_type("bbb", sta[1]));
+	if(!insert_stat.second)
+	{
+		printf("insert fail...2\n");
+	}
+	insert_stat=mpp.insert(map<string, AAA>::value_type("ccc", sta[2]));
+	if(!insert_stat.second)
+	{
+		printf("insert fail...3\n");
+	}
+	insert_stat=mpp.insert(map<string, AAA>::value_type("bbb", sta[3]));
+	if(!insert_stat.second)
+	{
+		printf("insert fail...4\n");
+	}
 
-	mitr itor = mpp.find("zzz");
+	mitr itor = mpp.begin();
+	for(;itor != mpp.end();)
+	{
+		cout<<itor->first<<":"<<itor->second.b<<endl;
+		++itor;
+	}
 
-	char a[]="aaa";
+	itor = mpp.find("zzz");
+
+	char a[]="zzz";
 	std::string sss=std::string(a);
 	std::string str="adsf";
 	
@@ -79,6 +142,7 @@ int main()
 		printf("found\n");
 	}
 
+#endif
 
 
 #if 0
