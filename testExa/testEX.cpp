@@ -1,4 +1,5 @@
 ﻿#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "math.h"
 //#include "cgmtoolbox.h"
@@ -9,6 +10,8 @@
 #include <map>
 
 using namespace std;
+
+#define __TPL printf("line:[%06d]\n",__LINE__);
 
 typedef struct {
 	int a;
@@ -64,21 +67,54 @@ union obj{
 
 int main()
 {
-	printf(" -- %f -- %.2f\n", 1.605,1.605);
-	printf(" -- %f -- %.2f\n", 1.615,1.615);
-	printf(" -- %f -- %.2f\n", 1.625,1.625);
-	printf(" -- %f -- %.2f\n", 1.635,1.635);
-	printf(" -- %f -- %.2f\n", 1.645,1.645);
-	printf(" -- %f -- %.2f\n", 1.655,1.655);
-	printf("----------\n");
-	
-	double di=1.60;
-	while(di<1.70)
+	int c=2;
+	switch (c)
 	{
-		printf(" -- %f -- %.2f\n", di,di);
-		di+=0.005;
+		case 1:
+		{
+			__TPL;
+			break;
+		}
+		case 2:
+		{
+			__TPL;
+			//for(;;){
+			if(1)
+			{
+			__TPL;
+				break;
+			}
+			else
+			{
+			}
+			//}
+			__TPL;
+			break;
+		}
+			__TPL;
 	}
+			__TPL;
 
+#if 0
+	// 浮点数修约
+	int i=100;
+	printf("-- %x -- %d -- \n", i, i);
+	char c[50]={0};
+	printf("-- %s --\n",c);
+	double db=1.605;
+	printf(" -- origin -- const -- var --\n");
+	printf(" -- %.24f -- %.2f -- %.2f\n", 1.605,1.605,db);db+=0.01;
+	printf(" -- %.24f -- %.2f -- %.2f\n", 1.615,1.615,db);db+=0.01;
+	printf(" -- %.24f -- %.2f -- %.2f\n", 1.625,1.625,db);db+=0.01;
+	printf(" -- %.24f -- %.2f -- %.2f\n", 1.635,1.635,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.645,1.645,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.655,1.655,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.665,1.665,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.675,1.675,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.685,1.685,db);db+=0.01;
+	printf(" -- %f -- %.2f -- %.2f\n", 1.695,1.695,db);db+=0.01;
+	printf("----------\n");
+#endif	
 
 #if 0
 	// 2014-8-20 map op
