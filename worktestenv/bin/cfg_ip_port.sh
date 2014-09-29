@@ -72,7 +72,7 @@ file_path=""
 while read myline
 do
 	#echo "$myline"
-	if [ -z $myline ]; then
+	if [[ -z $myline ]]; then
 		# next line will be a file path 
 		flag_file=1
 	else
