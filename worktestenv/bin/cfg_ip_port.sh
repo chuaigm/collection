@@ -53,7 +53,7 @@ do
 	echo $X | tee -a $TAG_CFG
 	for Y in $KEY_WORDS
 	do
-		grep $Y $X | tee -a $TAG_CFG
+		grep -w $Y $X | tee -a $TAG_CFG
 	done
 
 	echo "" | tee -a $TAG_CFG
@@ -86,7 +86,7 @@ do
 			do
 				re_grep=`echo $myline | grep $KW`
 				if [[ $re_grep != "" ]]; then
-					re2=`grep $KW $file_path`
+					re2=`grep -w $KW $file_path`
 					if [[ $re_grep != $re2 ]]; then
 						# <> method may have some problem
 						#awk '/'$KW'/ {print "'$myline'"; next} {print}' $file_path 1<>$file_path
