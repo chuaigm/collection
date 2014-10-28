@@ -84,14 +84,14 @@ do
 		else
 			for KW in $KEY_WORDS
 			do
-				re_grep=`echo $myline | grep $KW`
+				re_grep=`echo $myline | grep -w $KW`
 				if [[ $re_grep != "" ]]; then
 					re2=`grep -w $KW $file_path`
 					if [[ $re_grep != $re2 ]]; then
 						# <> method may have some problem
 						#awk '/'$KW'/ {print "'$myline'"; next} {print}' $file_path 1<>$file_path
 						# core cmd
-						awk '/'$KW'/ {print "'$myline'"; next} {print}' $file_path >> tmp_file_cgm
+						awk '/\<'$KW'\>/ {print "'$myline'"; next} {print}' $file_path >> tmp_file_cgm
 						mv tmp_file_cgm $file_path
 						echo "[changing:]" $myline
 					fi
