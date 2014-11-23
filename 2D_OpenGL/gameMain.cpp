@@ -883,13 +883,14 @@ void gameMain::lbuttonproc(int lparam)
 			break;
 
 		case MENU_HELP:
-			iShowHelp=1;
+			//iShowHelp=1;
 			b_font_test=!b_font_test;
 			break;
 
 		case MENU_QUIT:
 			m_OpenGL->CleanUp();
-			PostQuitMessage(0);				
+			PostQuitMessage(0);
+			exit(0);
 			break;
 		}		
 		break;	
@@ -1592,7 +1593,51 @@ void gameMain::show_2D_test()
 		{
 			// y=ax^2+bx+c
 			float y=0.07f*x*x+0.6f*x-15;
-			glVertex3f( (float)x*scale,(float)y*scale, 0.0);
+			glVertex2f( (float)x*scale,(float)y*scale);
+		}
+		glEnd();
+
+		// draw a func
+		glColor3f(1.0,1.0,0.0);
+		glBegin(GL_LINE_STRIP);
+		for (int x=-40; x<40; x++)
+		{
+			// y=asinx
+			float y=20.0f*sin(0.1f*x);
+			glVertex2f( (float)x*scale,(float)y*scale);
+		}
+		glEnd();
+
+		// draw a func
+		glColor3f(0.0,0.0,1.0);
+		glBegin(GL_LINE_STRIP);
+		for (int x=1; x<400; x++)
+		{
+			// y=1/x
+			float y=100.0f/x;
+			glVertex2f( (float)x*scale,(float)y*scale);
+		}
+		glEnd();
+
+		// draw a func
+		glColor3f(0.0,1.0,1.0);
+		glBegin(GL_LINE_STRIP);
+		for (int x=-40; x<40; x++)
+		{
+			// y=10*2^x
+			float y=10.0f*pow(2.0f,x/10.0f);
+			glVertex2f( (float)x*scale,(float)y*scale);
+		}
+		glEnd();
+
+		// draw a func
+		glColor3f(1.0f,0.0f,1.0f);
+		glBegin(GL_LINE_STRIP);
+		for (int x=1; x<400; x++)
+		{
+			// y=log(x)
+			float y=10*log(x/10.0f);
+			glVertex2f( (float)x*scale,(float)y*scale);
 		}
 		glEnd();
 	}
