@@ -20,7 +20,7 @@
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
-			UseOfMFC="1"
+			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			>
@@ -215,7 +215,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="anmobj.cpp"
+				RelativePath=".\gameMain.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -235,44 +235,8 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="filereport.cpp"
+				RelativePath=".\gameMain.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="gamemap.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="GLFont.cpp"
@@ -295,27 +259,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\mainFrame.cpp"
+				RelativePath="GLFont.h"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="MathLib.cpp"
+				RelativePath=".\main_Win.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -353,6 +301,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\OpenGLbase.h"
+				>
 			</File>
 			<File
 				RelativePath="Script1.rc"
@@ -402,35 +354,11 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="anmobj.h"
-				>
-			</File>
-			<File
-				RelativePath="filereport.h"
-				>
-			</File>
-			<File
-				RelativePath="gamemap.h"
-				>
-			</File>
-			<File
-				RelativePath="GLFont.h"
-				>
-			</File>
-			<File
-				RelativePath="MathLib.h"
+				RelativePath=".\inifileop.h"
 				>
 			</File>
 			<File
 				RelativePath="myclock.h"
-				>
-			</File>
-			<File
-				RelativePath="mykey.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OpenGLbase.h"
 				>
 			</File>
 			<File
@@ -454,102 +382,6 @@
 		<Filter
 			Name="3Dmodel_lib"
 			>
-			<File
-				RelativePath="3DS.CPP"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="3DS.H"
-				>
-			</File>
-			<File
-				RelativePath="md2.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="md2.h"
-				>
-			</File>
-			<File
-				RelativePath="MDLModel.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="MDLModel.h"
-				>
-			</File>
-			<File
-				RelativePath="mdlobj.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="mdlobj.h"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath="ReadMe.txt"

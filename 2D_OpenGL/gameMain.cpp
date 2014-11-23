@@ -4,11 +4,11 @@
 //=======================================
 
 #include "stdafx.h"
-#include "gamemap.h"
+#include "gameMain.h"
 #include "myclock.h"
 #include "glfont.h"
 #include "OpenGLbase.h"
-#include "mykey.h"
+//#include "mykey.h"
 
 //font
 extern CGLFont myfont;
@@ -18,7 +18,7 @@ extern MYCLOCK c1;
 
 //mouse
 extern int Lbutdown;
-
+// OpenGL环境对象指针在主函数文件中声明
 extern COpenGLbase* m_OpenGL;
 
 extern int WinWidth;
@@ -26,14 +26,14 @@ extern int WinHeight;
 
 /////////////////////////
 
-GAMEMAP::GAMEMAP()
+gameMain::gameMain()
 {
 	iGameState=GAME_NULL;	
 
-	xmouse=0;
+	/*xmouse=0;
 	ymouse=0;
 	xmouseOld=0;
-	ymouseOld=0;
+	ymouseOld=0;*/
 
 	iMenu=-1;
 
@@ -55,12 +55,12 @@ GAMEMAP::GAMEMAP()
 	iShowHelp=0;
 }
 
-GAMEMAP::~GAMEMAP()
+gameMain::~gameMain()
 {
-	delete m_anmobj;
+	//delete m_anmobj;
 }
 //游戏所需数据文件检查,如果缺少,程序中止
-int GAMEMAP::haveDataFile()
+int gameMain::haveDataFile()
 {
 	int ihave=1;
 	FILE *fp;
@@ -122,7 +122,7 @@ int GAMEMAP::haveDataFile()
 }
 
 //加载各个图片,模型,初始化全局数据
-void GAMEMAP::init()
+void gameMain::init()
 {
 	//mdl模型要最先初始化
 //	m_mdlobj.InitGL(0,"data/mdl/qian1.mdl");	
@@ -168,13 +168,14 @@ void GAMEMAP::init()
 	//游戏状态
 //	iGameState=GAME_PRE_ANI;
 	iGameState=GAME_MENU;
+	// 关数
 	iMatch=0;
 	//参数
 	param1=0;
 }
 //游戏界面
 /*
-void GAMEMAP::showInfo()
+void gameMain::showInfo()
 {
 	char info[50]={0};
 
@@ -240,7 +241,7 @@ void GAMEMAP::showInfo()
 */
 //敌人生命值
 /*
-void GAMEMAP::showEnemyHp()
+void gameMain::showEnemyHp()
 {
 	int i;
 
@@ -282,7 +283,7 @@ void GAMEMAP::showEnemyHp()
 */
 //准心
 /*
-void GAMEMAP::showTarget()
+void gameMain::showTarget()
 {
 	unsigned char rasterallf[12] = {
 		0xff, 0xff,0xff, 0xff,0xff, 0xff,
@@ -316,7 +317,7 @@ void GAMEMAP::showTarget()
 }
 */
 //绘制鼠标
-void GAMEMAP::drawMouse()
+void gameMain::drawMouse()
 {
 	glPushMatrix();
 	//glLoadIdentity();
@@ -326,19 +327,19 @@ void GAMEMAP::drawMouse()
 	glDisable(GL_TEXTURE_2D);    
 	//glDisable(GL_LIGHTING);      	
 	
-	glTranslatef(xmouse,WinHeight-ymouse,0.1f);
+	glTranslatef((GLfloat)m_OpenGL->Xmouse,(GLfloat)(WinHeight-m_OpenGL->Ymouse),0.1f);
 
 	glBegin(GL_TRIANGLE_FAN);
-	glColor3f(0.0, 0.5, 0.0); 
-	glVertex3f(0.0,0.0,0.0);
-	glVertex3f(30.0, -15.0,0.0);
+	glColor3f(0.0f, 0.5f, 0.0f); 
+	glVertex3f(0.0f,0.0f,0.0f);
+	glVertex3f(30.0f, -15.0f,0.0f);
 
-	glColor3f(0.0, 0.8, 0.0); 
-	glVertex3f(12.0, -12.0,0.0);
-	glVertex3f(6.0,-20.0,0.0);
+	glColor3f(0.0f, 0.8f, 0.0f); 
+	glVertex3f(12.0f, -12.0f,0.0f);
+	glVertex3f(6.0f,-20.0f,0.0f);
 
-	glColor3f(0.0, 0.0, 0.0); 
-	glVertex3f(3.0,-20.0,0.0);
+	glColor3f(0.0f, 0.0f, 0.0f); 
+	glVertex3f(3.0f,-20.0f,0.0f);
 	glEnd();
 
 	/////////////////////////
@@ -349,7 +350,7 @@ void GAMEMAP::drawMouse()
 }
 /*
 //画两个黑色方块
-void GAMEMAP::showFire()
+void gameMain::showFire()
 {
 	unsigned char rasterallf[12] = {
 		0xff, 0xff,0xff, 0xff,0xff, 0xff,
@@ -408,7 +409,7 @@ void GAMEMAP::showFire()
 }
 */
 //屏幕刷新
-void GAMEMAP::show()
+void gameMain::show()
 {
 //	int i;
 //	float xx0,zz0;	//gun
@@ -416,13 +417,13 @@ void GAMEMAP::show()
 	switch(iGameState)
 	{
 	case GAME_PRE_ANI:
-		showpreani();
+//		showpreani();
 		break;
 
 	case GAME_MENU:
 		//glLoadIdentity();
 		showmenu();		
-	// cgm test
+		// cgm test
 		show_2D_test();
 		//glLoadIdentity();
 		drawMouse();
@@ -481,7 +482,7 @@ void GAMEMAP::show()
 	}
 }
 //构造位图贴图
-bool GAMEMAP::LoadT8(char *filename, GLuint &texture)
+bool gameMain::LoadT8(char *filename, GLuint &texture)
 {	
 	AUX_RGBImageRec *pImage = NULL;
 	
@@ -507,7 +508,7 @@ bool GAMEMAP::LoadT8(char *filename, GLuint &texture)
 }
 
 //指定贴图
-void GAMEMAP::texture(UINT textur)
+void gameMain::texture(UINT textur)
 {
 	glBindTexture  (GL_TEXTURE_2D, textur);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -518,7 +519,7 @@ void GAMEMAP::texture(UINT textur)
 }
 
 //指定贴图
-void GAMEMAP::texture0(UINT textur)
+void gameMain::texture0(UINT textur)
 {
 	glBindTexture  (GL_TEXTURE_2D, textur);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -528,7 +529,7 @@ void GAMEMAP::texture0(UINT textur)
 }
 
 //画正方形 ，边长2e
-void GAMEMAP::tPic(float e)
+void gameMain::tPic(float e)
 {
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 0.0f); glVertex3f(-e, -e,  0.0f);
@@ -539,7 +540,7 @@ void GAMEMAP::tPic(float e)
 }
 
 //画矩形，左下角坐标xy，宽度w，高h
-void GAMEMAP::tPic(float x,float y,float w,float h)
+void gameMain::tPic(float x,float y,float w,float h)
 { 
 	glPushMatrix();
 
@@ -563,7 +564,7 @@ void GAMEMAP::tPic(float x,float y,float w,float h)
 	glPopMatrix();
 }
 //画按钮
-void GAMEMAP::tPicButton(float x,float y,float w,float h,float ytex)
+void gameMain::tPicButton(float x,float y,float w,float h,float ytex)
 { 
 	glPushMatrix();
 
@@ -588,7 +589,7 @@ void GAMEMAP::tPicButton(float x,float y,float w,float h,float ytex)
 }
 
 //设置灯光
-void GAMEMAP::light0()
+void gameMain::light0()
 {
 	GLfloat light_position[] = {10.0,10.0,3.0,1.0};
 
@@ -603,20 +604,20 @@ void GAMEMAP::light0()
 	glEnable(GL_COLOR_MATERIAL);
 }
 //开屏动画
-void GAMEMAP::showpreani()
-{
-	glPushMatrix();
-	//移动到当前位置
-	glTranslatef(0,0,-8.0);
-	texture0(g_cactus[0]);	
-	tPic(2.0f);
-	//移动动画
-	tSquare(param1*0.2, 0.0, 0.1, 3.0);
-	glPopMatrix();
-}
+//void gameMain::showpreani()
+//{
+//	glPushMatrix();
+//	//移动到当前位置
+//	glTranslatef(0,0,-8.0);
+//	texture0(g_cactus[0]);	
+//	tPic(2.0f);
+//	//移动动画
+//	tSquare(param1*0.2, 0.0, 0.1, 3.0);
+//	glPopMatrix();
+//}
 
 //指定位置画一个正方形
-void GAMEMAP::tSquare(float x, float y, float z, float a)
+void gameMain::tSquare(float x, float y, float z, float a)
 {
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
@@ -638,7 +639,7 @@ void GAMEMAP::tSquare(float x, float y, float z, float a)
 }
 
 //实时检测
-void GAMEMAP::check()
+void gameMain::check()
 {
 	int i;
 	int x,y;
@@ -664,8 +665,8 @@ void GAMEMAP::check()
 
 	case GAME_MENU:
 		//检测菜单选择
-		x=xmouse;
-		y=WinHeight-ymouse;
+		x=m_OpenGL->Xmouse;
+		y=WinHeight-m_OpenGL->Ymouse;
 		iMenu=-1;//初始化 没有选择
 		
 		if(x<XMENU	|| x>XMENU+WIDTH_MENU || y<YMENU)
@@ -683,7 +684,7 @@ void GAMEMAP::check()
 	
 	case GAME_IN_INIT:
 		//进入地图前初始化
-		initMap();
+		//initMap();
 		iGameState=GAME_IN;
 		c1.ReStart(300);
 		//设置游戏投影
@@ -757,7 +758,7 @@ void GAMEMAP::check()
 	}
 }
 //显示菜单
-void GAMEMAP::showmenu()
+void gameMain::showmenu()
 {
 	int i;
 	char *menustr[]={"退    出","开始实验","开始游戏"};
@@ -837,17 +838,17 @@ void GAMEMAP::showmenu()
 }
 
 //键盘处理
-void GAMEMAP::keyupproc(int keyparam)
+void gameMain::keyupproc(int keyparam)
 {
     switch (keyparam)
     {
-	case KEY_F12:
-		//直接过关
-		if(iGameState=GAME_IN)
-		{
-			iEnemyNum=0;
-		}		
-		break;
+	//case KEY_F12:
+	//	//直接过关
+	//	if(iGameState=GAME_IN)
+	//	{
+	//		iEnemyNum=0;
+	//	}		
+	//	break;
 
 	case VK_ESCAPE:
 		//回到菜单
@@ -861,15 +862,15 @@ void GAMEMAP::keyupproc(int keyparam)
 }
 
 //鼠标检测函数
-void GAMEMAP::mouseproc(int lparam)
-{
-	xmouseOld=xmouse;
-	ymouseOld=ymouse;
-	xmouse=LOWORD(lparam);
-	ymouse=HIWORD(lparam);
-}
+//void gameMain::mouseproc(int lparam)
+//{
+//	xmouseOld=xmouse;
+//	ymouseOld=ymouse;
+//	xmouse=LOWORD(lparam);
+//	ymouse=HIWORD(lparam);
+//}
 //左键松开
-void GAMEMAP::lbuttonproc(int lparam)
+void gameMain::lbuttonproc(int lparam)
 {
 	switch(iGameState)
 	{
@@ -901,7 +902,7 @@ void GAMEMAP::lbuttonproc(int lparam)
 
 //画立方体
 //入参 	位置 长宽高 贴图坐标 贴图编号 iHastop 是否有顶面和底面
-void GAMEMAP::showmapBox(float *ppos, float *psize, float *ptex,int itex,int iHastop)
+void gameMain::showmapBox(float *ppos, float *psize, float *ptex,int itex,int iHastop)
 {
 	float width =psize[0];	
 	float height=psize[2];	
@@ -972,7 +973,7 @@ void GAMEMAP::showmapBox(float *ppos, float *psize, float *ptex,int itex,int iHa
 }
 /*
 //画地图场景
-void GAMEMAP::showmap()
+void gameMain::showmap()
 {
 	//地图数据
 	float pmappos[]={0,0,0};
@@ -1009,8 +1010,9 @@ void GAMEMAP::showmap()
 	}	
 }
 */
+/*
 //设置摄像机
-void GAMEMAP::DisplayScene()
+void gameMain::DisplayScene()
 {
 	float speed=0.5f;					
 	float x=g_eye[0],y=g_eye[1],z=g_eye[2];
@@ -1018,7 +1020,6 @@ void GAMEMAP::DisplayScene()
 	if (KEY_DOWN(VK_SHIFT))  speed   =speed*2;
 
 	//mouse
-/*  */
 	g_Angle +=  (xmouse-xmouseOld)*.2f;            
 	g_elev  += -(ymouse-ymouseOld)*.2f;          
 
@@ -1101,9 +1102,10 @@ void GAMEMAP::DisplayScene()
 
 	return;
 }
-
+*/
+/*
 //碰撞检测
-int GAMEMAP::hittest()
+int gameMain::hittest()
 {
 	int i;
 	int iHit=0;
@@ -1216,8 +1218,9 @@ int GAMEMAP::hittest()
 	}
 	return 0;
 }
-
-void GAMEMAP::checkRole()
+*/
+/*
+void gameMain::checkRole()
 {
 	int i,j;
 	int iTurn;//是否反向运动
@@ -1309,8 +1312,9 @@ void GAMEMAP::checkRole()
 		}// end for
 	}
 }
-
-void GAMEMAP::checkFire()
+*/
+/*
+void gameMain::checkFire()
 {
 	//碰撞检测
 	hittest();	
@@ -1346,8 +1350,9 @@ void GAMEMAP::checkFire()
 	}
 
 }
-
-int GAMEMAP::RoleInMap(float x,float y,float z)
+*/
+/*
+int gameMain::RoleInMap(float x,float y,float z)
 {
 	int i;
 	RECT_F role;
@@ -1375,7 +1380,7 @@ int GAMEMAP::RoleInMap(float x,float y,float z)
 	return 1;
 }
 //初始化某一关地图 游戏数据
-void GAMEMAP::initMap()
+void gameMain::initMap()
 {
 	//camera
 	g_eye[0]=50.0f;//
@@ -1401,7 +1406,7 @@ void GAMEMAP::initMap()
 	LoadMap();
 }
 //加载地图
-int GAMEMAP::LoadMap()
+int gameMain::LoadMap()
 {
 	FILE *fp;
 	char temp[50]={0};
@@ -1489,12 +1494,12 @@ int GAMEMAP::LoadMap()
 
 	return 1;
 }
-
+*/
 //设置投影方式
-void GAMEMAP::initView()
+void gameMain::initView()
 {
 	//ShowCursor(false);
-	ShowCursor(true);
+	//ShowCursor(true);
 	switch(iGameState)
 	{
 	case GAME_MENU:
@@ -1502,12 +1507,13 @@ void GAMEMAP::initView()
 		break;
 
 	default:
-		m_OpenGL->init_3D();		
+		//m_OpenGL->init_3D();
+		m_OpenGL->init_2D();
 		break;
 	}
 }
 
-void GAMEMAP::show_2D_test()
+void gameMain::show_2D_test()
 {
 	glPushMatrix();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);

@@ -1,7 +1,7 @@
-#ifndef __GAMEMAP
-#define __GAMEMAP
+#ifndef __gameMain
+#define __gameMain
 
-#include "mdlobj.h"
+//#include "mdlobj.h"
 
 typedef struct tagRECT_F
 {
@@ -39,11 +39,11 @@ struct ROLE
 	int r;//旋转角度
 };
 
-class GAMEMAP
+class gameMain
 {
 public:
-	GAMEMAP();
-	~GAMEMAP();
+	gameMain();
+	~gameMain();
 	
 	void init();
 	//
@@ -107,10 +107,10 @@ public:
 	int param1;
 	
 	//鼠标位置
-	int xmouse;
-	int ymouse;
-	int xmouseOld;
-	int ymouseOld;
+	//int xmouse;
+	//int ymouse;
+	//int xmouseOld;
+	//int ymouseOld;
 	//当前选择的菜单项
 	int iMenu;
 
@@ -126,7 +126,7 @@ public:
 	int iMapEnemyCursor;
 
 	//md2
-	anmobj* m_anmobj;
+	//anmobj* m_anmobj;
 
 	//map人物活动区域
 	RECT maprect[MAX_MAP_OBJECT];
@@ -134,7 +134,7 @@ public:
 	int iMapRectNum;
 	
 	//mdl
-	mdlobj	m_mdlobj;
+	//mdlobj	m_mdlobj;
 
 	//FIRE
 	int IsFire;//是否正在发射子弹

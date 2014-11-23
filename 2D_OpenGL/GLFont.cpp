@@ -10,7 +10,7 @@
 
 #include "GLFont.h"
 
-#include "filereport.h"
+//#include "filereport.h"
 
 
 #ifdef _DEBUG

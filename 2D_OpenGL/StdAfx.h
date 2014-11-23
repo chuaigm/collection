@@ -28,16 +28,16 @@
 #include <gl\glu.h>
 #include <gl\glaux.h>
 //////////////////////
-#include "filereport.h"
+//#include "filereport.h"
 
 //3ds
-#include "3ds.h"
+//#include "3ds.h"
 //md2
-#include "md2.h"
-#include "anmobj.h"
+//#include "md2.h"
+//#include "anmobj.h"
 //mdl
-#include "MDLFormat.h"//
-#include "MDLModel.h"//
+//#include "MDLFormat.h"//
+//#include "MDLModel.h"//
 
 // ÆÁ±Î±àÒë¾¯¸æ
 #pragma warning (disable:4996)
@@ -59,7 +59,7 @@
 #define MAP_SCALE   24.0f    
 #define MAP			MAP_W*MAP_SCALE/2
 
-// window
+// window size
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 700
 
@@ -99,7 +99,7 @@
 
 #define GAME_TEX_NUM 20
 
-#define PI		(3.14159265359f)
+#define PI		(3.14159265359)
 
 //×ÖÌå
 #define FONT0 0
