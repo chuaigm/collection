@@ -36,12 +36,8 @@ gameMain::gameMain()
 	ymouseOld=0;*/
 
 	iMenu=-1;
-
-	//camera
-	g_eye[0]=50;//
-	g_eye[2]=5;//
-	g_Angle=0;
-	g_elev=0;
+	b_font_test=true;
+	b_func_test=true;
 
 	//fire
 	IsFire=0;
@@ -426,7 +422,8 @@ void gameMain::show()
 		// cgm test
 		show_2D_test();
 		//glLoadIdentity();
-		drawMouse();
+		// 绘制定制的鼠标形状
+		//drawMouse();
 		break;
 
 	case GAME_IN:
@@ -761,7 +758,7 @@ void gameMain::check()
 void gameMain::showmenu()
 {
 	int i;
-	char *menustr[]={"退    出","开始实验","开始游戏"};
+	char *menustr[]={"退    出","字体测试","函数绘制"};
 	//      imenu        0           1          2
 
 	glLoadIdentity();
@@ -777,11 +774,11 @@ void gameMain::showmenu()
 		texture0(g_cactus[9]);
 		if(iMenu==i)
 		{
-			tPicButton(XMENU,YMENU+i*Y_2MENU,WIDTH_MENU,HEIGHT_MENU,0.0f);
+			tPicButton((float)XMENU,(float)(YMENU+i*Y_2MENU),(float)WIDTH_MENU,(float)HEIGHT_MENU,0.0f);
 		}
 		else
 		{
-			tPicButton(XMENU,YMENU+i*Y_2MENU,WIDTH_MENU,HEIGHT_MENU,0.5f);
+			tPicButton((float)XMENU,(float)(YMENU+i*Y_2MENU),(float)WIDTH_MENU,(float)HEIGHT_MENU,0.5f);
 		}
 	}
 
@@ -881,11 +878,13 @@ void gameMain::lbuttonproc(int lparam)
 		switch(iMenu)
 		{
 		case MENU_START:
-			iGameState=GAME_IN_INIT;
+			//iGameState=GAME_IN_INIT;
+			b_func_test=!b_func_test;
 			break;
 
 		case MENU_HELP:
 			iShowHelp=1;
+			b_font_test=!b_font_test;
 			break;
 
 		case MENU_QUIT:
@@ -1515,6 +1514,11 @@ void gameMain::initView()
 
 void gameMain::show_2D_test()
 {
+	if (b_font_test)
+	{
+		show_Font_test();
+	}
+
 	glPushMatrix();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glDisable(GL_TEXTURE_2D);
@@ -1533,19 +1537,19 @@ void gameMain::show_2D_test()
 	for (int x=-4; x<5; x++)
 	{
 		glBegin(GL_POINTS);
-		glVertex3f( x*100.0, 0.0, 0.0);
+		glVertex3f( x*100.0f, 0.0, 0.0);
 		glEnd();
 		//int ta=x*scale;
 		sprintf_s(tmpstr,"%d\n",x*scale);
-		myfont.Print2D(x*100.0,0,tmpstr,FONT0,1.0f,1.0f,1.0f);
+		myfont.Print2D(x*100,0,tmpstr,FONT0,1.0f,1.0f,1.0f);
 	}
 	for (int y=-3; y<4; y++)
 	{
 		glBegin(GL_POINTS);
-		glVertex3f( 0.0, y*100.0, 0.0);
+		glVertex3f( 0.0, y*100.0f, 0.0);
 		glEnd();
 		sprintf_s(tmpstr,"%d\n",y*scale);
-		myfont.Print2D(0,y*100.0,tmpstr,FONT0,1.0f,1.0f,1.0f);
+		myfont.Print2D(0,y*100,tmpstr,FONT0,1.0f,1.0f,1.0f);
 	}
 	myfont.Print2D(0,0,"O",FONT0,1.0f,1.0f,0.0f);
 	glColor3f(1.0,1.0,1.0);
@@ -1568,30 +1572,49 @@ void gameMain::show_2D_test()
 
 	// --------------------
 
-	// draw a func
-	glColor3f(1.0,0.0,0.0);
-	glBegin(GL_LINE_STRIP);
-	for (int x=-40; x<40; x++)
+	if (b_func_test)
 	{
-		// y=kx+b
-		float y=0.6*x+5;
-		glVertex3f( x*scale,y*scale, 0.0);
-	}
-	glEnd();
+		// draw a func
+		glColor3f(1.0,0.0,0.0);
+		glBegin(GL_LINE_STRIP);
+		for (int x=-40; x<40; x++)
+		{
+			// y=kx+b
+			float y=0.6f*x+5;
+			glVertex3f( (float)x*scale,(float)y*scale, 0.0);
+		}
+		glEnd();
 
-	// draw a func
-	glColor3f(0.0,1.0,0.0);
-	glBegin(GL_LINE_STRIP);
-	for (int x=-40; x<40; x++)
-	{
-		// y=ax*x+bx+c
-		float y=0.07*x*x+0.6*x-15;
-		glVertex3f( x*scale,y*scale, 0.0);
+		// draw a func
+		glColor3f(0.0,1.0,0.0);
+		glBegin(GL_LINE_STRIP);
+		for (int x=-40; x<40; x++)
+		{
+			// y=ax^2+bx+c
+			float y=0.07f*x*x+0.6f*x-15;
+			glVertex3f( (float)x*scale,(float)y*scale, 0.0);
+		}
+		glEnd();
 	}
-	glEnd();
 
 	glEnable(GL_TEXTURE_2D);
 	glPopAttrib();
 	glPopMatrix();
+}
+
+void gameMain::show_Font_test()
+{
+	// Y /-------------\
+	//   |600          |(800,600)
+	//   |             |
+	//   |0         800|
+	//   \-------------/ X
+
+	myfont.Print2D(50,2,"0,0",FONT0,1.0f,1.0f,1.0f);
+	myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
+	myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
+	myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
+	myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
+	myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
 }
 

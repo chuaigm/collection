@@ -219,12 +219,12 @@ void COpenGLbase::text_OpenGL_log()
 	//   |0         800|
 	//   \-------------/ X
 
-	myfont.Print2D(50,2,"0,0",FONT0,1.0f,1.0f,1.0f);
-	myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
-	myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
-	myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
-	myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
-	myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
+	//myfont.Print2D(50,2,"0,0",FONT0,1.0f,1.0f,1.0f);
+	//myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
+	//myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
+	//myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
+	//myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
+	//myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
 	//myfont.Print2D(600,2,"6,0",FONT6,1.0f,1.0f,1.0f);
 	
 	// 显示鼠标坐标值

@@ -10,13 +10,10 @@
 
 #include "GLFont.h"
 
-//#include "filereport.h"
-
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
+//#define new DEBUG_NEW
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -30,12 +27,25 @@ CGLFont::CGLFont()
 
 	for(i=0;i<6;i++)
 	{
-		hFontAr[i]=CreateFont(-12-i*12, 0, 0, 0, 800, 0, 0, 0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
+		hFontAr[i]=CreateFont(
+			(i+1)*12,			// 字体的高度
+			0,					// 字体的宽度
+			0,					// 字体的倾斜角
+			0,					// 字体的倾斜角
+			0,					// 字体的粗细,400表示标准体，700表示黑(粗)体
+			0,					// 字体是否斜体
+			0,					// 字体是否有下划线
+			0,					// 字体是否有删除线
+			GB2312_CHARSET,		// 字体使用的字符集
+			0,					// 指定如何选择合适的字体
+			0,					// 用来确定裁剪的精度
+			0,					// 怎么样跟选择的字体相符合
+			FF_MODERN,			// 间距标志和属性标志
+			"Arial"	// 字体的名称
+			);
 	}
 
-	hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,
-			GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
+	//hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
 }
 CGLFont::~CGLFont()
 {
@@ -88,15 +98,17 @@ void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,
 	glPopMatrix();
 }
 
-void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,float b)
+// int x, y [窗口左下角为起点位置的坐标]
+// char* str 要输出的文字
+// int ifont 字体
+// float r,g,b 文字颜色
+void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,float b)
 {
 	//glDisable(GL_DEPTH_TEST);
 
 	glPushMatrix();
-
-	//属性进栈
-	//glPushAttrib(GL_CURRENT_BIT);
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
+
 	glDisable(GL_TEXTURE_2D);
 
 	//指定颜色
@@ -104,13 +116,13 @@ void CGLFont::Print2D(float x,float y,const char* str,int ifont,float r,float g,
 	//坐标转换，移动
 	//glTranslatef(x, y, -0.5f);
 	//输出文字
-	Printftext ((int)x,(int)y, str,hFontAr[ifont]);   
+	Printftext (x,y, str, hFontAr[ifont]);   
 
 	/////////////////////////
 	//glEnable(GL_LIGHTING);
-	glEnable(GL_TEXTURE_2D);          
-	glPopAttrib();
+	glEnable(GL_TEXTURE_2D);
 
+	glPopAttrib();
 	glPopMatrix();
 
 	//glEnable(GL_DEPTH_TEST);
@@ -141,7 +153,7 @@ void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)
 	//选入位图
 	HBITMAP oldBmp=(HBITMAP)SelectObject(MDC,bitmap);
 	//设置文字背景色
-	SetBkColor  (MDC, RGB(0,     0,   0));	
+	SetBkColor  (MDC, RGB(  0,   0,   0));	
 	//文字颜色
 	SetTextColor(MDC, RGB(255, 255, 255));	
 	//DC中输出文字

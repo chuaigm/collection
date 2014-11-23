@@ -84,7 +84,7 @@
 #define YMENU 15
 #define WIDTH_MENU 80
 #define HEIGHT_MENU 30
-#define MENU_NUM 2
+#define MENU_NUM 3
 #define Y_2MENU 40
 
 //MENU²Ëµ¥Ïî±àºÅ

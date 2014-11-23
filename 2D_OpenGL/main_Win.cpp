@@ -19,7 +19,7 @@
 MYCLOCK c1;
 // OpenGl对象
 COpenGLbase * m_OpenGL;
-// OpenGL字体对象
+// OpenGL字体对象(全局)
 CGLFont myfont;
 // 设备描述句柄
 HDC		hDC;
@@ -28,7 +28,7 @@ HWND	hWnd=NULL;
 //窗口宽高
 int WinWidth = WIN_WIDTH;
 int WinHeight= WIN_HEIGHT;
-// 目前游戏框架中，主要代码
+// 目前游戏框架中，主要代码(全局)
 gameMain gm;
 
 //左键是否按下
@@ -235,7 +235,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	//c1.ReStart(TIME_PRE_ANI);
 
 	//是否显示鼠标
-	ShowCursor(false);
+	//ShowCursor(false);
 	// 程序主循环
 	GameLoop();	
     

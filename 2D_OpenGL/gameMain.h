@@ -56,6 +56,7 @@ public:
 	void showmenu();
 	// cgm test
 	void show_2D_test();
+	void show_Font_test();
 	
 	void mouseproc(int lparam);
 	void lbuttonproc(int lparam);
@@ -114,19 +115,21 @@ public:
 	//当前选择的菜单项
 	int iMenu;
 
+	int iButton;
+
+	bool b_font_test;
+	bool b_func_test;
+
 	// look
-	float	g_eye[3];		//
-	float	g_look[3];		//
-	float	rad_xz;	
-	float	g_Angle;	
-	float	g_elev;	
+	//float	g_eye[3];		//
+	//float	g_look[3];		//
+	//float	rad_xz;	
+	//float	g_Angle;	
+	//float	g_elev;	
 	
 	//enemy
-	struct ROLE MapEnemyArray[MAX_MAP_OBJECT];
-	int iMapEnemyCursor;
-
-	//md2
-	//anmobj* m_anmobj;
+	/*struct ROLE MapEnemyArray[MAX_MAP_OBJECT];
+	int iMapEnemyCursor;*/
 
 	//map人物活动区域
 	RECT maprect[MAX_MAP_OBJECT];
