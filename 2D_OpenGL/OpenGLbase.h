@@ -34,8 +34,8 @@ public:
 	void	init_2D();
 	void	Render();
 	void	CleanUp();
-
-	void	text_OpenGL_log();
+	// 输出本OpenGL类一些调试测试参数
+	void	text_Debug();
 	// 处理鼠标
 	void	mouseProc(long long lparam);
 	//-----------------------------------------

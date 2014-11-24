@@ -68,8 +68,8 @@ void GameLoop()
 		{
 			if(c1.clockcount())
 			{
-				m_OpenGL->Render();				
 				gm.check();
+				m_OpenGL->Render();
 			}
 			else
 			{

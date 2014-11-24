@@ -1,44 +1,6 @@
 #ifndef __gameMain
 #define __gameMain
 
-//#include "mdlobj.h"
-
-typedef struct tagRECT_F
-{
-    float   left;
-    float   top;
-    float   right;
-    float   bottom;
-} RECT_F, *PRECT_F;
-
-struct ROLE
-{
-	int id;	//ID
-	//坐标
-	float x;
-	float y;
-	float z;
-
-	int w;
-	int h;
-	
-	int iframe;
-	int iCurrentAni;	
-
-	//移动部分
-	int iAngle;
-	int iMoveDir;
-	int iMoveSpeed;
-
-	//人物属性
-	int hp;//生命值
-	int hpMax;
-
-	int show;	//是否显示
-
-	int r;//旋转角度
-};
-
 class gameMain
 {
 public:

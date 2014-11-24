@@ -8,7 +8,6 @@
 #include "myclock.h"
 #include "glfont.h"
 #include "OpenGLbase.h"
-//#include "mykey.h"
 
 //font
 extern CGLFont myfont;

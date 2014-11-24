@@ -11,7 +11,8 @@ NC='\e[0m'
 echo -e "${green} Please input a number:${NC}(time format ${RED} s|m|h|d${NC})"
 XXX
 
-curl -H "Accept-Encoding: gzip" 'http://m.weather.com.cn/data/101070201.html' 
+#curl -H "Accept-Encoding: gzip" 'http://m.weather.com.cn/data/101070201.html' 
+curl -s 'http://m.weather.com.cn/data/101070201.html' 
 
 #city=`sed 's/.*city":"\(.*\)","city_en.*/\1/g' wtmp`
 #echo $city

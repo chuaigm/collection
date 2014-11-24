@@ -192,7 +192,7 @@ void COpenGLbase::Render()
 
 	glLoadIdentity();
 	// 输出GL本类的一些参数
-	text_OpenGL_log();
+	text_Debug();
 	// 游戏主体的绘制
 	gm.show();
 
@@ -206,7 +206,7 @@ void COpenGLbase::CleanUp()
 	wglDeleteContext(hRC);
 }
 
-void COpenGLbase::text_OpenGL_log()
+void COpenGLbase::text_Debug()
 {
 	//char str[128];
 	//sprintf(str, "C %d/%d ",c1.iNumDest, c1.expire_time);
