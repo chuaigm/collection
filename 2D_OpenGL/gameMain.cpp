@@ -35,8 +35,9 @@ gameMain::gameMain()
 	ymouseOld=0;*/
 
 	iMenu=-1;
-	b_font_test=true;
+	b_font_test=false;
 	b_func_test=true;
+	b_mouse_test=true;
 
 	//fire
 	IsFire=0;
@@ -757,8 +758,8 @@ void gameMain::check()
 void gameMain::showmenu()
 {
 	int i;
-	char *menustr[]={"退    出","字体测试","函数绘制"};
-	//      imenu        0           1          2
+	char *menustr[]={"退    出","字体测试","函数绘制","坐标追踪"};
+	//      imenu        0           1          2          3
 
 	glLoadIdentity();
 
@@ -876,6 +877,10 @@ void gameMain::lbuttonproc(int lparam)
 
 		switch(iMenu)
 		{
+		case 3:
+			//iGameState=GAME_IN_INIT;
+			b_mouse_test=!b_mouse_test;
+			break;
 		case MENU_START:
 			//iGameState=GAME_IN_INIT;
 			b_func_test=!b_func_test;
@@ -1519,6 +1524,11 @@ void gameMain::show_2D_test()
 		show_Font_test();
 	}
 
+	if (b_mouse_test)
+	{
+		show_Mouse_test();
+	}
+
 	glPushMatrix();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glDisable(GL_TEXTURE_2D);
@@ -1660,5 +1670,41 @@ void gameMain::show_Font_test()
 	myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
 	myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
 	myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
+}
+
+void gameMain::show_Mouse_test()
+{
+	glPushMatrix();
+	//glLoadIdentity();
+	//属性进栈
+	//glPushAttrib(GL_CURRENT_BIT);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	glDisable(GL_TEXTURE_2D);    
+	//glDisable(GL_LIGHTING);
+
+	glTranslatef((GLfloat)m_OpenGL->Xmouse,(GLfloat)(WinHeight-m_OpenGL->Ymouse),0.1f);
+
+	// 显示鼠标坐标值
+	char str[64];
+	sprintf(str, "(%4d,%4d)",m_OpenGL->Xmouse, WinHeight-m_OpenGL->Ymouse);
+	myfont.Print2D(0,0,str,FONT0,1.0f,1.0f,1.0f);
+
+	// TODO 透明度测试，目前不太好用
+	glEnable(GL_ALPHA_TEST);
+	glBegin(GL_LINES);
+	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+	glVertex3f(-1000.0f, 0.0f, 0.0f);
+	glVertex3f( 1000.0f, 0.0f, 0.0f);
+
+	glVertex3f( 0.0f, -1000.0f, 0.0f);
+	glVertex3f( 0.0f,  1000.0f, 0.0f);
+
+	glEnd();
+
+	/////////////////////////
+	//glEnable(GL_LIGHTING);         
+	glEnable(GL_TEXTURE_2D);          
+	glPopAttrib();
+	glPopMatrix();
 }
 

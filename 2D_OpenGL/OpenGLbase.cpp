@@ -118,6 +118,9 @@ BOOL COpenGLbase::SetupPixelFormat(HDC hDC0)
 	glEnable(GL_POLYGON_SMOOTH);
 	//glPolygonOffset(0.01f,0.002f);
 	//glPolygonMode(GL_FRONT,GL_FILL);
+
+	// Í¸Ã÷¶È
+	glEnable(GL_ALPHA_TEST);
 	
 	return TRUE;
 }

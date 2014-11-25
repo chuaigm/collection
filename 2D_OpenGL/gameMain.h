@@ -19,6 +19,7 @@ public:
 	// cgm test
 	void show_2D_test();
 	void show_Font_test();
+	void show_Mouse_test();
 	
 	void mouseproc(int lparam);
 	void lbuttonproc(int lparam);
@@ -81,6 +82,7 @@ public:
 
 	bool b_font_test;
 	bool b_func_test;
+	bool b_mouse_test;
 
 	// look
 	//float	g_eye[3];		//
