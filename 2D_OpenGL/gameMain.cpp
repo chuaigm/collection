@@ -1533,7 +1533,7 @@ void gameMain::show_2D_test()
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glDisable(GL_TEXTURE_2D);
 
-	glTranslatef(WIN_WIDTH/2-5,WIN_HEIGHT/2-20,-0.1f);
+	glTranslatef(m_OpenGL->RCwidth/2.0f/*-5.0f*/,m_OpenGL->RCheight/2.0f/*-20.0f*/,-0.1f);
 
 	char tmpstr[32]={0};
 	// 一个刻度线代表的值
@@ -1682,11 +1682,11 @@ void gameMain::show_Mouse_test()
 	glDisable(GL_TEXTURE_2D);    
 	//glDisable(GL_LIGHTING);
 
-	glTranslatef((GLfloat)m_OpenGL->Xmouse,(GLfloat)(WinHeight-m_OpenGL->Ymouse),0.1f);
+	glTranslatef((GLfloat)m_OpenGL->Xmouse,(GLfloat)(WinHeight-m_OpenGL->Ymouse),-0.2f);
 
 	// 显示鼠标坐标值
 	char str[64];
-	sprintf(str, "(%4d,%4d)",m_OpenGL->Xmouse, WinHeight-m_OpenGL->Ymouse);
+	sprintf(str, "(%3.1f,%3.1f)",(m_OpenGL->Xmouse - m_OpenGL->RCwidth/2)/10.0, (WinHeight-m_OpenGL->Ymouse - m_OpenGL->RCheight/2)/10.0);
 	myfont.Print2D(0,0,str,FONT0,1.0f,1.0f,1.0f);
 
 	// TODO 透明度测试，目前不太好用
