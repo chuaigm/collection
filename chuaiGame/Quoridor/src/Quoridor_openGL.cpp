@@ -270,7 +270,7 @@ void CQuoridor::check()
 	case GAME_SENDBOX:
 		if (x<board_x+lace || x>board_x+m_OpenGL->RCheight-lace)
 			break;
-		it=(x-board_x-lace)/(roadw+wall_w);
+		it=(int)((x-board_x-lace)/(roadw+wall_w));
 		remain = (x-board_x-lace)-it*(roadw+wall_w);
 		if (remain>roadw)
 		{
@@ -278,7 +278,7 @@ void CQuoridor::check()
 		} else {
 			arr_x = it*2;
 		}
-		it = (y-lace)/(roadw+wall_w);
+		it = (int)((y-lace)/(roadw+wall_w));
 		remain = (y-lace) - it*(roadw+wall_w);
 		if (remain>roadw)
 		{
@@ -372,6 +372,8 @@ void CQuoridor::showInGameBotton()
 {
 	switch(iGameState)
 	{
+	case GAME_SINGE:
+	case GAME_MULTIP:
 	case GAME_IN_CONFIG:
 		break;
 	case GAME_HELP:
@@ -898,14 +900,14 @@ void CQuoridor::showChessBorad()
 {
 	float layer=-0.5;
 	// 绘制玩家信息指示标志区域
-	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,1);
-	tRectangle(0,m_OpenGL->RCheight*2/4.0f,layer,(float)player_info_w,(float)player_info_h,1,0,0,1);
-	tRectangle(0,m_OpenGL->RCheight*1/4.0f,layer,(float)player_info_w,(float)player_info_h,0,1,0,1);
+	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,0.7f);
+	tRectangle(0,m_OpenGL->RCheight*2/4.0f,layer,(float)player_info_w,(float)player_info_h,1,0,0,0.7f);
+	tRectangle(0,m_OpenGL->RCheight*1/4.0f,layer,(float)player_info_w,(float)player_info_h,0,1,0,0.7f);
 	tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,1);
 
 	// 绘制棋盘底
 	texture_select(g_cactus[1]);
-	tPicRectangle(board_x,0,m_OpenGL->RCheight,m_OpenGL->RCheight,layer-0.1);
+	tPicRectangle((float)board_x,0,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,layer-0.1f);
 	// 绘制棋盘
 	texture_select(g_cactus[2]);
 	for (int i=0; i<9; i++)
@@ -957,4 +959,35 @@ void CQuoridor::showChessBorad()
 	glEnable(GL_TEXTURE_2D);
 	glPopMatrix();
 	glPopAttrib();
+
+	//文字
+	char tmpstr[64]={0};
+	sprintf(tmpstr,"确    认");
+	myfont.Print2D(x_menu+10,y_menu+5,tmpstr,FONT1,1,1,1);
+	// 按钮图片
+	texture_select(g_cactus[9]);
+	if(1==iButton)
+	{
+		tPicButton((float)x_menu,(float)(y_menu),(float)menu_w,(float)menu_h,0.0f);
+	}
+	else
+	{
+		tPicButton((float)x_menu,(float)(y_menu),(float)menu_w,(float)menu_h,0.5f);
+	}
+
+	sprintf(tmpstr,"返回菜单");
+	myfont.Print2D(x_menu+10,m_OpenGL->RCheight-y_menu-menu_h+5,tmpstr,FONT1,1,1,1);
+	if(0==iButton)
+	{
+		tPicButton((float)x_menu,(float)(m_OpenGL->RCheight-y_menu-menu_h),(float)menu_w,(float)menu_h,0.0f);
+	}
+	else
+	{
+		tPicButton((float)x_menu,(float)(m_OpenGL->RCheight-y_menu-menu_h),(float)menu_w,(float)menu_h,0.5f);
+	}
+}
+
+void CQuoridor::showPlayWall()
+{
+
 }

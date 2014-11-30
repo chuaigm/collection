@@ -82,6 +82,8 @@ public:
 	void showChessBorad();
 	// 绘制游戏过程中的按钮
 	void showInGameBotton();
+	// 绘制玩家和墙
+	void showPlayWall();
 
 	////////////////////////////////////////////////////////////
 	//data
@@ -136,6 +138,9 @@ public:
 	char gameData[17][17];
 	int arr_x;
 	int arr_y;
+	// 玩家位置
+	int blue_x;
+	int blue_y;
 };
 
 #endif
