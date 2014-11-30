@@ -67,6 +67,66 @@ union obj{
 
 int main()
 {
+	char* a= (char*)malloc(24);
+	char* b= (char*)malloc(15);
+	char* c= (char*)malloc(43);
+	printf("[a addr=%d]\n", a);
+	printf("[b addr=%d]\n", b);
+	printf("[c addr=%d]\n", c);
+	printf("------------------\n");
+	printf("[a header:]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (a-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	free(a);
+	printf("[a header after free(a):]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (a-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	printf("\n");
+
+	printf("[b header:]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (b-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	free(b);
+	printf("[b header after free(b):]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (b-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	printf("\n");
+
+	printf("[c header:]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (c-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	free(c);
+	printf("[c header after free(c):]\n");
+	for (int i=0; i<8; i++)
+	{
+		char t = *(unsigned char *) (c-8+i);
+		printf("_%d", t);
+	}
+	printf("\n");
+	printf("\n");
+
+#if 0
+// break 到第几层
 	int c=2;
 	switch (c)
 	{
@@ -94,6 +154,7 @@ int main()
 			__TPL;
 	}
 			__TPL;
+#endif
 
 #if 0
 	// 浮点数修约
