@@ -45,6 +45,12 @@ CQuoridor::CQuoridor()
 	rButtonx=10;
 	// 菜单上下间距
 	menu_dis=10;
+	// 游戏棋盘与窗口边界间距
+	lace=6;
+
+	// 游戏数据初始化
+	arr_x=-1;
+	arr_y=-1;
 }
 
 CQuoridor::~CQuoridor()
@@ -123,7 +129,8 @@ void CQuoridor::init()
 */
 	//load images
 	LoadT8("data/images/quoridor_cover.bmp", g_cactus[0]);
-	//LoadT8("data/images/white.bmp", g_cactus[1]);
+	LoadT8("data/images/chess_board_shading.bmp", g_cactus[1]);
+	LoadT8("data/images/road.bmp", g_cactus[2]);
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);
 
@@ -171,12 +178,15 @@ void CQuoridor::initView()
 	// 游戏棋盘数据
 	player_info_h=m_OpenGL->RCheight/4;
 	player_info_w=(m_OpenGL->RCwidth-m_OpenGL->RCheight)*3/8;
+	// 棋盘左下角，起点坐标
+	board_x = (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2;
+	board_y = 0;
 	// 墙和路的宽度推算公式：
 	//  x=roadw; y=wall_w
-	//  9*x + 8*y = Height - 5*2
+	//  9*x + 8*y = Height - lace*2
 	//    x = 4 y
-	roadw = (m_OpenGL->RCheight)/11;
-	wall_w= (m_OpenGL->RCheight - 5*2)/44;
+	roadw = (m_OpenGL->RCheight - lace*2)/11.0f;
+	wall_w= (m_OpenGL->RCheight - lace*2)/44.0f;
 	wall_l= 2*roadw+wall_w;
 }
 
@@ -215,11 +225,15 @@ void CQuoridor::check()
 {
 	int i;
 	int x,y;
+	int it;
+	float remain;
 	//检测菜单选择
 	x=m_OpenGL->Xmouse;
 	y=m_OpenGL->Ymouse;
 	iMenu=-1;//初始化 没有选择
 	iButton=-1;
+	arr_x=-1;
+	arr_y=-1;
 
 	switch(iGameState)
 	{
@@ -251,6 +265,26 @@ void CQuoridor::check()
 				iMenu=i;
 				break;
 			}
+		}
+		break;
+	case GAME_SENDBOX:
+		if (x<board_x+lace || x>board_x+m_OpenGL->RCheight-lace)
+			break;
+		it=(x-board_x-lace)/(roadw+wall_w);
+		remain = (x-board_x-lace)-it*(roadw+wall_w);
+		if (remain>roadw)
+		{
+			arr_x = it*2+1;
+		} else {
+			arr_x = it*2;
+		}
+		it = (y-lace)/(roadw+wall_w);
+		remain = (y-lace) - it*(roadw+wall_w);
+		if (remain>roadw)
+		{
+			arr_y = it*2+1;
+		} else {
+			arr_y = it*2;
 		}
 		break;
 	case GAME_HELP:
@@ -333,6 +367,19 @@ void CQuoridor::keyupproc(int keyparam)
 		break;
 	}
 }
+// 绘制游戏进行中的按钮
+void CQuoridor::showInGameBotton()
+{
+	switch(iGameState)
+	{
+	case GAME_IN_CONFIG:
+		break;
+	case GAME_HELP:
+		break;
+	default:
+		break;
+	}
+}
 
 //构造位图贴图
 bool CQuoridor::LoadT8(char *filename, GLuint &texture)
@@ -399,12 +446,12 @@ void CQuoridor::tPic(float e)
 }
 
 //画矩形，左下角坐标xy，宽度w，高h
-void CQuoridor::tPicRectangle(float x,float y,float w,float h)
+void CQuoridor::tPicRectangle(float x,float y,float w,float h,float deep)
 { 
 	glPushMatrix();
 
 	//画背景矩形
-	glTranslatef(x,y,-0.1f);
+	glTranslatef(x,y,deep);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 0.0f);
 		glVertex3f(0.0f, 0.0f, 0.0f);
@@ -796,8 +843,13 @@ void CQuoridor::show_Font_test()
 	//   \-------------/ X
 
 	char tmpstr[64]={0};
-	sprintf(tmpstr, "%d",iMenu);
-	myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f);
+	sprintf(tmpstr, "iMenu=%d",iMenu);
+	myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+
+	sprintf(tmpstr, "arr_x=%d",arr_x);
+	myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	sprintf(tmpstr, "arr_y=%d",arr_y);
+	myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
 
 	//myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
 	//myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
@@ -810,20 +862,20 @@ void CQuoridor::showHelp()
 {
 	//画背景图片
 	glPushMatrix();
-	glTranslatef(0.0,0.0,-0.3f);
+	glTranslatef(0.0,0.0,-0.5f);
 	texture_select(g_cactus[0]);
 	float det=m_OpenGL->RCheight / 6.0f;
 	tPicRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2.0f + det, 0 + det, (float)m_OpenGL->RCheight*0.6f, (float)m_OpenGL->RCheight*0.6f);
 	glPopMatrix();
 
-	tRectangle(70,70,0.3f,400,400,0.5,0.5,0.5,0.5);
+	tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.5);
 
 	char tmpstr[64]={"游戏说明"};
-	myfont.Print2D(50,500,tmpstr,FONT1,1.0,1.0,1.0);
+	myfont.Print2D(board_x+lace,500,tmpstr,FONT1,0.0,0.0,0.0);
 	sprintf(tmpstr,"具体内容以后在写吧具体内容以后在写吧");
-	myfont.Print2D(50,400,tmpstr,FONT1,1.0,1.0,1.0);
+	myfont.Print2D(board_x+lace,400,tmpstr,FONT1,0.0,0.0,1.0);
 	sprintf(tmpstr,"具体内容以后在写吧");
-	myfont.Print2D(50,300,tmpstr,FONT1,1.0,1.0,1.0);
+	myfont.Print2D(board_x+lace,300,tmpstr,FONT1,1.0,1.0,0.0);
 
 
 	//文字
@@ -844,18 +896,23 @@ void CQuoridor::showHelp()
 
 void CQuoridor::showChessBorad()
 {
+	float layer=-0.5;
 	// 绘制玩家信息指示标志区域
-	tRectangle(0,m_OpenGL->RCheight*3/4.0f,-0.2f,player_info_w,player_info_h,1,1,0,0);
-	tRectangle(0,m_OpenGL->RCheight*2/4.0f,-0.2f,player_info_w,player_info_h,1,0,0,0);
-	tRectangle(0,m_OpenGL->RCheight*1/4.0f,-0.2f,player_info_w,player_info_h,0,1,0,0);
-	tRectangle(0,0,-0.2f,player_info_w,player_info_h,0,0,1,0);
+	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,1);
+	tRectangle(0,m_OpenGL->RCheight*2/4.0f,layer,(float)player_info_w,(float)player_info_h,1,0,0,1);
+	tRectangle(0,m_OpenGL->RCheight*1/4.0f,layer,(float)player_info_w,(float)player_info_h,0,1,0,1);
+	tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,1);
 
+	// 绘制棋盘底
+	texture_select(g_cactus[1]);
+	tPicRectangle(board_x,0,m_OpenGL->RCheight,m_OpenGL->RCheight,layer-0.1);
 	// 绘制棋盘
+	texture_select(g_cactus[2]);
 	for (int i=0; i<9; i++)
 	{
 		for (int j=0; j<9; j++)
 		{
-			tRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5+i*(roadw+wall_w),5+j*(roadw+wall_w),-0.2f,roadw,roadw,0.5,0.5,0.1,0);
+			tPicRectangle(board_x+lace+i*(roadw+wall_w),lace+j*(roadw+wall_w),roadw,roadw,layer);
 		}
 	}
 
@@ -863,38 +920,38 @@ void CQuoridor::showChessBorad()
 	glPushAttrib(GL_CURRENT_BIT);
 	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);
+	glTranslatef(0,0,layer);
 	// 左边黄色标记
 	glColor3f(1, 1, 0);
 	glBegin(GL_QUADS);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  0,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glVertex3f( (float)board_x, 0,  0.0f);
+	glVertex3f( (float)board_x, (float)m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (float)board_x+lace, (float)m_OpenGL->RCheight-lace,  0.0f);
+	glVertex3f( (float)board_x+lace, (float)lace,  0.0f);
 	glEnd();
 	// 上边红色标记
 	glColor3f(1, 0, 0);
 	glBegin(GL_QUADS);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+m_OpenGL->RCheight,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+m_OpenGL->RCheight-5,  m_OpenGL->RCheight-5,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
+	glVertex3f( (float)board_x, (float)m_OpenGL->RCheight, 0.0f);
+	glVertex3f( (float)board_x+m_OpenGL->RCheight, (float)m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (float)board_x+m_OpenGL->RCheight-lace, (float)m_OpenGL->RCheight-lace,  0.0f);
+	glVertex3f( (float)board_x+lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glEnd();
 	// 右边绿色标记
 	glColor3f(0, 1, 0);
 	glBegin(GL_QUADS);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  0,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glVertex3f((float) board_x+m_OpenGL->RCheight, (float)m_OpenGL->RCheight,  0.0f);
+	glVertex3f((float) board_x+m_OpenGL->RCheight, 0,  0.0f);
+	glVertex3f((float) board_x+m_OpenGL->RCheight-lace, (float)lace,  0.0f);
+	glVertex3f((float) board_x+m_OpenGL->RCheight-lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glEnd();
 	// 下边蓝色标记
 	glColor3f(0, 0, 1);
 	glBegin(GL_QUADS);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  0,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
-	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glVertex3f((float)board_x,  0,  0.0f);
+	glVertex3f((float)board_x+lace, (float)lace,  0.0f);
+	glVertex3f((float)board_x+m_OpenGL->RCheight-lace, (float)lace,  0.0f);
+	glVertex3f((float)board_x+m_OpenGL->RCheight,  0,  0.0f);
 	glEnd();
 
 	glEnable(GL_TEXTURE_2D);

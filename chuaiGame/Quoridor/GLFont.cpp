@@ -32,7 +32,7 @@ CGLFont::CGLFont()
 			0,					// 字体的宽度
 			0,					// 字体的倾斜角
 			0,					// 字体的倾斜角
-			0,					// 字体的粗细,400表示标准体，700表示黑(粗)体
+			500,				// 字体的粗细,400表示标准体，700表示黑(粗)体
 			0,					// 字体是否斜体
 			0,					// 字体是否有下划线
 			0,					// 字体是否有删除线
@@ -41,7 +41,7 @@ CGLFont::CGLFont()
 			0,					// 用来确定裁剪的精度
 			0,					// 怎么样跟选择的字体相符合
 			FF_MODERN,			// 间距标志和属性标志
-			"Arial"	// 字体的名称
+			"楷体"	// 字体的名称
 			);
 	}
 
@@ -102,7 +102,7 @@ void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,
 // char* str 要输出的文字
 // int ifont 字体
 // float r,g,b 文字颜色
-void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,float b)
+void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,float b, float a)
 {
 	//glDisable(GL_DEPTH_TEST);
 	glPushMatrix();
@@ -111,7 +111,7 @@ void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,floa
 	glDisable(GL_TEXTURE_2D);
 
 	//指定颜色
-	glColor3f(r,g,b);             
+	glColor4f(r,g,b,a);             
 	//坐标转换，移动
 	//glTranslatef(x, y, -0.5f);
 	//输出文字

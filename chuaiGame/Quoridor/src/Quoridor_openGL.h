@@ -13,6 +13,7 @@ enum {
 	GAME_PRE,
 	GAME_MENU,
 	GAME_SINGE,
+	GAME_IN_CONFIG,
 	GAME_MULTIP,
 	GAME_SENDBOX,
 	GAME_HELP
@@ -69,7 +70,7 @@ public:
 	void texture_select(UINT textur);			
 	//显示图片
 	void tPic(float e);
-	void tPicRectangle(float x,float y,float w,float h);
+	void tPicRectangle(float x,float y, float w, float h,float deep=-0.1f);
 	void tPicButton(float x,float y,float w,float h,float ytex);
 	void tRectangle(float x, float y, float z, float w, float h, float r, float g, float b, float a);
 
@@ -77,8 +78,10 @@ public:
 	void showHelp();
 
 	void drawMouse();
-
+	// 绘制棋盘
 	void showChessBorad();
+	// 绘制游戏过程中的按钮
+	void showInGameBotton();
 
 	////////////////////////////////////////////////////////////
 	//data
@@ -116,16 +119,23 @@ public:
 
 	// 游戏棋盘数据
 	// 正方形路的宽度
-	int roadw;
+	float roadw;
 	// 墙的长度和宽度
-	int wall_l;
-	int wall_w;
+	float wall_l;
+	float wall_w;
 	// 玩家指示格的宽度和高度
 	int player_info_w;
 	int player_info_h;
+	// 棋盘的起点定位坐标,期盼左下角
+	int board_x;
+	int board_y;
 	// 游戏棋盘花边宽度
 	int lace;
 
+	// 游戏算法数据
+	char gameData[17][17];
+	int arr_x;
+	int arr_y;
 };
 
 #endif
