@@ -39,6 +39,10 @@ CQuoridor::CQuoridor()
 	// 菜单按钮的宽度和高度
 	menu_w=10;
 	menu_h=10;
+	// 帮助界面返回菜单按钮宽度
+	helpRetButtonW=10;
+	// 帮助界面返回菜单按钮横坐标
+	rButtonx=10;
 	// 菜单上下间距
 	menu_dis=10;
 }
@@ -119,6 +123,7 @@ void CQuoridor::init()
 */
 	//load images
 	LoadT8("data/images/quoridor_cover.bmp", g_cactus[0]);
+	//LoadT8("data/images/white.bmp", g_cactus[1]);
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);
 
@@ -156,9 +161,23 @@ void CQuoridor::initView()
 	// 菜单按钮的宽度和高度
 	menu_w=m_OpenGL->RCwidth/9;
 	menu_h=m_OpenGL->RCheight/20;
+	// 帮助界面返回菜单按钮宽度
+	helpRetButtonW=m_OpenGL->RCwidth/5;
+	rButtonx=(m_OpenGL->RCwidth-helpRetButtonW)/2;
 	// 菜单坐标位置
 	x_menu=m_OpenGL->RCwidth-menu_dis/2-menu_w;
 	y_menu=/*menu_dis/2 +*/ menu_h;
+
+	// 游戏棋盘数据
+	player_info_h=m_OpenGL->RCheight/4;
+	player_info_w=(m_OpenGL->RCwidth-m_OpenGL->RCheight)*3/8;
+	// 墙和路的宽度推算公式：
+	//  x=roadw; y=wall_w
+	//  9*x + 8*y = Height - 5*2
+	//    x = 4 y
+	roadw = (m_OpenGL->RCheight)/11;
+	wall_w= (m_OpenGL->RCheight - 5*2)/44;
+	wall_l= 2*roadw+wall_w;
 }
 
 // 游戏主绘图函数
@@ -180,10 +199,11 @@ void CQuoridor::showMain()
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
+		showChessBorad();
+		break;
 
 	case GAME_HELP:
-
-	case GAME_INFO:
+		showHelp();
 		break;
 
 	default:
@@ -195,6 +215,11 @@ void CQuoridor::check()
 {
 	int i;
 	int x,y;
+	//检测菜单选择
+	x=m_OpenGL->Xmouse;
+	y=m_OpenGL->Ymouse;
+	iMenu=-1;//初始化 没有选择
+	iButton=-1;
 
 	switch(iGameState)
 	{
@@ -216,11 +241,6 @@ void CQuoridor::check()
 		break;
 
 	case GAME_MENU:
-		//检测菜单选择
-		x=m_OpenGL->Xmouse;
-		y=m_OpenGL->Ymouse;
-		iMenu=-1;//初始化 没有选择
-		// 
 		if(x<x_menu	|| x>x_menu+menu_w || y<y_menu)
 			break;
 
@@ -231,6 +251,12 @@ void CQuoridor::check()
 				iMenu=i;
 				break;
 			}
+		}
+		break;
+	case GAME_HELP:
+		if (x>rButtonx&&x<rButtonx+helpRetButtonW&&y>y_menu&&y<y_menu+menu_h)
+		{
+			iButton=9;
 		}
 		break;
 
@@ -258,18 +284,50 @@ void CQuoridor::lbuttonproc(int lparam)
 			//b_func_test=!b_func_test;
 			break;
 		case MENU_SENDBOX:
+			iGameState=GAME_SENDBOX;
 			break;
 		case MENU_HELP:
-			//iShowHelp=1;
-			//b_font_test=!b_font_test;
+			iGameState=GAME_HELP;
 			break;
 		case MENU_QUIT:
 			m_OpenGL->CleanUp();
 			PostQuitMessage(0);
 			exit(0);
 			break;
+		default:
+			break;
 		}		
-		break;	
+		break;
+	case GAME_HELP:
+		if (9==iButton)
+		{
+			iGameState=GAME_MENU;
+		}
+		break;
+
+	default:
+		break;
+	}
+}
+
+//键盘处理
+void CQuoridor::keyupproc(int keyparam)
+{
+	switch (keyparam)
+	{
+		//case KEY_F12:
+		//	//直接过关
+		//	if(iGameState=GAME_IN)
+		//	{
+		//		iEnemyNum=0;
+		//	}		
+		//	break;
+
+	case VK_ESCAPE:
+		//回到菜单
+		iGameState=GAME_MENU;
+		initView();
+		break;
 
 	default:
 		break;
@@ -419,7 +477,7 @@ void CQuoridor::tPicButton(float x,float y,float w,float h,float ytex)
 //}
 
 //指定位置画一个正方形
-void CQuoridor::tSquare(float x, float y, float z, float a)
+void CQuoridor::tRectangle(float x, float y, float z, float w, float h, float r, float g, float b, float a)
 {
 	//属性进栈
 	glPushAttrib(GL_CURRENT_BIT);
@@ -427,12 +485,13 @@ void CQuoridor::tSquare(float x, float y, float z, float a)
 	glDisable(GL_TEXTURE_2D);
 
 	glTranslatef(x,y,z);
-	glColor3f(0.0, 0.0, 0.0);
+	glColor4f(r, g, b, a);
+	//glColor3f(r, g, b);
 	glBegin(GL_QUADS);
-		glVertex3f(-a, -a,  0.0f);
-		glVertex3f( a, -a,  0.0f);
-		glVertex3f( a,  a,  0.0f);
-		glVertex3f(-a,  a,  0.0f);
+		glVertex3f( 0,  0,  0.0f);
+		glVertex3f( w,  0,  0.0f);
+		glVertex3f( w,  h,  0.0f);
+		glVertex3f( 0,  h,  0.0f);
 	glEnd();
 
 	glEnable(GL_TEXTURE_2D);
@@ -504,30 +563,6 @@ void CQuoridor::showmenu()
 		{
 			tPicButton((float)x_menu,(float)(y_menu+i*menu_dis),(float)menu_w,(float)menu_h,0.5f);
 		}
-	}
-}
-
-//键盘处理
-void CQuoridor::keyupproc(int keyparam)
-{
-    switch (keyparam)
-    {
-	//case KEY_F12:
-	//	//直接过关
-	//	if(iGameState=GAME_IN)
-	//	{
-	//		iEnemyNum=0;
-	//	}		
-	//	break;
-
-	case VK_ESCAPE:
-		//回到菜单
-		iGameState=GAME_MENU;
-		initView();
-		break;
-
-	default:
-		break;
 	}
 }
 
@@ -769,4 +804,100 @@ void CQuoridor::show_Font_test()
 	//myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
 	//myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
 	//myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
+}
+
+void CQuoridor::showHelp()
+{
+	//画背景图片
+	glPushMatrix();
+	glTranslatef(0.0,0.0,-0.3f);
+	texture_select(g_cactus[0]);
+	float det=m_OpenGL->RCheight / 6.0f;
+	tPicRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2.0f + det, 0 + det, (float)m_OpenGL->RCheight*0.6f, (float)m_OpenGL->RCheight*0.6f);
+	glPopMatrix();
+
+	tRectangle(70,70,0.3f,400,400,0.5,0.5,0.5,0.5);
+
+	char tmpstr[64]={"游戏说明"};
+	myfont.Print2D(50,500,tmpstr,FONT1,1.0,1.0,1.0);
+	sprintf(tmpstr,"具体内容以后在写吧具体内容以后在写吧");
+	myfont.Print2D(50,400,tmpstr,FONT1,1.0,1.0,1.0);
+	sprintf(tmpstr,"具体内容以后在写吧");
+	myfont.Print2D(50,300,tmpstr,FONT1,1.0,1.0,1.0);
+
+
+	//文字
+	sprintf(tmpstr,"按ESC返回主菜单");
+	myfont.Print2D(rButtonx+10,y_menu+5,tmpstr,FONT1,1,1,1);
+
+	//图片
+	texture_select(g_cactus[9]);
+	if(iButton==9)
+	{
+		tPicButton((float)rButtonx,(float)y_menu,(float)helpRetButtonW,(float)menu_h,0.0f);
+	}
+	else
+	{
+		tPicButton((float)rButtonx,(float)y_menu,(float)helpRetButtonW,(float)menu_h,0.5f);
+	}
+}
+
+void CQuoridor::showChessBorad()
+{
+	// 绘制玩家信息指示标志区域
+	tRectangle(0,m_OpenGL->RCheight*3/4.0f,-0.2f,player_info_w,player_info_h,1,1,0,0);
+	tRectangle(0,m_OpenGL->RCheight*2/4.0f,-0.2f,player_info_w,player_info_h,1,0,0,0);
+	tRectangle(0,m_OpenGL->RCheight*1/4.0f,-0.2f,player_info_w,player_info_h,0,1,0,0);
+	tRectangle(0,0,-0.2f,player_info_w,player_info_h,0,0,1,0);
+
+	// 绘制棋盘
+	for (int i=0; i<9; i++)
+	{
+		for (int j=0; j<9; j++)
+		{
+			tRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5+i*(roadw+wall_w),5+j*(roadw+wall_w),-0.2f,roadw,roadw,0.5,0.5,0.1,0);
+		}
+	}
+
+	// 绘制彩色边
+	glPushAttrib(GL_CURRENT_BIT);
+	glPushMatrix();
+	glDisable(GL_TEXTURE_2D);
+	// 左边黄色标记
+	glColor3f(1, 1, 0);
+	glBegin(GL_QUADS);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  0,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glEnd();
+	// 上边红色标记
+	glColor3f(1, 0, 0);
+	glBegin(GL_QUADS);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+m_OpenGL->RCheight,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+m_OpenGL->RCheight-5,  m_OpenGL->RCheight-5,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
+	glEnd();
+	// 右边绿色标记
+	glColor3f(0, 1, 0);
+	glBegin(GL_QUADS);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  0,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glEnd();
+	// 下边蓝色标记
+	glColor3f(0, 0, 1);
+	glBegin(GL_QUADS);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  0,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2,  m_OpenGL->RCheight,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  m_OpenGL->RCheight-5,  0.0f);
+	glVertex3f( (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2+5,  5,  0.0f);
+	glEnd();
+
+	glEnable(GL_TEXTURE_2D);
+	glPopMatrix();
+	glPopAttrib();
 }

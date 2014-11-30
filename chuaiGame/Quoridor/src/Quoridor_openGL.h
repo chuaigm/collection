@@ -15,8 +15,7 @@ enum {
 	GAME_SINGE,
 	GAME_MULTIP,
 	GAME_SENDBOX,
-	GAME_HELP,
-	GAME_INFO
+	GAME_HELP
 };
 // 菜单数量
 #define MENU_NUM 5
@@ -48,6 +47,9 @@ public:
 	void check();
 	// 处理鼠标左键按下
 	void lbuttonproc(int lparam);
+	// 键盘按键检测响应
+	void keyupproc(int keyparam);
+
 
 	void showpreani();
 	// 绘制主菜单
@@ -58,8 +60,6 @@ public:
 	
 	void mouseproc(int lparam);
 	
-	void keyupproc(int keyparam);
-
 	void showmapBox(float *ppos,float *psize,float *ptex,int itex,int iHastop);
 	void light0();
 
@@ -71,17 +71,21 @@ public:
 	void tPic(float e);
 	void tPicRectangle(float x,float y,float w,float h);
 	void tPicButton(float x,float y,float w,float h,float ytex);
-	void tSquare(float x, float y, float z, float a);
-	// 
-	void showInfo();
+	void tRectangle(float x, float y, float z, float w, float h, float r, float g, float b, float a);
+
+	// 显示帮助信息
+	void showHelp();
 
 	void drawMouse();
+
+	void showChessBorad();
 
 	////////////////////////////////////////////////////////////
 	//data
 	int iGameState;		// 当前游戏状态
 	int iMenu;			// 当前选择的菜单项
 	int iButton;
+	int iShowHelp;
 
 	//images
 	unsigned int g_cactus[GAME_TEX_NUM];
@@ -103,8 +107,24 @@ public:
 	// 菜单按钮的宽度和高度
 	int menu_w;
 	int menu_h;
+	// 帮助界面返回菜单按钮宽度
+	int helpRetButtonW;
+	// 帮助界面返回菜单按钮横坐标
+	int rButtonx;
 	// 菜单上下间距
 	int menu_dis;
+
+	// 游戏棋盘数据
+	// 正方形路的宽度
+	int roadw;
+	// 墙的长度和宽度
+	int wall_l;
+	int wall_w;
+	// 玩家指示格的宽度和高度
+	int player_info_w;
+	int player_info_h;
+	// 游戏棋盘花边宽度
+	int lace;
 
 };
 
