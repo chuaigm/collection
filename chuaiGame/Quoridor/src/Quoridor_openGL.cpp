@@ -34,8 +34,8 @@ CQuoridor::CQuoridor()
 	// 当前菜单选择项
 	iMenu=-1;
 	// 菜单坐标位置
-	x_menu=10;
-	y_menu=10;
+	menu.x=10;
+	menu.y=10;
 	// 菜单按钮的宽度和高度
 	menu_w=10;
 	menu_h=10;
@@ -51,6 +51,15 @@ CQuoridor::CQuoridor()
 	// 游戏数据初始化
 	arr_x=-1;
 	arr_y=-1;
+	blue_ply.x=4;
+	blue_ply.y=0;
+	red_ply.x=4;
+	red_ply.y=8;
+
+	// 棋盘数据初始化
+	memset(gameData,0,sizeof(gameData));
+	gameData[2*blue_ply.x][2*blue_ply.y]=GD_BLUE;
+	gameData[2*red_ply.x][2*red_ply.y]=GD_RED;
 }
 
 CQuoridor::~CQuoridor()
@@ -131,6 +140,7 @@ void CQuoridor::init()
 	LoadT8("data/images/quoridor_cover.bmp", g_cactus[0]);
 	LoadT8("data/images/chess_board_shading.bmp", g_cactus[1]);
 	LoadT8("data/images/road.bmp", g_cactus[2]);
+	LoadT8("data/images/xiaohei1.bmp", g_cactus[3]);
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);
 
@@ -172,8 +182,8 @@ void CQuoridor::initView()
 	helpRetButtonW=m_OpenGL->RCwidth/5;
 	rButtonx=(m_OpenGL->RCwidth-helpRetButtonW)/2;
 	// 菜单坐标位置
-	x_menu=m_OpenGL->RCwidth-menu_dis/2-menu_w;
-	y_menu=/*menu_dis/2 +*/ menu_h;
+	menu.x=m_OpenGL->RCwidth-menu_dis/2-menu_w;
+	menu.y=/*menu_dis/2 +*/ menu_h;
 
 	// 游戏棋盘数据
 	player_info_h=m_OpenGL->RCheight/4;
@@ -209,6 +219,7 @@ void CQuoridor::showMain()
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
+		showPlayerWall();
 		showChessBorad();
 		break;
 
@@ -255,12 +266,12 @@ void CQuoridor::check()
 		break;
 
 	case GAME_MENU:
-		if(x<x_menu	|| x>x_menu+menu_w || y<y_menu)
+		if(x<menu.x	|| x>menu.x+menu_w || y<menu.y)
 			break;
 
 		for(i=0;i<MENU_NUM;i++)
 		{
-			if( y>y_menu+i*menu_dis && y<y_menu+i*menu_dis+menu_h )
+			if( y>menu.y+i*menu_dis && y<menu.y+i*menu_dis+menu_h )
 			{
 				iMenu=i;
 				break;
@@ -288,7 +299,7 @@ void CQuoridor::check()
 		}
 		break;
 	case GAME_HELP:
-		if (x>rButtonx&&x<rButtonx+helpRetButtonW&&y>y_menu&&y<y_menu+menu_h)
+		if (x>rButtonx&&x<rButtonx+helpRetButtonW&&y>menu.y&&y<menu.y+menu_h)
 		{
 			iButton=9;
 		}
@@ -600,17 +611,17 @@ void CQuoridor::showmenu()
 	for(int i=0;i<MENU_NUM;i++)
 	{
 		//文字
-		myfont.Print2D(x_menu+10,y_menu+5+i*menu_dis,menustr[i],FONT1,1,1,1);
+		myfont.Print2D(menu.x+10,menu.y+5+i*menu_dis,menustr[i],FONT1,1,1,1);
 
 		//图片
 		texture_select(g_cactus[9]);
 		if(iMenu==i)
 		{
-			tPicButton((float)x_menu,(float)(y_menu+i*menu_dis),(float)menu_w,(float)menu_h,0.0f);
+			tPicButton((float)menu.x,(float)(menu.y+i*menu_dis),(float)menu_w,(float)menu_h,0.0f);
 		}
 		else
 		{
-			tPicButton((float)x_menu,(float)(y_menu+i*menu_dis),(float)menu_w,(float)menu_h,0.5f);
+			tPicButton((float)menu.x,(float)(menu.y+i*menu_dis),(float)menu_w,(float)menu_h,0.5f);
 		}
 	}
 }
@@ -882,17 +893,17 @@ void CQuoridor::showHelp()
 
 	//文字
 	sprintf(tmpstr,"按ESC返回主菜单");
-	myfont.Print2D(rButtonx+10,y_menu+5,tmpstr,FONT1,1,1,1);
+	myfont.Print2D(rButtonx+10,menu.y+5,tmpstr,FONT1,1,1,1);
 
 	//图片
 	texture_select(g_cactus[9]);
 	if(iButton==9)
 	{
-		tPicButton((float)rButtonx,(float)y_menu,(float)helpRetButtonW,(float)menu_h,0.0f);
+		tPicButton((float)rButtonx,(float)menu.y,(float)helpRetButtonW,(float)menu_h,0.0f);
 	}
 	else
 	{
-		tPicButton((float)rButtonx,(float)y_menu,(float)helpRetButtonW,(float)menu_h,0.5f);
+		tPicButton((float)rButtonx,(float)menu.y,(float)helpRetButtonW,(float)menu_h,0.5f);
 	}
 }
 
@@ -963,31 +974,63 @@ void CQuoridor::showChessBorad()
 	//文字
 	char tmpstr[64]={0};
 	sprintf(tmpstr,"确    认");
-	myfont.Print2D(x_menu+10,y_menu+5,tmpstr,FONT1,1,1,1);
+	myfont.Print2D(menu.x+10,menu.y+5,tmpstr,FONT1,1,1,1);
 	// 按钮图片
 	texture_select(g_cactus[9]);
 	if(1==iButton)
 	{
-		tPicButton((float)x_menu,(float)(y_menu),(float)menu_w,(float)menu_h,0.0f);
+		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.0f);
 	}
 	else
 	{
-		tPicButton((float)x_menu,(float)(y_menu),(float)menu_w,(float)menu_h,0.5f);
+		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.5f);
 	}
 
 	sprintf(tmpstr,"返回菜单");
-	myfont.Print2D(x_menu+10,m_OpenGL->RCheight-y_menu-menu_h+5,tmpstr,FONT1,1,1,1);
+	myfont.Print2D(menu.x+10,m_OpenGL->RCheight-menu.y-menu_h+5,tmpstr,FONT1,1,1,1);
 	if(0==iButton)
 	{
-		tPicButton((float)x_menu,(float)(m_OpenGL->RCheight-y_menu-menu_h),(float)menu_w,(float)menu_h,0.0f);
+		tPicButton((float)menu.x,(float)(m_OpenGL->RCheight-menu.y-menu_h),(float)menu_w,(float)menu_h,0.0f);
 	}
 	else
 	{
-		tPicButton((float)x_menu,(float)(m_OpenGL->RCheight-y_menu-menu_h),(float)menu_w,(float)menu_h,0.5f);
+		tPicButton((float)menu.x,(float)(m_OpenGL->RCheight-menu.y-menu_h),(float)menu_w,(float)menu_h,0.5f);
 	}
 }
 
-void CQuoridor::showPlayWall()
+void CQuoridor::showPlayerWall()
 {
+	texture_select(g_cactus[3]);
+	if (blue_ply.x!=-1 && blue_ply.y!=-1)
+	{
+		tPicRectangle(board_x+lace+(roadw+wall_w)*blue_ply.x,lace+(roadw+wall_w)*blue_ply.y,roadw,roadw);
+	}
+	if (red_ply.x!=-1 && red_ply.y!=-1)
+	{
+		tPicRectangle(board_x+lace+(roadw+wall_w)*red_ply.x,lace+(roadw+wall_w)*red_ply.y,roadw,roadw);
+	}
 
+	//for (int i=0; i<sz; i++)
+	//{
+	//	for (int j=0; j<sz; j++)
+	//	{
+	//		switch (gameData[j][i])
+	//		{
+	//		case GD_BLANK:
+	//			break;
+	//		case GD_YELLOW:
+	//			break;
+	//		case GD_RED:
+	//			break;
+	//		case GD_GREEN:
+	//			break;
+	//		case GD_BLUE:
+	//			break;
+	//		case GD_WALL:
+	//			break;
+	//		default:
+	//			break;
+	//		}
+	//	}
+	//}
 }

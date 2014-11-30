@@ -29,6 +29,26 @@ enum {
 	MENU_MULTIP,
 	MENU_SINGE
 };
+// 棋盘数组里代表的含义
+enum {
+	GD_BLANK,
+	GD_YELLOW,
+	GD_RED,
+	GD_GREEN,
+	GD_BLUE,
+	GD_WALL
+};
+
+struct pos2d{
+	int x;
+	int y;
+};
+struct point2d{
+	float x;
+	float y;
+};
+// 游戏棋盘数据的数组尺寸
+const int sz=17;
 
 class CQuoridor
 {
@@ -83,7 +103,7 @@ public:
 	// 绘制游戏过程中的按钮
 	void showInGameBotton();
 	// 绘制玩家和墙
-	void showPlayWall();
+	void showPlayerWall();
 
 	////////////////////////////////////////////////////////////
 	//data
@@ -107,8 +127,7 @@ public:
 
 	// 主菜单相关的计算参数
 	// 这些参数，在initview时，根据opengl视口情况再具体赋值
-	int x_menu;
-	int y_menu;
+	pos2d menu;
 	// 菜单按钮的宽度和高度
 	int menu_w;
 	int menu_h;
@@ -135,12 +154,13 @@ public:
 	int lace;
 
 	// 游戏算法数据
-	char gameData[17][17];
+	// 其值如上述枚举
+	char gameData[sz][sz];
 	int arr_x;
 	int arr_y;
 	// 玩家位置
-	int blue_x;
-	int blue_y;
+	pos2d blue_ply;
+	pos2d red_ply;
 };
 
 #endif
