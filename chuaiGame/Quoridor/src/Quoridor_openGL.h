@@ -104,6 +104,8 @@ public:
 	void showInGameBotton();
 	// 绘制玩家和墙
 	void showPlayerWall();
+	// 绘制选定遮罩层
+	void drawPickMask();
 
 	////////////////////////////////////////////////////////////
 	//data
@@ -161,6 +163,9 @@ public:
 	// 玩家位置
 	pos2d blue_ply;
 	pos2d red_ply;
+	// 鼠标选定的玩家位置,这个位置对应于算法数组的下标的一半
+	// 也就是说，只计算玩家位置的坐标
+	pos2d pickup;
 };
 
 #endif

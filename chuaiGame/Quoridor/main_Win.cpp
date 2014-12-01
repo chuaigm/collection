@@ -162,7 +162,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	char errstr[]="缺少数据文件，请修复后重启游戏";
 	if(!gm.haveDataFile())
 	{
-		MessageBox(NULL,errstr, "CGM_main",MB_OK);
+		MessageBox(NULL,errstr, "Quoridor_Game",MB_OK);
 		return 0;
 	}
 	//--------------------------------------------------
@@ -170,7 +170,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	char tmpstr[64];
 	if (CFG_OK != ConfigGetKeyValue("config.ini", "Window_Resolution", "width", tmpstr))
 	{
-		MessageBox(NULL, "无法正常读取配置文件,主进程即将退出", "CGM_main",MB_OK);
+		MessageBox(NULL, "无法正常读取配置文件,主进程即将退出", "Quoridor_Game",MB_OK);
 		return 0;
 	}
 	WinWidth=atoi(tmpstr);
@@ -178,12 +178,12 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	WinHeight=atoi(tmpstr);
 	if (WinWidth<800 || WinHeight<600)
 	{
-		MessageBox(NULL, "配置分辨率过小，将以默认分辨率开始游戏", "CGM_main",MB_OK);
+		MessageBox(NULL, "配置分辨率过小，将以默认分辨率开始游戏", "Quoridor_Game",MB_OK);
 		WinWidth = WIN_WIDTH;
 		WinHeight= WIN_HEIGHT;
 	}
 	//--------------------------------------------------
-	char cc[]="chuaiOpenGL";
+	char cc[]="Quoridor";
 	// 窗体类
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), 
 		CS_CLASSDC,								// 窗体类的风格，可以用or操作符连接
@@ -215,11 +215,11 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	int hei=GetSystemMetrics(SM_CYSCREEN);
 	// 窗口左上角坐标
 	int nX=(wid-WinWidth)/2;
-	int nY=(hei-WinHeight)/2;	
+	int nY=(hei-WinHeight)/2-10;
 	// 创建并传递窗口句柄
 	hWnd = CreateWindowEx(NULL,		// 窗口的扩展风格
 		cc,							// 指向注册类名的指针
-		"chuai_OpenGL_Sample",		// 指向窗口名称的指针
+		"Quoridor_by_ChuaiGM",		// 指向窗口名称的指针
 		dwStyle,					// 窗口风格
 		nX, nY,						// 窗口的起始位置坐标
 		WinWidth,					// 窗口的宽度

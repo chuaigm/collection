@@ -58,8 +58,12 @@ CQuoridor::CQuoridor()
 
 	// 棋盘数据初始化
 	memset(gameData,0,sizeof(gameData));
+	// 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
 	gameData[2*blue_ply.x][2*blue_ply.y]=GD_BLUE;
 	gameData[2*red_ply.x][2*red_ply.y]=GD_RED;
+	// 鼠标选取的位置
+	pickup.x=-1;
+	pickup.y=-1;
 }
 
 CQuoridor::~CQuoridor()
@@ -211,16 +215,16 @@ void CQuoridor::showMain()
 	case GAME_PRE:
 //		showpreani();
 		break;
-
 	case GAME_MENU:
 		showmenu();
 		break;
-
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
-		showPlayerWall();
 		showChessBorad();
+		showPlayerWall();
+		// 注意此处，透明图层与绘制顺序有关
+		drawPickMask();
 		break;
 
 	case GAME_HELP:
@@ -278,6 +282,8 @@ void CQuoridor::check()
 			}
 		}
 		break;
+	case GAME_SINGE:
+	case GAME_MULTIP:
 	case GAME_SENDBOX:
 		if (x<board_x+lace || x>board_x+m_OpenGL->RCheight-lace)
 			break;
@@ -342,6 +348,18 @@ void CQuoridor::lbuttonproc(int lparam)
 		default:
 			break;
 		}		
+		break;
+	case GAME_SINGE:
+	case GAME_MULTIP:
+	case GAME_SENDBOX:
+		if (arr_x>-1 && arr_y>-1)
+		{
+			if (GD_BLANK != gameData[arr_x][arr_y])
+			{
+				pickup.x = arr_x/2;
+				pickup.y = arr_y/2;
+			}
+		}
 		break;
 	case GAME_HELP:
 		if (9==iButton)
@@ -1033,4 +1051,13 @@ void CQuoridor::showPlayerWall()
 	//		}
 	//	}
 	//}
+}
+
+void CQuoridor::drawPickMask()
+{
+	if (-1 != pickup.x && -1 !=pickup.y)
+	{
+		// 这里以后换个贴图
+		tRectangle(board_x+lace+pickup.x*(roadw+roadw),lace+pickup.y*(roadw+roadw),0,(float)roadw,(float)roadw,0.1f,0.5f,1,0.4f);
+	}
 }
