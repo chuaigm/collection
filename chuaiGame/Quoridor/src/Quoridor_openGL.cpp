@@ -49,21 +49,30 @@ CQuoridor::CQuoridor()
 	lace=6;
 
 	// 游戏数据初始化
-	arr_x=-1;
-	arr_y=-1;
-	blue_ply.x=4;
-	blue_ply.y=0;
+	arr.x=-1;
+	arr.y=-1;
+	yellow_ply.x=0;
+	yellow_ply.y=4;
 	red_ply.x=4;
 	red_ply.y=8;
+	green_ply.x=8;
+	green_ply.y=4;
+	blue_ply.x=4;
+	blue_ply.y=0;
 
 	// 棋盘数据初始化
 	memset(gameData,0,sizeof(gameData));
 	// 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
-	gameData[2*blue_ply.x][2*blue_ply.y]=GD_BLUE;
+	gameData[2*yellow_ply.x][2*yellow_ply.y]=GD_YELLOW;
 	gameData[2*red_ply.x][2*red_ply.y]=GD_RED;
+	gameData[2*green_ply.x][2*green_ply.y]=GD_GREEN;
+	gameData[2*blue_ply.x][2*blue_ply.y]=GD_BLUE;
 	// 鼠标选取的位置
 	pickup.x=-1;
 	pickup.y=-1;
+	// 墙的第一个选取位置
+	wall_pick.x=-1;
+	wall_pick.y=-1;
 }
 
 CQuoridor::~CQuoridor()
@@ -144,7 +153,11 @@ void CQuoridor::init()
 	LoadT8("data/images/quoridor_cover.bmp", g_cactus[0]);
 	LoadT8("data/images/chess_board_shading.bmp", g_cactus[1]);
 	LoadT8("data/images/road.bmp", g_cactus[2]);
-	LoadT8("data/images/xiaohei1.bmp", g_cactus[3]);
+	LoadT8("data/images/bidiu1.bmp", g_cactus[3]);
+	LoadT8("data/images/huangshou1.bmp", g_cactus[4]);
+	LoadT8("data/images/diting1.bmp", g_cactus[5]);
+	LoadT8("data/images/xiaohei1.bmp", g_cactus[6]);
+	LoadT8("data/images/wall1.bmp", g_cactus[7]);
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);
 
@@ -247,8 +260,8 @@ void CQuoridor::check()
 	y=m_OpenGL->Ymouse;
 	iMenu=-1;//初始化 没有选择
 	iButton=-1;
-	arr_x=-1;
-	arr_y=-1;
+	arr.x=-1;
+	arr.y=-1;
 
 	switch(iGameState)
 	{
@@ -285,23 +298,28 @@ void CQuoridor::check()
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
+		// 实时检查鼠标位置
+		// 检查时，如果鼠标位于棋盘边界外
 		if (x<board_x+lace || x>board_x+m_OpenGL->RCheight-lace)
 			break;
+		// 当前位置除一个路的宽度和一个墙的宽度的整数部分
 		it=(int)((x-board_x-lace)/(roadw+wall_w));
+		// 余数部分
 		remain = (x-board_x-lace)-it*(roadw+wall_w);
 		if (remain>roadw)
-		{
-			arr_x = it*2+1;
+		{	// 余数比路宽度大，这是墙的位置，奇数
+			arr.x = it*2+1;
 		} else {
-			arr_x = it*2;
+			// 玩家可以放置的位置，路，偶数
+			arr.x = it*2;
 		}
 		it = (int)((y-lace)/(roadw+wall_w));
 		remain = (y-lace) - it*(roadw+wall_w);
 		if (remain>roadw)
 		{
-			arr_y = it*2+1;
+			arr.y = it*2+1;
 		} else {
-			arr_y = it*2;
+			arr.y = it*2;
 		}
 		break;
 	case GAME_HELP:
@@ -315,7 +333,7 @@ void CQuoridor::check()
 		break;
 	}
 }
-//左键松开
+// 左键松开
 void CQuoridor::lbuttonproc(int lparam)
 {
 	switch(iGameState)
@@ -323,7 +341,6 @@ void CQuoridor::lbuttonproc(int lparam)
 	case GAME_MENU:
 		if(iMenu<0)
 			break;
-
 		switch(iMenu)
 		{
 		case MENU_SINGE:
@@ -352,12 +369,121 @@ void CQuoridor::lbuttonproc(int lparam)
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
-		if (arr_x>-1 && arr_y>-1)
-		{
-			if (GD_BLANK != gameData[arr_x][arr_y])
+		// 存在已选取的位置，并且鼠标再次点击时，位置为双偶数位
+		if (-1 != pickup.x && -1 != pickup.y && 0==arr.x%2 && 0==arr.y%2)
+		{	// 这种情况，进入到人物棋子处理阶段
+			char tmp=0;
+			// 交换
+			tmp=gameData[arr.x][arr.y];
+			gameData[arr.x][arr.y]=gameData[2*pickup.x][2*pickup.y];
+			gameData[2*pickup.x][2*pickup.y]=tmp;
+			// 在目标位置上，更新玩家变量
+			switch (gameData[arr.x][arr.y])
 			{
-				pickup.x = arr_x/2;
-				pickup.y = arr_y/2;
+			case GD_BLANK:
+				break;
+			case GD_YELLOW:
+				yellow_ply.x=arr.x/2;
+				yellow_ply.y=arr.y/2;
+				break;
+			case GD_RED:
+				red_ply.x=arr.x/2;
+				red_ply.y=arr.y/2;
+				break;
+			case GD_GREEN:
+				green_ply.x=arr.x/2;
+				green_ply.y=arr.y/2;
+				break;
+			case GD_BLUE:
+				blue_ply.x=arr.x/2;
+				blue_ply.y=arr.y/2;
+				break;
+			default:
+				break;
+			}
+			// 对于旧的位置上，更新玩家变量
+			switch (gameData[2*pickup.x][2*pickup.y])
+			{
+			case GD_BLANK:
+				break;
+			case GD_YELLOW:
+				yellow_ply.x=pickup.x;
+				yellow_ply.y=pickup.y;
+				break;
+			case GD_RED:
+				red_ply.x=pickup.x;
+				red_ply.y=pickup.y;
+				break;
+			case GD_GREEN:
+				green_ply.x=pickup.x;
+				green_ply.y=pickup.y;
+				break;
+			case GD_BLUE:
+				blue_ply.x=pickup.x;
+				blue_ply.y=pickup.y;
+				break;
+			default:
+				break;
+			}
+			// 将选取位置赋值为无效值
+			pickup.x=-1;
+			pickup.y=-1;
+		}
+		else if (arr.x>-1 && arr.y>-1)
+		{
+			// 如果是一个双偶坐标，且选取位置是非空白位置(说明此处应该是某一玩家棋子位置)
+			if (arr.x%2==0 && arr.y%2==0 && GD_BLANK != gameData[arr.x][arr.y])
+			{
+				pickup.x = arr.x/2;
+				pickup.y = arr.y/2;
+			}
+			// 如果两个数，一个是奇数一个是偶数，说明这处是一个墙可以存在的位置
+			else if ((arr.x+arr.y)%2==1 && GD_BLANK == gameData[arr.x][arr.y])
+			{	// 如果上次已有预选墙的位置
+				if (wall_pick.x>-1&&wall_pick.y>-1)
+				{	// 如果是横墙,并且这次选的和上次选的在同一行上
+					if (wall_pick.x%2==0&&arr.y==wall_pick.y)
+					{	// 如果这次选的在上一次选的左边一块位置
+						if(arr.x==wall_pick.x-2)
+						{
+							// 压入墙绘制队列,先压入左边的块
+							wall_vec.push_back(arr);
+							wall_vec.push_back(wall_pick);
+							// 更新游戏算法数据
+							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
+							// 预选墙清空
+							wall_pick.x=-1;
+							wall_pick.y=-1;
+							break;
+						}
+						// 如果在这次选的在上一次右边一块位置
+						else if(arr.x==wall_pick.x+2)
+						{
+							// 压入墙绘制队列,先压入左边的块
+							wall_vec.push_back(wall_pick);
+							wall_vec.push_back(arr);
+							// 更新游戏算法数据
+							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
+							// 预选墙清空
+							wall_pick.x=-1;
+							wall_pick.y=-1;
+						}
+					}
+					// 如果是竖墙，并且这次选的和上次选的在同一列上
+					else if(wall_pick.y%2==0&&arr.x==wall_pick.x)
+					{
+						if (1)
+						{
+						}
+					}
+				}
+				else
+				{	// 新选取的一个预选墙的位置
+					wall_pick.x=arr.x;
+					wall_pick.y=arr.y;
+				}
 			}
 		}
 		break;
@@ -368,6 +494,19 @@ void CQuoridor::lbuttonproc(int lparam)
 		}
 		break;
 
+	default:
+		break;
+	}
+}
+
+void CQuoridor::rbuttonproc( int lparam )
+{
+	switch(iGameState)
+	{
+	case GAME_SINGE:
+	case GAME_MULTIP:
+	case GAME_SENDBOX:
+		break;
 	default:
 		break;
 	}
@@ -724,147 +863,7 @@ void CQuoridor::showmapBox(float *ppos, float *psize, float *ptex,int itex,int i
 		glEnd();
 	}
 }
-
-void CQuoridor::show_2D_test()
-{
-/*
-	if (b_font_test)
-	{
-		show_Font_test();
-	}
-
-	if (b_mouse_test)
-	{
-		show_Mouse_test();
-	}
-*/
-	glPushMatrix();
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	glDisable(GL_TEXTURE_2D);
-
-	glTranslatef(m_OpenGL->RCwidth/2.0f/*-5.0f*/,m_OpenGL->RCheight/2.0f/*-20.0f*/,-0.1f);
-
-	char tmpstr[32]={0};
-	// 一个刻度线代表的值
-	int scale=10;  // 100 pixel = scale
-
-	// draw aix---------------
-	// 坐标原点
-	//myfont.Print2D(0,0,"O",FONT1,1.0f,1.0f,0.0f);
-	// 设置点的尺寸
-	glPointSize(3);
-	for (int x=-4; x<5; x++)
-	{
-		glBegin(GL_POINTS);
-		glVertex3f( x*100.0f, 0.0, 0.0);
-		glEnd();
-		//int ta=x*scale;
-		sprintf_s(tmpstr,"%d\n",x*scale);
-		myfont.Print2D(x*100,0,tmpstr,FONT0,1.0f,1.0f,1.0f);
-	}
-	for (int y=-3; y<4; y++)
-	{
-		glBegin(GL_POINTS);
-		glVertex3f( 0.0, y*100.0f, 0.0);
-		glEnd();
-		sprintf_s(tmpstr,"%d\n",y*scale);
-		myfont.Print2D(0,y*100,tmpstr,FONT0,1.0f,1.0f,1.0f);
-	}
-	myfont.Print2D(0,0,"O",FONT0,1.0f,1.0f,0.0f);
-	glColor3f(1.0,1.0,1.0);
-	glBegin(GL_LINES);
-	// X aix
-	glVertex3f(-WIN_WIDTH/2, 0.0, 0.0);
-	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
-	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
-	glVertex3f( WIN_WIDTH/2-15,  5.0, 0.0);
-	glVertex3f( WIN_WIDTH/2, 0.0, 0.0);
-	glVertex3f( WIN_WIDTH/2-15, -5.0, 0.0);
-	// Y aix
-	glVertex3f( 0.0, -WIN_HEIGHT/2, 0.0);
-	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
-	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
-	glVertex3f( 5.0,  WIN_HEIGHT/2-15, 0.0);
-	glVertex3f( 0.0,  WIN_HEIGHT/2, 0.0);
-	glVertex3f(-5.0,  WIN_HEIGHT/2-15, 0.0);
-	glEnd();
-
-	// --------------------
-
-	//if (b_func_test)
-	{
-		// draw a func
-		glColor3f(1.0,0.0,0.0);
-		glBegin(GL_LINE_STRIP);
-		for (int x=-40; x<40; x++)
-		{
-			// y=kx+b
-			float y=0.6f*x+5;
-			glVertex3f( (float)x*scale,(float)y*scale, 0.0);
-		}
-		glEnd();
-
-		// draw a func
-		glColor3f(0.0,1.0,0.0);
-		glBegin(GL_LINE_STRIP);
-		for (int x=-40; x<40; x++)
-		{
-			// y=ax^2+bx+c
-			float y=0.07f*x*x+0.6f*x-15;
-			glVertex2f( (float)x*scale,(float)y*scale);
-		}
-		glEnd();
-
-		// draw a func
-		glColor3f(1.0,1.0,0.0);
-		glBegin(GL_LINE_STRIP);
-		for (int x=-40; x<40; x++)
-		{
-			// y=asinx
-			float y=20.0f*sin(0.1f*x);
-			glVertex2f( (float)x*scale,(float)y*scale);
-		}
-		glEnd();
-
-		// draw a func
-		glColor3f(0.0,0.0,1.0);
-		glBegin(GL_LINE_STRIP);
-		for (int x=1; x<400; x++)
-		{
-			// y=1/x
-			float y=100.0f/x;
-			glVertex2f( (float)x*scale,(float)y*scale);
-		}
-		glEnd();
-
-		// draw a func
-		glColor3f(0.0,1.0,1.0);
-		glBegin(GL_LINE_STRIP);
-		for (int x=-40; x<40; x++)
-		{
-			// y=10*2^x
-			float y=10.0f*pow(2.0f,x/10.0f);
-			glVertex2f( (float)x*scale,(float)y*scale);
-		}
-		glEnd();
-
-		// draw a func
-		glColor3f(1.0f,0.0f,1.0f);
-		glBegin(GL_LINE_STRIP);
-		for (int x=1; x<400; x++)
-		{
-			// y=log(x)
-			float y=10*log(x/10.0f);
-			glVertex2f( (float)x*scale,(float)y*scale);
-		}
-		glEnd();
-	}
-
-	glEnable(GL_TEXTURE_2D);
-	glPopAttrib();
-	glPopMatrix();
-}
-
+// 显示测试数据
 void CQuoridor::show_Font_test()
 {
 	// Y /-------------\
@@ -877,9 +876,25 @@ void CQuoridor::show_Font_test()
 	sprintf(tmpstr, "iMenu=%d",iMenu);
 	myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
 
-	sprintf(tmpstr, "arr_x=%d",arr_x);
+	for (int i=0; i<17;i++)
+	{
+		for (int j=0; j<17;j++)
+		{
+			sprintf(tmpstr, "%d,",gameData[j][i]);
+			myfont.Print2D(10*(j+1),70+10*i,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+		}
+	}
+	sprintf(tmpstr, "wall_px=%d",wall_pick.x);
+	myfont.Print2D(50,60,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	sprintf(tmpstr, "wall_py=%d",wall_pick.y);
+	myfont.Print2D(50,50,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	sprintf(tmpstr, "pick_x=%d",pickup.x);
+	myfont.Print2D(50,40,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	sprintf(tmpstr, "pick_y=%d",pickup.y);
+	myfont.Print2D(50,30,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	sprintf(tmpstr, "arr.x=%d",arr.x);
 	myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
-	sprintf(tmpstr, "arr_y=%d",arr_y);
+	sprintf(tmpstr, "arr.y=%d",arr.y);
 	myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
 
 	//myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
@@ -1018,39 +1033,38 @@ void CQuoridor::showChessBorad()
 
 void CQuoridor::showPlayerWall()
 {
+	// 对应颜色的玩家，黄，红，绿，蓝
 	texture_select(g_cactus[3]);
-	if (blue_ply.x!=-1 && blue_ply.y!=-1)
+	if (yellow_ply.x>-1 && yellow_ply.y>-1)
 	{
-		tPicRectangle(board_x+lace+(roadw+wall_w)*blue_ply.x,lace+(roadw+wall_w)*blue_ply.y,roadw,roadw);
+		tPicRectangle(board_x+lace+(roadw+wall_w)*yellow_ply.x,lace+(roadw+wall_w)*yellow_ply.y,roadw,roadw);
 	}
-	if (red_ply.x!=-1 && red_ply.y!=-1)
+	texture_select(g_cactus[4]);
+	if (red_ply.x>-1 && red_ply.y>-1)
 	{
 		tPicRectangle(board_x+lace+(roadw+wall_w)*red_ply.x,lace+(roadw+wall_w)*red_ply.y,roadw,roadw);
 	}
+	texture_select(g_cactus[5]);
+	if (green_ply.x>-1 && green_ply.y>-1)
+	{
+		tPicRectangle(board_x+lace+(roadw+wall_w)*green_ply.x,lace+(roadw+wall_w)*green_ply.y,roadw,roadw);
+	}
+	texture_select(g_cactus[6]);
+	if (blue_ply.x>-1 && blue_ply.y>-1)
+	{
+		tPicRectangle(board_x+lace+(roadw+wall_w)*blue_ply.x,lace+(roadw+wall_w)*blue_ply.y,roadw,roadw);
+	}
 
-	//for (int i=0; i<sz; i++)
-	//{
-	//	for (int j=0; j<sz; j++)
-	//	{
-	//		switch (gameData[j][i])
-	//		{
-	//		case GD_BLANK:
-	//			break;
-	//		case GD_YELLOW:
-	//			break;
-	//		case GD_RED:
-	//			break;
-	//		case GD_GREEN:
-	//			break;
-	//		case GD_BLUE:
-	//			break;
-	//		case GD_WALL:
-	//			break;
-	//		default:
-	//			break;
-	//		}
-	//	}
-	//}
+	// 绘制墙
+	for (size_t i=0; i<wall_vec.size();i+=2)
+	{
+		texture_select(g_cactus[7]);
+		// 如果是横墙
+		if (wall_vec[i].x%2==0)
+		{
+			tPicRectangle(board_x+lace+wall_vec[i].x/2*(roadw+wall_w),lace+(int)(wall_vec[i].y/2)*(roadw+wall_w)+roadw,(float)wall_l,(float)wall_w);
+		}
+	}
 }
 
 void CQuoridor::drawPickMask()
@@ -1058,6 +1072,19 @@ void CQuoridor::drawPickMask()
 	if (-1 != pickup.x && -1 !=pickup.y)
 	{
 		// 这里以后换个贴图
-		tRectangle(board_x+lace+pickup.x*(roadw+roadw),lace+pickup.y*(roadw+roadw),0,(float)roadw,(float)roadw,0.1f,0.5f,1,0.4f);
+		tRectangle(board_x+lace+pickup.x*(roadw+wall_w),lace+pickup.y*(roadw+wall_w),0,(float)roadw,(float)roadw,0.1f,0.5f,1,0.6f);
+	}
+	// 这里绘制临时选取的预选墙，单墙位置
+	if (-1 != wall_pick.x && -1 != wall_pick.y)
+	{
+		// 选中的墙预选位置，*走到这里*，一定是一奇数一偶数
+		if (wall_pick.x%2==0)
+		{	// 横墙(TODO,注意这里，暂时墙的长度4/9这个数值是根据墙宽与路宽的比为1:4的前提)
+			tRectangle(board_x+lace+wall_pick.x/2*(roadw+wall_w),lace+(int)(wall_pick.y/2)*(roadw+wall_w)+roadw,0,(float)wall_l*4/9,(float)wall_w,1.0f,1,0,0.6f);
+		}
+		else
+		{	// 竖墙
+			tRectangle(board_x+lace+(int)(wall_pick.x/2)*(roadw+wall_w)+roadw,lace+wall_pick.y/2*(roadw+wall_w),0,(float)wall_w,(float)wall_l*4/9,1.0f,1,0,0.6f);
+		}
 	}
 }

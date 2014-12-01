@@ -8,6 +8,7 @@
 // date: 2014-11-29
 //
 //=======================================
+#include <vector>
 // Game state
 enum {
 	GAME_PRE,
@@ -47,6 +48,9 @@ struct point2d{
 	float x;
 	float y;
 };
+//struct walls{
+//	pos2d w[2];
+//};
 // 游戏棋盘数据的数组尺寸
 const int sz=17;
 
@@ -68,18 +72,18 @@ public:
 	void check();
 	// 处理鼠标左键按下
 	void lbuttonproc(int lparam);
+	// 处理鼠标右键按下
+	void rbuttonproc(int lparam);
 	// 键盘按键检测响应
 	void keyupproc(int keyparam);
-
 
 	void showpreani();
 	// 绘制主菜单
 	void showmenu();
-	// cgm test
-	void show_2D_test();
+	// 显示测试数据
 	void show_Font_test();
-	
-	void mouseproc(int lparam);
+	// 鼠标处理函数
+	//void mouseproc(int lparam);
 	
 	void showmapBox(float *ppos,float *psize,float *ptex,int itex,int iHastop);
 	void light0();
@@ -149,7 +153,12 @@ public:
 	// 玩家指示格的宽度和高度
 	int player_info_w;
 	int player_info_h;
-	// 棋盘的起点定位坐标,期盼左下角
+	// 棋盘的起点定位坐标,棋盘左下角
+	// |-----------------|
+	// |   |         |   |
+	// |   |         |   |
+	// |   |         |   |
+	// |---*-------------|
 	int board_x;
 	int board_y;
 	// 游戏棋盘花边宽度
@@ -158,14 +167,24 @@ public:
 	// 游戏算法数据
 	// 其值如上述枚举
 	char gameData[sz][sz];
-	int arr_x;
-	int arr_y;
-	// 玩家位置
-	pos2d blue_ply;
+	// 实时计算的获取鼠标在棋盘上的整数位置
+	// 注意，这个值并不是只按照road计算，是包含墙在内的坐标
+	pos2d arr;
+
+	// 玩家位置，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
+	pos2d yellow_ply;
 	pos2d red_ply;
+	pos2d green_ply;
+	pos2d blue_ply;
+
 	// 鼠标选定的玩家位置,这个位置对应于算法数组的下标的一半
-	// 也就是说，只计算玩家位置的坐标
+	// 也就是说，只计算玩家位置的坐标(同ply)，最大为9-1
 	pos2d pickup;
+
+	// 标记的墙的第一处选取位置，此坐标与算法数组同下标
+	pos2d wall_pick;
+	// 需要绘制的墙的队列,先压入的是左边的块与下边的块(方便绘制)
+	std::vector<pos2d> wall_vec;
 };
 
 #endif

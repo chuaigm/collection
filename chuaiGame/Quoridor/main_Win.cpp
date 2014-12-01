@@ -132,6 +132,9 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
 		case WM_LBUTTONDOWN:
 			Lbutdown=1;
 			break;
+		case WM_RBUTTONDOWN:
+			//Rbutdown=1;
+			break;
 
 		case WM_MOUSEMOVE:
 			//gm.mouseproc(lParam);
@@ -141,6 +144,10 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
 		case WM_LBUTTONUP:
 			Lbutdown=0;
 			gm.lbuttonproc(lParam);
+			break;
+		case WM_RBUTTONUP:
+			//Lbutdown=0;
+			gm.rbuttonproc(lParam);
 			break;
 
 		default:			
