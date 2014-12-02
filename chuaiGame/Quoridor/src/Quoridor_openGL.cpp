@@ -48,7 +48,16 @@ CQuoridor::CQuoridor()
 	// 游戏棋盘与窗口边界间距
 	lace=6;
 
+	iButton=-1;
+
 	// 游戏数据初始化
+	roadw = 10;
+	wall_l=10;
+	wall_w=10;
+	player_info_h=10;
+	player_info_w=10;
+	board_x=10;
+	board_y=10;
 	arr.x=-1;
 	arr.y=-1;
 	yellow_ply.x=0;
@@ -344,12 +353,10 @@ void CQuoridor::lbuttonproc(int lparam)
 		switch(iMenu)
 		{
 		case MENU_SINGE:
-			//iGameState=GAME_IN_INIT;
-			//b_mouse_test=!b_mouse_test;
+			//iGameState=GAME_SINGE;
 			break;
 		case MENU_MULTIP:
-			//iGameState=GAME_IN_INIT;
-			//b_func_test=!b_func_test;
+			//iGameState=GAME_MULTIP;
 			break;
 		case MENU_SENDBOX:
 			iGameState=GAME_SENDBOX;
@@ -428,7 +435,7 @@ void CQuoridor::lbuttonproc(int lparam)
 			// 将选取位置赋值为无效值
 			pickup.x=-1;
 			pickup.y=-1;
-		}
+		}	// 从这里开始处理墙相关的
 		else if (arr.x>-1 && arr.y>-1)
 		{
 			// 如果是一个双偶坐标，且选取位置是非空白位置(说明此处应该是某一玩家棋子位置)
@@ -444,13 +451,15 @@ void CQuoridor::lbuttonproc(int lparam)
 				{	// 如果是横墙,并且这次选的和上次选的在同一行上
 					if (wall_pick.x%2==0&&arr.y==wall_pick.y)
 					{	// 如果这次选的在上一次选的左边一块位置
-						if(arr.x==wall_pick.x-2)
+						// 并且两块连接的中间位置是可用的
+						if(arr.x==wall_pick.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
 						{
-							// 压入墙绘制队列,先压入左边的块
+							// 压入墙绘制队列,一定先压入左边的块
 							wall_vec.push_back(arr);
 							wall_vec.push_back(wall_pick);
-							// 更新游戏算法数据
+							// 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
 							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[arr.x+1][arr.y]=GD_WALL;
 							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
 							// 预选墙清空
 							wall_pick.x=-1;
@@ -458,32 +467,62 @@ void CQuoridor::lbuttonproc(int lparam)
 							break;
 						}
 						// 如果在这次选的在上一次右边一块位置
-						else if(arr.x==wall_pick.x+2)
+						// 并且两块连接的中间位置是可用的
+						else if(arr.x==wall_pick.x+2&&gameData[arr.x-1][arr.y]==GD_BLANK)
 						{
-							// 压入墙绘制队列,先压入左边的块
+							// 压入墙绘制队列,一定先压入左边的块
 							wall_vec.push_back(wall_pick);
 							wall_vec.push_back(arr);
 							// 更新游戏算法数据
 							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[arr.x-1][arr.y]=GD_WALL;
 							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
 							// 预选墙清空
 							wall_pick.x=-1;
 							wall_pick.y=-1;
+							break;
 						}
 					}
 					// 如果是竖墙，并且这次选的和上次选的在同一列上
 					else if(wall_pick.y%2==0&&arr.x==wall_pick.x)
-					{
-						if (1)
+					{	// 如果这次选择的在上一次选择的下面一块
+						// 并且两块连接的中间位置是可用的
+						if (arr.y==wall_pick.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
 						{
+							// 压入墙绘制队列，一定先压入下面的一块
+							wall_vec.push_back(arr);
+							wall_vec.push_back(wall_pick);
+							// 更新游戏算法数据
+							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[arr.x][arr.y+1]=GD_WALL;
+							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
+							// 预选墙清空
+							wall_pick.x=-1;
+							wall_pick.y=-1;
+							break;
+						}
+						// 如果这次选择的在上一次选择的上面一块
+						// 并且两块连接的中间位置是可用的
+						else if (arr.y==wall_pick.y+2&&gameData[arr.x][arr.y-1]==GD_BLANK)
+						{
+							// 压入墙绘制队列，一定先压入下面的一块
+							wall_vec.push_back(wall_pick);
+							wall_vec.push_back(arr);
+							// 更新游戏算法数据
+							gameData[arr.x][arr.y]=GD_WALL;
+							gameData[arr.x][arr.y-1]=GD_WALL;
+							gameData[wall_pick.x][wall_pick.y]=GD_WALL;
+							// 预选墙清空
+							wall_pick.x=-1;
+							wall_pick.y=-1;
+							break;
 						}
 					}
 				}
-				else
-				{	// 新选取的一个预选墙的位置
-					wall_pick.x=arr.x;
-					wall_pick.y=arr.y;
-				}
+				// 如果不满足以上情况的，都认为是
+				// 新选取的一个预选墙的位置
+				wall_pick.x=arr.x;
+				wall_pick.y=arr.y;
 			}
 		}
 		break;
@@ -506,6 +545,64 @@ void CQuoridor::rbuttonproc( int lparam )
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
+		switch (gameData[arr.x][arr.y])
+		{
+		case GD_BLANK:
+			break;
+		case GD_YELLOW:
+			yellow_ply.x=-1;
+			yellow_ply.y=-1;
+			gameData[arr.x][arr.y]=0;
+			break;
+		case GD_RED:
+			red_ply.x=-1;
+			red_ply.y=-1;
+			gameData[arr.x][arr.y]=0;
+			break;
+		case GD_GREEN:
+			green_ply.x=-1;
+			green_ply.y=-1;
+			gameData[arr.x][arr.y]=0;
+			break;
+		case GD_BLUE:
+			blue_ply.x=-1;
+			blue_ply.y=-1;
+			gameData[arr.x][arr.y]=0;
+			break;
+		case GD_WALL:
+			for (size_t i=0; i<wall_vec.size();i++)
+			{
+				std::vector<pos2d>::iterator itor=find(wall_vec.begin(),wall_vec.end(),arr);
+				if (itor==wall_vec.end())
+				{
+					continue;
+				}
+				int dist=distance(wall_vec.begin(),itor);
+				// 如果间距是偶数，则下标也是偶数
+				if (dist%2==0)
+				{
+					// 注意这里，可能存在迭代器失效的问题
+					gameData[itor->x][itor->y]=GD_BLANK;
+					gameData[(itor->x+(itor+1)->x)/2][(itor->y+(itor+1)->y)/2]=GD_BLANK;
+					gameData[(itor+1)->x][(itor+1)->y]=GD_BLANK;
+					wall_vec.erase(itor,itor+2);
+					break;
+				}
+				// 如果间距是奇数，则下标也是奇数
+				else
+				{
+					// 注意迭代器失效问题
+					gameData[itor->x][itor->y]=GD_BLANK;
+					gameData[(itor->x+(itor-1)->x)/2][(itor->y+(itor-1)->y)/2]=GD_BLANK;
+					gameData[(itor-1)->x][(itor-1)->y]=GD_BLANK;
+					wall_vec.erase(itor-1,itor+1);
+					break;
+				}
+			}
+			break;
+		default:
+			break;
+		}
 		break;
 	default:
 		break;
@@ -792,77 +889,6 @@ void CQuoridor::showmenu()
 //	ymouse=HIWORD(lparam);
 //}
 
-//画立方体
-//入参 	位置 长宽高 贴图坐标 贴图编号 iHastop 是否有顶面和底面
-void CQuoridor::showmapBox(float *ppos, float *psize, float *ptex,int itex,int iHastop)
-{
-	float width =psize[0];	
-	float height=psize[2];	
-	float length=psize[1];	
-	float x = ppos[0];	
-	float y = ppos[1];
-	float z = ppos[2];
-	float fstex=ptex[0];//沿x轴的贴图
-	float fttex=ptex[1];
-	float fhtex=ptex[2];
-	///////////////////////////////////////////////////////////////////////////////
-	
-	//wall 垂直于Z轴
-	texture_select(TexBox[itex]);	
-	glBegin(GL_QUADS);		
-		glTexCoord2f(fstex,0.0f); glVertex3f(x+width,y,		 z);
-		glTexCoord2f(fstex,fhtex); glVertex3f(x+width,y+height,z); 
-		glTexCoord2f(0.0f,fhtex); glVertex3f(x,		y+height,z);
-		glTexCoord2f(0.0f,0.0f); glVertex3f(x,		y,		 z);
-	glEnd();
-
-	texture_select(TexBox[itex]);	
-	glBegin(GL_QUADS);		
-		glTexCoord2f(fstex,0.0f); glVertex3f(x,		y,		 z+length);
-		glTexCoord2f(fstex,fhtex); glVertex3f(x,		y+height,z+length);
-		glTexCoord2f(0.0f,fhtex); glVertex3f(x+width,y+height,z+length); 
-		glTexCoord2f(0.0f,0.0f); glVertex3f(x+width,y,		 z+length);
-	glEnd();
-
-	if(iHastop)
-	{
-		//sky
-		texture_select(g_cactus[4]);	
-		glBegin(GL_QUADS);	
-			glTexCoord2f(0.0f,fttex); glVertex3f(x+width,y+height,z);
-			glTexCoord2f(0.0f,0.0f); glVertex3f(x+width,y+height,z+length); 
-			glTexCoord2f(fstex,0.0f); glVertex3f(x,		y+height,z+length);
-			glTexCoord2f(fstex,fttex); glVertex3f(x,		y+height,z);
-		glEnd();
-	}
-	//wall 垂直于x轴
-	texture_select(TexBox[itex+1]);	
-	glBegin(GL_QUADS);		
-		glTexCoord2f(fttex,fhtex); glVertex3f(x,		y+height,z);	
-		glTexCoord2f(0.0f,fhtex); glVertex3f(x,		y+height,z+length); 
-		glTexCoord2f(0.0f,0.0f); glVertex3f(x,		y,		 z+length);
-		glTexCoord2f(fttex,0.0f); glVertex3f(x,		y,		 z);		
-	glEnd();
-	texture_select(TexBox[itex+1]);	
-	glBegin(GL_QUADS);			
-		glTexCoord2f(0.0f,0.0f); glVertex3f(x+width,y,		 z);
-		glTexCoord2f(fttex,0.0f); glVertex3f(x+width,y,		 z+length);
-		glTexCoord2f(fttex,fhtex); glVertex3f(x+width,y+height,z+length); 
-		glTexCoord2f(0.0f,fhtex); glVertex3f(x+width,y+height,z);
-	glEnd();
-
-	//ground
-	if(iHastop)
-	{
-		texture_select(g_cactus[7]);	
-		glBegin(GL_QUADS);	
-			glTexCoord2f(0.0f,fttex); glVertex3f(x+width,y,z);
-			glTexCoord2f(0.0f,0.0f); glVertex3f(x+width,y,z+length); 
-			glTexCoord2f(fstex,0.0f); glVertex3f(x,		y,z+length);
-			glTexCoord2f(fstex,fttex); glVertex3f(x,		y,z);
-		glEnd();
-	}
-}
 // 显示测试数据
 void CQuoridor::show_Font_test()
 {
@@ -1063,6 +1089,10 @@ void CQuoridor::showPlayerWall()
 		if (wall_vec[i].x%2==0)
 		{
 			tPicRectangle(board_x+lace+wall_vec[i].x/2*(roadw+wall_w),lace+(int)(wall_vec[i].y/2)*(roadw+wall_w)+roadw,(float)wall_l,(float)wall_w);
+		}
+		else
+		{
+			tPicRectangle(board_x+lace+(int)(wall_vec[i].x/2)*(roadw+wall_w)+roadw,lace+wall_vec[i].y/2*(roadw+wall_w),(float)wall_w,(float)wall_l);
 		}
 	}
 }

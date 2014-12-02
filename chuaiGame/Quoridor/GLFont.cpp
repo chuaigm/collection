@@ -175,18 +175,18 @@ void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)
 	binf->bmiHeader.biCompression = BI_RGB;     
 	binf->bmiHeader.biSizeImage   = bufsize; 
 	//分配内存
-	UCHAR* Bits = new UCHAR[bufsize];			
+	UCHAR* Bits = new UCHAR[bufsize];
 	//得到图像
 	::GetDIBits(MDC,bitmap,0,bm.bmHeight,Bits,binf,DIB_RGB_COLORS); 
  
 	//在RC中输出文字
 	glPixelStorei(GL_UNPACK_ALIGNMENT ,1);
 	//设置光栅位置
-	glRasterPos2i(x,y);                  
+	glRasterPos2i(x,y);
 	glBitmap(size.cx,size.cy,0,0,0,0,Bits);
 	
-	delete Bits;                            
-	SelectObject(MDC, oldBmp);           
+	delete [] Bits;
+	SelectObject(MDC, oldBmp);
 	::DeleteDC(MDC);
 
 	glPopAttrib();

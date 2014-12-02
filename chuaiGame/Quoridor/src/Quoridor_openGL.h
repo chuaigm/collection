@@ -9,6 +9,7 @@
 //
 //=======================================
 #include <vector>
+#include <algorithm>
 // Game state
 enum {
 	GAME_PRE,
@@ -43,6 +44,10 @@ enum {
 struct pos2d{
 	int x;
 	int y;
+	bool operator == (const pos2d &a)
+	{
+		return (a.x==this->x && a.y==this->y);
+	}
 };
 struct point2d{
 	float x;
@@ -116,11 +121,9 @@ public:
 	int iGameState;		// 当前游戏状态
 	int iMenu;			// 当前选择的菜单项
 	int iButton;
-	int iShowHelp;
 
 	//images
 	unsigned int g_cactus[GAME_TEX_NUM];
-	unsigned int TexBox[GAME_TEX_NUM];
 
 	//pre ani
 	int param1;
@@ -184,6 +187,8 @@ public:
 	// 标记的墙的第一处选取位置，此坐标与算法数组同下标
 	pos2d wall_pick;
 	// 需要绘制的墙的队列,先压入的是左边的块与下边的块(方便绘制)
+	// 墙的数据结构里，包含三个位置的坐标，分别是可以挡住两块路的数组坐标，
+	// 和这两个位置之间的那一小块中间连接的位置，用于判断交叉情况
 	std::vector<pos2d> wall_vec;
 };
 
