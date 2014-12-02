@@ -183,7 +183,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	WinWidth=atoi(tmpstr);
 	ConfigGetKeyValue("config.ini", "Window_Resolution", "height", tmpstr);
 	WinHeight=atoi(tmpstr);
-	if (WinWidth<800 || WinHeight<600)
+	if (WinWidth<800 || WinHeight<600||WinWidth-WinHeight<100)
 	{
 		MessageBox(NULL, "配置分辨率过小，将以默认分辨率开始游戏", "Quoridor_Game",MB_OK);
 		WinWidth = WIN_WIDTH;

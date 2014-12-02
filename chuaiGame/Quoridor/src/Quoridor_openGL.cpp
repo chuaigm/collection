@@ -135,29 +135,6 @@ int CQuoridor::haveDataFile()
 //加载各个图片,模型,初始化全局数据
 void CQuoridor::init()
 {
-	//mdl模型要最先初始化
-//	m_mdlobj.InitGL(0,"data/mdl/qian1.mdl");	
-/*
-	//load images
-	LoadT8("data/images/start1.bmp", g_cactus[0]);
-	LoadT8("data/images/start2.bmp", g_cactus[1]);
-
-	LoadT8("data/images/box0.bmp", TexBox[0]);
-	LoadT8("data/images/box01.bmp", TexBox[1]);
-	LoadT8("data/images/box1.bmp", TexBox[2]);
-	LoadT8("data/images/box11.bmp", TexBox[3]);
-	LoadT8("data/images/box2.bmp", TexBox[4]);
-	LoadT8("data/images/box21.bmp", TexBox[5]);
-	//up
-	LoadT8("data/images/map2.bmp", g_cactus[4]);
-	//ground
-	LoadT8("data/images/map5.bmp", g_cactus[7]);
-
-//	g_text = gluNewQuadric();
-//	gluQuadricTexture(g_text, GL_TRUE);
-
-	LoadT8("data/images/TRIX1.bmp", g_cactus[8]);
-*/
 	//load images
 	LoadT8("data/images/quoridor_cover.bmp", g_cactus[0]);
 	LoadT8("data/images/chess_board_shading.bmp", g_cactus[1]);
