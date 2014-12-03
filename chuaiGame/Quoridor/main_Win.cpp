@@ -120,7 +120,7 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
         case WM_KEYUP:
             switch (wParam)
             {
-			case 0x70:	// F1 ¼ü
+			case VK_F4:	// F4 ¼ü
 				ShowWindow(hWnd, SW_MINIMIZE);	
 				break;
 			default:

@@ -22,14 +22,18 @@ enum {
 };
 // 菜单数量
 #define MENU_NUM 5
+#define INVALID_VAL -1
 // Game Menu state
 // 这里的顺序请注意与绘制菜单时的对应关系
+// 所以新加入的枚举值，加在后面，不要影响前面给主菜单的赋值部分
 enum {
 	MENU_QUIT,
 	MENU_HELP,
 	MENU_SENDBOX,
 	MENU_MULTIP,
-	MENU_SINGE
+	MENU_SINGE,
+	BUTTON_RETURN,
+	BUTTON_INIT
 };
 // 棋盘数组里代表的含义
 enum {
@@ -109,19 +113,23 @@ public:
 	void drawMouse();
 	// 绘制棋盘
 	void showChessBorad();
-	// 绘制游戏过程中的按钮
-	void showInGameBotton();
+
 	// 绘制玩家和墙
 	void showPlayerWall();
 	// 绘制选定遮罩层
 	void drawPickMask();
+	// 确认窗口
+	void drawConfirm();
+	// 重设游戏数据
+	void resetGameData();
 
 	////////////////////////////////////////////////////////////
 	//data
 	int iGameState;		// 当前游戏状态
 	int iMenu;			// 当前选择的菜单项
-	int iButton;
-
+	int iButton;		// 按钮选择的结果
+	bool g_debug_flag;	// 显示调试信息
+	
 	//images
 	unsigned int g_cactus[GAME_TEX_NUM];
 
@@ -134,6 +142,7 @@ public:
 	//int xmouseOld;
 	//int ymouseOld;
 
+	//------------------------------------
 	// 主菜单相关的计算参数
 	// 这些参数，在initview时，根据opengl视口情况再具体赋值
 	pos2d menu;
@@ -144,9 +153,10 @@ public:
 	int helpRetButtonW;
 	// 帮助界面返回菜单按钮横坐标
 	int rButtonx;
-	// 菜单上下间距
+	// 主菜单上下间距
 	int menu_dis;
 
+	//------------------------------------
 	// 游戏棋盘数据
 	// 正方形路的宽度
 	float roadw;
@@ -167,29 +177,29 @@ public:
 	// 游戏棋盘花边宽度
 	int lace;
 
+	//------------------------------------
 	// 游戏算法数据
 	// 其值如上述枚举
 	char gameData[sz][sz];
 	// 实时计算的获取鼠标在棋盘上的整数位置
 	// 注意，这个值并不是只按照road计算，是包含墙在内的坐标
 	pos2d arr;
-
 	// 玩家位置，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
 	pos2d yellow_ply;
 	pos2d red_ply;
 	pos2d green_ply;
 	pos2d blue_ply;
-
 	// 鼠标选定的玩家位置,这个位置对应于算法数组的下标的一半
 	// 也就是说，只计算玩家位置的坐标(同ply)，最大为9-1
 	pos2d pickup;
-
 	// 标记的墙的第一处选取位置，此坐标与算法数组同下标
 	pos2d wall_pick;
 	// 需要绘制的墙的队列,先压入的是左边的块与下边的块(方便绘制)
 	// 墙的数据结构里，包含三个位置的坐标，分别是可以挡住两块路的数组坐标，
 	// 和这两个位置之间的那一小块中间连接的位置，用于判断交叉情况
 	std::vector<pos2d> wall_vec;
+
+	//------------------------------------
 };
 
 #endif

@@ -82,6 +82,8 @@ CQuoridor::CQuoridor()
 	// 墙的第一个选取位置
 	wall_pick.x=-1;
 	wall_pick.y=-1;
+	// 显示调试信息
+	g_debug_flag=false;
 }
 
 CQuoridor::~CQuoridor()
@@ -207,7 +209,10 @@ void CQuoridor::initView()
 void CQuoridor::showMain()
 {
 	// 显示测试数据
-	show_Font_test();
+	if (g_debug_flag)
+	{
+		show_Font_test();
+	}
 
 	switch(iGameState)
 	{
@@ -276,6 +281,7 @@ void CQuoridor::check()
 		{
 			if( y>menu.y+i*menu_dis && y<menu.y+i*menu_dis+menu_h )
 			{
+				// 注意，这里给菜单选取值，赋值的i，是与定义的枚举变量所对应的
 				iMenu=i;
 				break;
 			}
@@ -286,32 +292,45 @@ void CQuoridor::check()
 	case GAME_SENDBOX:
 		// 实时检查鼠标位置
 		// 检查时，如果鼠标位于棋盘边界外
-		if (x<board_x+lace || x>board_x+m_OpenGL->RCheight-lace)
-			break;
-		// 当前位置除一个路的宽度和一个墙的宽度的整数部分
-		it=(int)((x-board_x-lace)/(roadw+wall_w));
-		// 余数部分
-		remain = (x-board_x-lace)-it*(roadw+wall_w);
-		if (remain>roadw)
-		{	// 余数比路宽度大，这是墙的位置，奇数
-			arr.x = it*2+1;
-		} else {
-			// 玩家可以放置的位置，路，偶数
-			arr.x = it*2;
-		}
-		it = (int)((y-lace)/(roadw+wall_w));
-		remain = (y-lace) - it*(roadw+wall_w);
-		if (remain>roadw)
+		if (x>board_x+lace && x<board_x+m_OpenGL->RCheight-lace)
 		{
-			arr.y = it*2+1;
-		} else {
-			arr.y = it*2;
+			// 当前位置除一个路的宽度和一个墙的宽度的整数部分
+			it=(int)((x-board_x-lace)/(roadw+wall_w));
+			// 余数部分
+			remain = (x-board_x-lace)-it*(roadw+wall_w);
+			if (remain>roadw)
+			{	// 余数比路宽度大，这是墙的位置，奇数
+				arr.x = it*2+1;
+			} else {
+				// 玩家可以放置的位置，路，偶数
+				arr.x = it*2;
+			}
+			it = (int)((y-lace)/(roadw+wall_w));
+			remain = (y-lace) - it*(roadw+wall_w);
+			if (remain>roadw)
+			{
+				arr.y = it*2+1;
+			} else {
+				arr.y = it*2;
+			}
+		}
+		// 这里检测返回菜单按钮和重置棋盘按钮
+		else if (x>menu.x&&x<menu.x+menu_w)
+		{
+			if (y>menu.y&&y<menu.y+menu_h)
+			{
+				iButton=BUTTON_INIT;
+			}
+			else if (y>m_OpenGL->RCheight-menu.y-menu_h&&y<m_OpenGL->RCheight-menu.y)
+			{
+				iButton=BUTTON_RETURN;
+			}
 		}
 		break;
 	case GAME_HELP:
 		if (x>rButtonx&&x<rButtonx+helpRetButtonW&&y>menu.y&&y<menu.y+menu_h)
 		{
-			iButton=9;
+			iButton=BUTTON_RETURN;
 		}
 		break;
 
@@ -322,6 +341,11 @@ void CQuoridor::check()
 // 左键松开
 void CQuoridor::lbuttonproc(int lparam)
 {
+	if (iButton==BUTTON_RETURN)
+	{
+		iGameState=GAME_MENU;
+		return;
+	}
 	switch(iGameState)
 	{
 	case GAME_MENU:
@@ -353,6 +377,10 @@ void CQuoridor::lbuttonproc(int lparam)
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
+		if (iButton==BUTTON_INIT)
+		{
+			resetGameData();
+		}
 		// 存在已选取的位置，并且鼠标再次点击时，位置为双偶数位
 		if (-1 != pickup.x && -1 != pickup.y && 0==arr.x%2 && 0==arr.y%2)
 		{	// 这种情况，进入到人物棋子处理阶段
@@ -504,17 +532,13 @@ void CQuoridor::lbuttonproc(int lparam)
 		}
 		break;
 	case GAME_HELP:
-		if (9==iButton)
-		{
-			iGameState=GAME_MENU;
-		}
 		break;
 
 	default:
 		break;
 	}
 }
-
+// 鼠标右键处理
 void CQuoridor::rbuttonproc( int lparam )
 {
 	switch(iGameState)
@@ -547,18 +571,18 @@ void CQuoridor::rbuttonproc( int lparam )
 			gameData[arr.x][arr.y]=0;
 			break;
 		case GD_WALL:
-			for (size_t i=0; i<wall_vec.size();i++)
-			{
+			{	// 从vector中，搜索当前右键选取的墙的位置
 				std::vector<pos2d>::iterator itor=find(wall_vec.begin(),wall_vec.end(),arr);
 				if (itor==wall_vec.end())
 				{
-					continue;
+					//continue;
+					break;
 				}
 				int dist=distance(wall_vec.begin(),itor);
 				// 如果间距是偶数，则下标也是偶数
 				if (dist%2==0)
 				{
-					// 注意这里，可能存在迭代器失效的问题
+					// 注意避免迭代器失效的问题
 					gameData[itor->x][itor->y]=GD_BLANK;
 					gameData[(itor->x+(itor+1)->x)/2][(itor->y+(itor+1)->y)/2]=GD_BLANK;
 					gameData[(itor+1)->x][(itor+1)->y]=GD_BLANK;
@@ -598,28 +622,15 @@ void CQuoridor::keyupproc(int keyparam)
 		//		iEnemyNum=0;
 		//	}		
 		//	break;
-
+	case VK_F1:
+		g_debug_flag=!g_debug_flag;
+		break;
 	case VK_ESCAPE:
 		//回到菜单
 		iGameState=GAME_MENU;
-		initView();
+		//initView();
 		break;
 
-	default:
-		break;
-	}
-}
-// 绘制游戏进行中的按钮
-void CQuoridor::showInGameBotton()
-{
-	switch(iGameState)
-	{
-	case GAME_SINGE:
-	case GAME_MULTIP:
-	case GAME_IN_CONFIG:
-		break;
-	case GAME_HELP:
-		break;
 	default:
 		break;
 	}
@@ -933,7 +944,7 @@ void CQuoridor::showHelp()
 
 	//图片
 	texture_select(g_cactus[9]);
-	if(iButton==9)
+	if(iButton==BUTTON_RETURN)
 	{
 		tPicButton((float)rButtonx,(float)menu.y,(float)helpRetButtonW,(float)menu_h,0.0f);
 	}
@@ -945,6 +956,7 @@ void CQuoridor::showHelp()
 
 void CQuoridor::showChessBorad()
 {
+	// 所占图层深度
 	float layer=-0.5;
 	// 绘制玩家信息指示标志区域
 	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,0.7f);
@@ -1007,30 +1019,40 @@ void CQuoridor::showChessBorad()
 	glPopMatrix();
 	glPopAttrib();
 
-	//文字
-	char tmpstr[64]={0};
-	sprintf(tmpstr,"确    认");
-	myfont.Print2D(menu.x+10,menu.y+5,tmpstr,FONT1,1,1,1);
-	// 按钮图片
+	// 按钮贴图
 	texture_select(g_cactus[9]);
-	if(1==iButton)
-	{
-		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.0f);
-	}
-	else
-	{
-		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.5f);
-	}
-
+	char tmpstr[64]={0};
 	sprintf(tmpstr,"返回菜单");
 	myfont.Print2D(menu.x+10,m_OpenGL->RCheight-menu.y-menu_h+5,tmpstr,FONT1,1,1,1);
-	if(0==iButton)
+	if(BUTTON_RETURN==iButton)
 	{
 		tPicButton((float)menu.x,(float)(m_OpenGL->RCheight-menu.y-menu_h),(float)menu_w,(float)menu_h,0.0f);
 	}
 	else
 	{
 		tPicButton((float)menu.x,(float)(m_OpenGL->RCheight-menu.y-menu_h),(float)menu_w,(float)menu_h,0.5f);
+	}
+
+	switch (iGameState)
+	{
+	case GAME_SINGE:
+		sprintf(tmpstr,"确    认");
+		break;
+	case GAME_SENDBOX:
+		sprintf(tmpstr,"重置棋盘");
+		break;
+	default:
+		break;
+	}
+	myfont.Print2D(menu.x+10,menu.y+5,tmpstr,FONT1,1,1,1);
+	// 按钮图片
+	if(BUTTON_INIT==iButton)
+	{
+		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.0f);
+	}
+	else
+	{
+		tPicButton((float)menu.x,(float)(menu.y),(float)menu_w,(float)menu_h,0.5f);
 	}
 }
 
@@ -1094,4 +1116,41 @@ void CQuoridor::drawPickMask()
 			tRectangle(board_x+lace+(int)(wall_pick.x/2)*(roadw+wall_w)+roadw,lace+wall_pick.y/2*(roadw+wall_w),0,(float)wall_w,(float)wall_l*4/9,1.0f,1,0,0.6f);
 		}
 	}
+}
+// 绘制确认窗口
+void CQuoridor::drawConfirm()
+{
+	float layer=0.3f;
+	float tri_w=m_OpenGL->RCwidth/3.0f;
+	float tri_h=m_OpenGL->RCheight/3.0f;
+	//绘制背景半透明底纹窗口
+	tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.7f);
+}
+
+void CQuoridor::resetGameData()
+{
+	// 清空vector
+	wall_vec.swap(std::vector<pos2d>());
+	// 棋盘数据初始化
+	memset(gameData,0,sizeof(gameData));
+	// 重置玩家位置数据
+	yellow_ply.x=0;
+	yellow_ply.y=4;
+	red_ply.x=4;
+	red_ply.y=8;
+	green_ply.x=8;
+	green_ply.y=4;
+	blue_ply.x=4;
+	blue_ply.y=0;
+	// 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
+	gameData[2*yellow_ply.x][2*yellow_ply.y]=GD_YELLOW;
+	gameData[2*red_ply.x][2*red_ply.y]=GD_RED;
+	gameData[2*green_ply.x][2*green_ply.y]=GD_GREEN;
+	gameData[2*blue_ply.x][2*blue_ply.y]=GD_BLUE;
+	// 鼠标选取的位置
+	pickup.x=-1;
+	pickup.y=-1;
+	// 墙的第一个选取位置
+	wall_pick.x=-1;
+	wall_pick.y=-1;
 }

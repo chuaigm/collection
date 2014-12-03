@@ -21,7 +21,7 @@ public:
 		expire_time=iNumDest;
 
 		timenow=clock();
-		// 这个值是时间触发间隔
+		// 这个值是时间触发间隔, 1000/40=25 每隔25毫秒触发一次，每秒触发40次
 		timeclip=CLOCKS_PER_SEC/40;
 	}
 	~MYCLOCK()
