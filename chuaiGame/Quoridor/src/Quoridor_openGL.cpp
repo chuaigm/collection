@@ -225,8 +225,9 @@ void CQuoridor::showMain()
 	case GAME_SINGE:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
-		showChessBorad();
-		showPlayerWall();
+		drawAccessory();
+		drawChessBorad();
+		drawPlayerWall();
 		// 注意此处，透明图层与绘制顺序有关
 		drawPickMask();
 		break;
@@ -954,15 +955,10 @@ void CQuoridor::showHelp()
 	}
 }
 
-void CQuoridor::showChessBorad()
+void CQuoridor::drawChessBorad()
 {
 	// 所占图层深度
 	float layer=-0.5;
-	// 绘制玩家信息指示标志区域
-	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,0.7f);
-	tRectangle(0,m_OpenGL->RCheight*2/4.0f,layer,(float)player_info_w,(float)player_info_h,1,0,0,0.7f);
-	tRectangle(0,m_OpenGL->RCheight*1/4.0f,layer,(float)player_info_w,(float)player_info_h,0,1,0,0.7f);
-	tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,1);
 
 	// 绘制棋盘底
 	texture_select(g_cactus[1]);
@@ -982,7 +978,7 @@ void CQuoridor::showChessBorad()
 	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);
 	glTranslatef(0,0,layer);
-	// 左边黄色标记
+	// 左边黄色边纹
 	glColor3f(1, 1, 0);
 	glBegin(GL_QUADS);
 	glVertex3f( (float)board_x, 0,  0.0f);
@@ -990,7 +986,7 @@ void CQuoridor::showChessBorad()
 	glVertex3f( (float)board_x+lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glVertex3f( (float)board_x+lace, (float)lace,  0.0f);
 	glEnd();
-	// 上边红色标记
+	// 上边红色边纹
 	glColor3f(1, 0, 0);
 	glBegin(GL_QUADS);
 	glVertex3f( (float)board_x, (float)m_OpenGL->RCheight, 0.0f);
@@ -998,7 +994,7 @@ void CQuoridor::showChessBorad()
 	glVertex3f( (float)board_x+m_OpenGL->RCheight-lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glVertex3f( (float)board_x+lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glEnd();
-	// 右边绿色标记
+	// 右边绿色边纹
 	glColor3f(0, 1, 0);
 	glBegin(GL_QUADS);
 	glVertex3f((float) board_x+m_OpenGL->RCheight, (float)m_OpenGL->RCheight,  0.0f);
@@ -1006,7 +1002,7 @@ void CQuoridor::showChessBorad()
 	glVertex3f((float) board_x+m_OpenGL->RCheight-lace, (float)lace,  0.0f);
 	glVertex3f((float) board_x+m_OpenGL->RCheight-lace, (float)m_OpenGL->RCheight-lace,  0.0f);
 	glEnd();
-	// 下边蓝色标记
+	// 下边蓝色边纹
 	glColor3f(0, 0, 1);
 	glBegin(GL_QUADS);
 	glVertex3f((float)board_x,  0,  0.0f);
@@ -1018,6 +1014,17 @@ void CQuoridor::showChessBorad()
 	glEnable(GL_TEXTURE_2D);
 	glPopMatrix();
 	glPopAttrib();
+}
+
+void CQuoridor::drawAccessory()
+{
+	// 所占图层深度
+	float layer=-0.5;
+	// 绘制玩家信息指示标志区域
+	tRectangle(0,m_OpenGL->RCheight*3/4.0f,layer,(float)player_info_w,(float)player_info_h,1,1,0,0.7f);
+	tRectangle(0,m_OpenGL->RCheight*2/4.0f,layer,(float)player_info_w,(float)player_info_h,1,0,0,0.7f);
+	tRectangle(0,m_OpenGL->RCheight*1/4.0f,layer,(float)player_info_w,(float)player_info_h,0,1,0,0.7f);
+	tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,1);
 
 	// 按钮贴图
 	texture_select(g_cactus[9]);
@@ -1056,7 +1063,7 @@ void CQuoridor::showChessBorad()
 	}
 }
 
-void CQuoridor::showPlayerWall()
+void CQuoridor::drawPlayerWall()
 {
 	// 对应颜色的玩家，黄，红，绿，蓝
 	texture_select(g_cactus[3]);

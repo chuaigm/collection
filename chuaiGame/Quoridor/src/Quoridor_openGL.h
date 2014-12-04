@@ -57,6 +57,18 @@ struct point2d{
 	float x;
 	float y;
 };
+class player {
+public:
+	player():id(0),x(0),y(0),wall_num_left(0),next(NULL){};
+	~player(){};
+	// 玩家的数字编号，复用GD_系列数据，能反应颜色
+	int id;
+	// 玩家的位置，是按照玩家可站的位置计算，0~8
+	int x;
+	int y;
+	unsigned int wall_num_left;
+	player* next;
+};
 //struct walls{
 //	pos2d w[2];
 //};
@@ -94,8 +106,7 @@ public:
 	// 鼠标处理函数
 	//void mouseproc(int lparam);
 	
-	void showmapBox(float *ppos,float *psize,float *ptex,int itex,int iHastop);
-	void light0();
+	//void light0();
 
 	//加载位图
 	bool LoadT8(char *filename, GLuint &texture);
@@ -112,10 +123,11 @@ public:
 
 	void drawMouse();
 	// 绘制棋盘
-	void showChessBorad();
-
+	void drawChessBorad();
+	// 绘制附属画面
+	void drawAccessory();
 	// 绘制玩家和墙
-	void showPlayerWall();
+	void drawPlayerWall();
 	// 绘制选定遮罩层
 	void drawPickMask();
 	// 确认窗口
@@ -185,10 +197,10 @@ public:
 	// 注意，这个值并不是只按照road计算，是包含墙在内的坐标
 	pos2d arr;
 	// 玩家位置，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
-	pos2d yellow_ply;
-	pos2d red_ply;
-	pos2d green_ply;
-	pos2d blue_ply;
+	player yellow_ply;
+	player red_ply;
+	player green_ply;
+	player blue_ply;
 	// 鼠标选定的玩家位置,这个位置对应于算法数组的下标的一半
 	// 也就是说，只计算玩家位置的坐标(同ply)，最大为9-1
 	pos2d pickup;
