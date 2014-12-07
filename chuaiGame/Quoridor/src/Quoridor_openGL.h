@@ -33,7 +33,7 @@ enum {
 	MENU_MULTIP,
 	MENU_SINGE,
 	BUTTON_RETURN,
-	BUTTON_INIT
+	BUTTON_INIT_OR_CONFIRM,
 };
 // 棋盘数组里代表的含义
 enum {
@@ -61,7 +61,7 @@ class player {
 public:
 	player():id(0),x(0),y(0),wall_num_left(0),next(NULL){};
 	~player(){};
-	// 玩家的数字编号，复用GD_系列数据，能反应颜色
+	// 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭
 	int id;
 	// 玩家的位置，是按照玩家可站的位置计算，0~8
 	int x;
@@ -74,6 +74,7 @@ public:
 //};
 // 游戏棋盘数据的数组尺寸
 const int sz=17;
+const int wall_total_num=21;
 
 class CQuoridor
 {
@@ -128,6 +129,8 @@ public:
 	void drawAccessory();
 	// 绘制玩家和墙
 	void drawPlayerWall();
+	// 绘制选择游戏配置
+	void drawInConfig();
 	// 绘制选定遮罩层
 	void drawPickMask();
 	// 确认窗口
@@ -176,8 +179,8 @@ public:
 	float wall_l;
 	float wall_w;
 	// 玩家指示格的宽度和高度
-	int player_info_w;
-	int player_info_h;
+	float player_info_w;
+	float player_info_h;
 	// 棋盘的起点定位坐标,棋盘左下角
 	// |-----------------|
 	// |   |         |   |
@@ -196,16 +199,13 @@ public:
 	// 实时计算的获取鼠标在棋盘上的整数位置
 	// 注意，这个值并不是只按照road计算，是包含墙在内的坐标
 	pos2d arr;
-	// 玩家位置，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
-	player yellow_ply;
-	player red_ply;
-	player green_ply;
-	player blue_ply;
-	// 鼠标选定的玩家位置,这个位置对应于算法数组的下标的一半
-	// 也就是说，只计算玩家位置的坐标(同ply)，最大为9-1
+	// 玩家信息，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
+	// 序号默认包含颜色信息，0:黄色，1:红色，2:绿色，3:蓝色
+	player plyer[4];
+	// 鼠标选定的位置,这个位置对应于算法数组的下标的一半
 	pos2d pickup;
 	// 标记的墙的第一处选取位置，此坐标与算法数组同下标
-	pos2d wall_pick;
+	//pos2d wall_pick;
 	// 需要绘制的墙的队列,先压入的是左边的块与下边的块(方便绘制)
 	// 墙的数据结构里，包含三个位置的坐标，分别是可以挡住两块路的数组坐标，
 	// 和这两个位置之间的那一小块中间连接的位置，用于判断交叉情况
