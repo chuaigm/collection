@@ -62,19 +62,23 @@ CQuoridor::CQuoridor()
 	arr.y=-1;
 	// 玩家信息数据
 	// 黄
-	plyer[0].id=0;
+	plyer[0].id=2;
+	plyer[0].color=GD_YELLOW;
 	plyer[0].x=0;
 	plyer[0].y=4;
 	// 红
-	plyer[1].id=2;
+	plyer[1].id=1;
+	plyer[1].color=GD_RED;
 	plyer[1].x=4;
 	plyer[1].y=8;
 	// 绿
-	plyer[2].id=0;
+	plyer[2].id=2;
+	plyer[2].color=GD_GREEN;
 	plyer[2].x=8;
 	plyer[2].y=4;
 	// 蓝
-	plyer[3].id=1;
+	plyer[3].id=0;
+	plyer[3].color=GD_BLUE;
 	plyer[3].x=4;
 	plyer[3].y=0;
 
@@ -406,7 +410,8 @@ void CQuoridor::lbuttonproc(int lparam)
 		// 在单人模式下，此按钮为确定
 		if (iButton==BUTTON_INIT_OR_CONFIRM)
 		{
-			int counter=0;
+			// 这里，相当于单人游戏的初始化部分
+			int nn=0;
 			ply_head=NULL;
 			player* tail=NULL;
 			// 这里也可以考虑清一下每个玩家的next指针
@@ -421,15 +426,24 @@ void CQuoridor::lbuttonproc(int lparam)
 					}
 					tail->next=&plyer[i];
 					tail=&plyer[i];
-					counter++;
+					nn++;
 				}
 			}
-			if (counter<2)
+			// 当可用玩家数量，少于2时，无法进行游戏
+			if (nn<2)
 			{	// 以后添加弹窗提示, 玩家人数不能少于2人
 				ply_head=NULL;
 				break;
 			}
+			// 构建环形链表
 			tail->next=ply_head;
+			player* tmp_head=ply_head;
+			// 循环给剩余墙数赋值
+			do
+			{	// 整形数除法
+				tmp_head->wall_num_left=wall_total_num/nn;
+				tmp_head=tmp_head->next;
+			}while (ply_head!=tmp_head);
 			iGameState=GAME_SINGE;
 		}
 
@@ -1159,17 +1173,47 @@ void CQuoridor::drawAccessory()
 	char tmpstr[64]={0};
 	// 所占图层深度
 	float layer=-0.5;
+	float alp=0.8f;
 	// 绘制玩家信息指示标志区域
-	tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,0.8f);
-	tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,0.8f);
-	tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,0.8f);
-	tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,0.8f);
+	if (ply_head == &plyer[0])
+	{
+		tRectangle(0,3*player_info_h,layer,player_info_w*7/6,player_info_h,1,1,0,alp);
+	}
+	else
+	{
+		tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
+	}
+	if (ply_head == &plyer[1])
+	{
+		tRectangle(0,2*player_info_h,layer,player_info_w*7/6,player_info_h,1,0,0,alp);
+	}
+	else
+	{
+		tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
+	}
+	if (ply_head == &plyer[2])
+	{
+		tRectangle(0,1*player_info_h,layer,player_info_w*7/6,player_info_h,0,1,0,alp);
+	}
+	else
+	{
+		tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
+	}
+	if (ply_head == &plyer[3])
+	{
+		tRectangle(0,0,layer,(float)player_info_w*7/6,(float)player_info_h,0,0,1,alp);
+	}
+	else
+	{
+		tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,alp);
+	}
+	
 
 	for (int i=0; i<4; i++)
 	{
 		if (plyer[i].id!=2)
 		{
-			// 这里注意，贴图的编号与顺序定义时，需要与程序所描述的顺序一致
+			// 这里需要注意贴图的标号顺序
 			texture_select(g_cactus[3+i]);
 			tPicRectangle(0,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
 			sprintf(tmpstr,"墙剩余: %d",plyer[i].wall_num_left);
@@ -1250,6 +1294,17 @@ void CQuoridor::drawPlayerWall()
 			if (plyer[i].x>-1 && plyer[i].y>-1)
 			{
 				tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[i].x,lace+(roadw+wall_w)*plyer[i].y,roadw,roadw);
+				/*switch (i)
+				{
+				case 0:
+					glColor4f(1.0f,1.0f,0.0f,0.8f);
+				case 1:
+					glColor4f(1.0f,0.0f,0.0f,0.8f);
+				case 2:
+					glColor4f(0.0f,1.0f,0.0f,0.8f);
+				case 3:
+					glColor4f(0.0f,0.0f,1.0f,0.8f);
+				}*/
 			}
 		}
 	}
@@ -1295,8 +1350,45 @@ void CQuoridor::drawPickMask()
 	}
 	else if (pickup.x%2==0 && pickup.y%2==0)
 	{
-		// 这里以后换个贴图
-		tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+		if (iGameState==GAME_SINGE)
+		{
+			// 这里以后换个贴图
+			tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			if ( pickup.x > 0 
+				&& gameData[pickup.x-1][pickup.y]==GD_BLANK 
+				&& gameData[pickup.x-2][pickup.y]==GD_BLANK )
+			{
+				// 顺便在这里做赋值，再想想有没有什么更好的方法
+				//gameData[pickup.x-2][pickup.y]='c';
+				tRectangle(board_x+lace+(pickup.x-2)/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			}
+			if ( pickup.x < 16 
+				&& gameData[pickup.x+1][pickup.y]==GD_BLANK 
+				&& gameData[pickup.x+2][pickup.y]==GD_BLANK )
+			{
+				//gameData[pickup.x-2][pickup.y]='c';
+				tRectangle(board_x+lace+(pickup.x+2)/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			}
+			if ( pickup.y > 0 
+				&& gameData[pickup.x][pickup.y-1]==GD_BLANK 
+				&& gameData[pickup.x][pickup.y-2]==GD_BLANK )
+			{
+				//gameData[pickup.x][pickup.y-2]='c';
+				tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+(pickup.y-2)/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			}
+			if ( pickup.y < 16 
+				&& gameData[pickup.x][pickup.y+1]==GD_BLANK 
+				&& gameData[pickup.x][pickup.y+2]==GD_BLANK )
+			{
+				//gameData[pickup.x][pickup.y+2]='c';
+				tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+(pickup.y+2)/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			}
+		}
+		else if (iGameState==GAME_SENDBOX)
+		{
+			// 这里以后换个贴图
+			tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+		}
 	}
 	else if (pickup.x%2==0 && pickup.y%2!=0)
 	{
@@ -1330,12 +1422,20 @@ void CQuoridor::resetGameData()
 	// 重置玩家位置数据
 	plyer[0].x=0;
 	plyer[0].y=4;
+	plyer[0].wall_num_left=0;
+	plyer[0].next=NULL;
 	plyer[1].x=4;
 	plyer[1].y=8;
+	plyer[1].wall_num_left=0;
+	plyer[1].next=NULL;
 	plyer[2].x=8;
 	plyer[2].y=4;
+	plyer[2].wall_num_left=0;
+	plyer[2].next=NULL;
 	plyer[3].x=4;
 	plyer[3].y=0;
+	plyer[3].wall_num_left=0;
+	plyer[3].next=NULL;
 	// 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
 	gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
 	gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
@@ -1344,6 +1444,8 @@ void CQuoridor::resetGameData()
 	// 鼠标选取的位置
 	pickup.x=-1;
 	pickup.y=-1;
+	// 玩家环装链表头指针
+	ply_head=NULL;
 }
 
 void CQuoridor::drawInConfig()
@@ -1427,8 +1529,8 @@ void CQuoridor::playerActionRule()
 	// 如果之前没有选取任何位置
 	if ( pickup.x <0 && pickup.y <0 )
 	{
-		// 空白的玩家位
-		if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]==GD_BLANK)
+		// 空白的玩家位，或者不能控制的玩家位
+		if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=ply_head->color)
 		{
 			return;
 		}
@@ -1445,6 +1547,7 @@ void CQuoridor::playerActionRule()
 		}
 		// 并且鼠标再次点击时，前后两次都是玩家位置，即都为双偶数位
 		else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
+		//else if (gameData[arr.x][arr.y]='c')
 		{
 			// 这种情况，进入到人物棋子处理阶段
 			char tmp=0;
