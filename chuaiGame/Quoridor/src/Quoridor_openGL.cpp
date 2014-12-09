@@ -407,7 +407,7 @@ void CQuoridor::lbuttonproc(int lparam)
 		}		
 		break;
 	case GAME_IN_CONFIG:
-		// 在单人模式下，此按钮为确定
+		// 在单人配置模式下，此按钮为确定
 		if (iButton==BUTTON_INIT_OR_CONFIRM)
 		{
 			// 这里，相当于单人游戏的初始化部分
@@ -510,179 +510,7 @@ void CQuoridor::lbuttonproc(int lparam)
 	case GAME_MULTIP:
 		break;
 	case GAME_SENDBOX:
-		// 沙盒模式下，初始化棋盘的按钮
-		if (iButton==BUTTON_INIT_OR_CONFIRM)
-		{
-			resetGameData();
-			break;
-		}
-		// 已经存在的墙的位置，是不能被选取的
-		if (gameData[arr.x][arr.y]==GD_WALL)
-		{
-			break;
-		}
-		// 如果之前没有选取任何位置
-		if ( pickup.x <0 && pickup.y <0 )
-		{
-			// 空白的玩家位
-			if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]==GD_BLANK)
-			{
-				break;
-			}
-			pickup.x=arr.x;
-			pickup.y=arr.y;
-		}
-		else
-		{	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
-			if (arr == pickup)
-			{
-				pickup.x = -1;
-				pickup.y = -1;
-				break;
-			}
-			// 并且鼠标再次点击时，前后两次都是玩家位置，即都为双偶数位
-			else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
-			{
-				// 这种情况，进入到人物棋子处理阶段
-				char tmp=0;
-				// 交换
-				tmp=gameData[arr.x][arr.y];
-				gameData[arr.x][arr.y]=gameData[pickup.x][pickup.y];
-				gameData[pickup.x][pickup.y]=tmp;
-				// 在目标位置上，更新玩家变量
-				switch (gameData[arr.x][arr.y])
-				{
-				case GD_BLANK:
-					break;
-				case GD_YELLOW:
-					plyer[0].x=arr.x/2;
-					plyer[0].y=arr.y/2;
-					break;
-				case GD_RED:
-					plyer[1].x=arr.x/2;
-					plyer[1].y=arr.y/2;
-					break;
-				case GD_GREEN:
-					plyer[2].x=arr.x/2;
-					plyer[2].y=arr.y/2;
-					break;
-				case GD_BLUE:
-					plyer[3].x=arr.x/2;
-					plyer[3].y=arr.y/2;
-					break;
-				default:
-					break;
-				}
-				// 对于旧的位置上，更新玩家变量
-				switch (gameData[pickup.x][pickup.y])
-				{
-				case GD_BLANK:
-					break;
-				case GD_YELLOW:
-					plyer[0].x=pickup.x/2;
-					plyer[0].y=pickup.y/2;
-					break;
-				case GD_RED:
-					plyer[1].x=pickup.x/2;
-					plyer[1].y=pickup.y/2;
-					break;
-				case GD_GREEN:
-					plyer[2].x=pickup.x/2;
-					plyer[2].y=pickup.y/2;
-					break;
-				case GD_BLUE:
-					plyer[3].x=pickup.x/2;
-					plyer[3].y=pickup.y/2;
-					break;
-				default:
-					break;
-				}
-				// 将选取位置赋值为无效值
-				pickup.x=-1;
-				pickup.y=-1;
-				break;
-			}
-			// 在选墙的过程中，跳过玩家位置
-			else if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]==GD_BLANK)
-			{
-				break;
-			}
-			// 如果上次选取的位置也是墙，这次选取的也是墙，并且这次选取的位置是空
-			// 连续选取相同位置已经在最开始过滤
-			else if ((pickup.x+pickup.y)%2==1 
-				&& (arr.x+arr.y)%2==1 
-				&& GD_BLANK == gameData[arr.x][arr.y])
-			{
-				// 如果是横墙,并且这次选的和上次选的在同一行上
-				if (pickup.x%2==0&&arr.y==pickup.y)
-				{	// 如果这次选的在上一次选的左边一块位置
-					// 并且两块连接的中间位置是可用的
-					if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
-					{
-						// 压入墙绘制队列,一定先压入左边的块
-						wall_vec.push_back(arr);
-						wall_vec.push_back(pickup);
-						// 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
-						gameData[arr.x][arr.y]=GD_WALL;
-						gameData[arr.x+1][arr.y]=GD_WALL;
-						gameData[pickup.x][pickup.y]=GD_WALL;
-					}
-					// 如果在这次选的在上一次右边一块位置
-					// 并且两块连接的中间位置是可用的
-					else if(arr.x==pickup.x+2&&gameData[arr.x-1][arr.y]==GD_BLANK)
-					{
-						// 压入墙绘制队列,一定先压入左边的块
-						wall_vec.push_back(pickup);
-						wall_vec.push_back(arr);
-						// 更新游戏算法数据
-						gameData[arr.x][arr.y]=GD_WALL;
-						gameData[arr.x-1][arr.y]=GD_WALL;
-						gameData[pickup.x][pickup.y]=GD_WALL;
-					}
-					// 预选墙清空
-					pickup.x=-1;
-					pickup.y=-1;
-					break;
-				}
-				// 如果是竖墙，并且这次选的和上次选的在同一列上
-				else if(pickup.y%2==0&&arr.x==pickup.x)
-				{	// 如果这次选择的在上一次选择的下面一块
-					// 并且两块连接的中间位置是可用的
-					if (arr.y==pickup.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
-					{
-						// 压入墙绘制队列，一定先压入下面的一块
-						wall_vec.push_back(arr);
-						wall_vec.push_back(pickup);
-						// 更新游戏算法数据
-						gameData[arr.x][arr.y]=GD_WALL;
-						gameData[arr.x][arr.y+1]=GD_WALL;
-						gameData[pickup.x][pickup.y]=GD_WALL;
-					}
-					// 如果这次选择的在上一次选择的上面一块
-					// 并且两块连接的中间位置是可用的
-					else if (arr.y==pickup.y+2&&gameData[arr.x][arr.y-1]==GD_BLANK)
-					{
-						// 压入墙绘制队列，一定先压入下面的一块
-						wall_vec.push_back(pickup);
-						wall_vec.push_back(arr);
-						// 更新游戏算法数据
-						gameData[arr.x][arr.y]=GD_WALL;
-						gameData[arr.x][arr.y-1]=GD_WALL;
-						gameData[pickup.x][pickup.y]=GD_WALL;
-					}
-					// 预选墙清空
-					pickup.x=-1;
-					pickup.y=-1;
-					break;
-				}
-			}
-			if ( gameData[arr.x][arr.y]!=GD_WALL )
-			{
-				// 其他情况，一律视为重新选取
-				pickup.x=arr.x;
-				pickup.y=arr.y;
-			}
-		}
+		freeRuleSendBox();
 		break;
 	case GAME_HELP:
 		break;
@@ -1354,34 +1182,10 @@ void CQuoridor::drawPickMask()
 		{
 			// 这里以后换个贴图
 			tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
-			if ( pickup.x > 0 
-				&& gameData[pickup.x-1][pickup.y]==GD_BLANK 
-				&& gameData[pickup.x-2][pickup.y]==GD_BLANK )
+			// 绘制玩家可走预选区
+			for (size_t i=0; i<preselect_pos.size();i++)
 			{
-				// 顺便在这里做赋值，再想想有没有什么更好的方法
-				//gameData[pickup.x-2][pickup.y]='c';
-				tRectangle(board_x+lace+(pickup.x-2)/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
-			}
-			if ( pickup.x < 16 
-				&& gameData[pickup.x+1][pickup.y]==GD_BLANK 
-				&& gameData[pickup.x+2][pickup.y]==GD_BLANK )
-			{
-				//gameData[pickup.x-2][pickup.y]='c';
-				tRectangle(board_x+lace+(pickup.x+2)/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
-			}
-			if ( pickup.y > 0 
-				&& gameData[pickup.x][pickup.y-1]==GD_BLANK 
-				&& gameData[pickup.x][pickup.y-2]==GD_BLANK )
-			{
-				//gameData[pickup.x][pickup.y-2]='c';
-				tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+(pickup.y-2)/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
-			}
-			if ( pickup.y < 16 
-				&& gameData[pickup.x][pickup.y+1]==GD_BLANK 
-				&& gameData[pickup.x][pickup.y+2]==GD_BLANK )
-			{
-				//gameData[pickup.x][pickup.y+2]='c';
-				tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+(pickup.y+2)/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+				tRectangle(board_x+lace+preselect_pos[i].x/2*(roadw+wall_w),lace+preselect_pos[i].y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
 			}
 		}
 		else if (iGameState==GAME_SENDBOX)
@@ -1536,6 +1340,236 @@ void CQuoridor::playerActionRule()
 		}
 		pickup.x=arr.x;
 		pickup.y=arr.y;
+		// 如果选完是当前玩家位置
+		if (gameData[pickup.x][pickup.y]==ply_head->color)
+		{
+			playerMovablePos(pickup);
+		}
+	}
+	else
+	{	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
+		if (arr == pickup)
+		{
+			pickup.x = -1;
+			pickup.y = -1;
+			return ;
+		}
+		// 并且鼠标再次点击时，选取的位置是在玩家棋子可以移动的位置
+		// 要走的位置在可走位置的向量中
+		//else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
+		else if (find(preselect_pos.begin(),preselect_pos.end(),arr)!=preselect_pos.end())
+		{
+			// 这种情况，进入到人物棋子处理阶段
+			char tmp=0;
+			// 交换
+			tmp=gameData[arr.x][arr.y];
+			gameData[arr.x][arr.y]=gameData[pickup.x][pickup.y];
+			gameData[pickup.x][pickup.y]=tmp;
+			// 在目标位置上，更新玩家变量
+			switch (gameData[arr.x][arr.y])
+			{
+			case GD_BLANK:
+				break;
+			case GD_YELLOW:
+				plyer[0].x=arr.x/2;
+				plyer[0].y=arr.y/2;
+				break;
+			case GD_RED:
+				plyer[1].x=arr.x/2;
+				plyer[1].y=arr.y/2;
+				break;
+			case GD_GREEN:
+				plyer[2].x=arr.x/2;
+				plyer[2].y=arr.y/2;
+				break;
+			case GD_BLUE:
+				plyer[3].x=arr.x/2;
+				plyer[3].y=arr.y/2;
+				break;
+			default:
+				break;
+			}
+			// 对于旧的位置上，更新玩家变量
+			switch (gameData[pickup.x][pickup.y])
+			{
+			case GD_BLANK:
+				break;
+			case GD_YELLOW:
+				plyer[0].x=pickup.x/2;
+				plyer[0].y=pickup.y/2;
+				break;
+			case GD_RED:
+				plyer[1].x=pickup.x/2;
+				plyer[1].y=pickup.y/2;
+				break;
+			case GD_GREEN:
+				plyer[2].x=pickup.x/2;
+				plyer[2].y=pickup.y/2;
+				break;
+			case GD_BLUE:
+				plyer[3].x=pickup.x/2;
+				plyer[3].y=pickup.y/2;
+				break;
+			default:
+				break;
+			}
+			// 这里，是重要的算法流转。控制玩家移动后
+			goto ACTION_RULE_EXIT;
+		}
+		// 在选墙的过程中，跳过玩家位置
+		else if (0==arr.x%2 && 0==arr.y%2/* && gameData[arr.x][arr.y]==GD_BLANK*/)
+		{
+			return ;
+		}
+		// 如果上次选取的位置也是墙，这次选取的也是墙，并且这次选取的位置是空
+		// 连续选取相同位置已经在最开始过滤
+		else if ((pickup.x+pickup.y)%2==1 
+			&& (arr.x+arr.y)%2==1 
+			&& GD_BLANK == gameData[arr.x][arr.y])
+		{
+			// 如果是横墙,并且这次选的和上次选的在同一行上
+			if (pickup.x%2==0&&arr.y==pickup.y)
+			{	// 如果这次选的在上一次选的左边一块位置
+				// 并且两块连接的中间位置是可用的
+				if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
+				{
+					// 压入墙绘制队列,一定先压入左边的块
+					wall_vec.push_back(arr);
+					wall_vec.push_back(pickup);
+					// 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
+					gameData[arr.x][arr.y]=GD_WALL;
+					gameData[arr.x+1][arr.y]=GD_WALL;
+					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto RULE_WALL_EXIT;
+				}
+				// 如果在这次选的在上一次右边一块位置
+				// 并且两块连接的中间位置是可用的
+				else if(arr.x==pickup.x+2&&gameData[arr.x-1][arr.y]==GD_BLANK)
+				{
+					// 压入墙绘制队列,一定先压入左边的块
+					wall_vec.push_back(pickup);
+					wall_vec.push_back(arr);
+					// 更新游戏算法数据
+					gameData[arr.x][arr.y]=GD_WALL;
+					gameData[arr.x-1][arr.y]=GD_WALL;
+					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto RULE_WALL_EXIT;
+				}
+			}
+			// 如果是竖墙，并且这次选的和上次选的在同一列上
+			else if(pickup.y%2==0&&arr.x==pickup.x)
+			{	// 如果这次选择的在上一次选择的下面一块
+				// 并且两块连接的中间位置是可用的
+				if (arr.y==pickup.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
+				{
+					// 压入墙绘制队列，一定先压入下面的一块
+					wall_vec.push_back(arr);
+					wall_vec.push_back(pickup);
+					// 更新游戏算法数据
+					gameData[arr.x][arr.y]=GD_WALL;
+					gameData[arr.x][arr.y+1]=GD_WALL;
+					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto RULE_WALL_EXIT;
+				}
+				// 如果这次选择的在上一次选择的上面一块
+				// 并且两块连接的中间位置是可用的
+				else if (arr.y==pickup.y+2&&gameData[arr.x][arr.y-1]==GD_BLANK)
+				{
+					// 压入墙绘制队列，一定先压入下面的一块
+					wall_vec.push_back(pickup);
+					wall_vec.push_back(arr);
+					// 更新游戏算法数据
+					gameData[arr.x][arr.y]=GD_WALL;
+					gameData[arr.x][arr.y-1]=GD_WALL;
+					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto RULE_WALL_EXIT;
+				}
+			}
+		}
+		if ( gameData[arr.x][arr.y]!=GD_WALL )
+		{
+			// 其他情况，一律视为重新选取
+			pickup.x=arr.x;
+			pickup.y=arr.y;
+		}
+	}
+	return ;
+RULE_WALL_EXIT:
+	// 当前玩家的可用墙数减1
+	ply_head->wall_num_left--;
+ACTION_RULE_EXIT:
+	// 当玩家选择了移动人物，那么此玩家的行动就结束了，控制权应该交由下一位玩家
+	ply_head=ply_head->next;
+	// 清空预选位置
+	pickup.x=-1;
+	pickup.y=-1;
+	return ;
+}
+// 此函数的前提是，selected是在棋盘上选取的可用位置
+// 此函数的出口是，preselect_pos玩家可走位置的向量
+void CQuoridor::playerMovablePos( pos2d selected )
+{
+	pos2d tmppos;
+	// 清空vector
+	preselect_pos.swap(std::vector<pos2d>());
+	// 判断玩家可走的可能位置
+	if ( selected.x > 0 
+		&& gameData[selected.x-1][selected.y]==GD_BLANK 
+		&& gameData[selected.x-2][selected.y]==GD_BLANK )
+	{
+		tmppos.x=selected.x-2;
+		tmppos.y=selected.y;
+		preselect_pos.push_back(tmppos);
+	}
+	if ( selected.x < 16 
+		&& gameData[selected.x+1][selected.y]==GD_BLANK 
+		&& gameData[selected.x+2][selected.y]==GD_BLANK )
+	{
+		tmppos.x=selected.x+2;
+		tmppos.y=selected.y;
+		preselect_pos.push_back(tmppos);
+	}
+	if ( selected.y > 0 
+		&& gameData[selected.x][selected.y-1]==GD_BLANK 
+		&& gameData[selected.x][selected.y-2]==GD_BLANK )
+	{
+		tmppos.x=selected.x;
+		tmppos.y=selected.y-2;
+		preselect_pos.push_back(tmppos);
+	}
+	if ( selected.y < 16 
+		&& gameData[selected.x][selected.y+1]==GD_BLANK 
+		&& gameData[selected.x][selected.y+2]==GD_BLANK )
+	{
+		tmppos.x=selected.x;
+		tmppos.y=selected.y+2;
+		preselect_pos.push_back(tmppos);
+	}
+}
+
+void CQuoridor::freeRuleSendBox()
+{
+	// 沙盒模式下，初始化棋盘的按钮
+	if (iButton==BUTTON_INIT_OR_CONFIRM)
+	{
+		resetGameData();
+		return ;
+	}
+	// 已经存在的墙的位置，是不能被选取的
+	if (gameData[arr.x][arr.y]==GD_WALL)
+	{
+		return ;
+	}
+	// 如果之前没有选取任何位置
+	if ( pickup.x <0 && pickup.y <0 )
+	{
+		// 空白的玩家位
+		if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]==GD_BLANK)
+		{
+			return ;
+		}
+		pickup.x=arr.x;
+		pickup.y=arr.y;
 	}
 	else
 	{	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
@@ -1547,7 +1581,6 @@ void CQuoridor::playerActionRule()
 		}
 		// 并且鼠标再次点击时，前后两次都是玩家位置，即都为双偶数位
 		else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
-		//else if (gameData[arr.x][arr.y]='c')
 		{
 			// 这种情况，进入到人物棋子处理阶段
 			char tmp=0;
@@ -1604,9 +1637,7 @@ void CQuoridor::playerActionRule()
 				break;
 			}
 			// 将选取位置赋值为无效值
-			pickup.x=-1;
-			pickup.y=-1;
-			return ;
+			goto SEND_BOX_EXIT;
 		}
 		// 在选墙的过程中，跳过玩家位置
 		else if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]==GD_BLANK)
@@ -1632,6 +1663,7 @@ void CQuoridor::playerActionRule()
 					gameData[arr.x][arr.y]=GD_WALL;
 					gameData[arr.x+1][arr.y]=GD_WALL;
 					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto SEND_BOX_EXIT;
 				}
 				// 如果在这次选的在上一次右边一块位置
 				// 并且两块连接的中间位置是可用的
@@ -1644,11 +1676,8 @@ void CQuoridor::playerActionRule()
 					gameData[arr.x][arr.y]=GD_WALL;
 					gameData[arr.x-1][arr.y]=GD_WALL;
 					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto SEND_BOX_EXIT;
 				}
-				// 预选墙清空
-				pickup.x=-1;
-				pickup.y=-1;
-				return ;
 			}
 			// 如果是竖墙，并且这次选的和上次选的在同一列上
 			else if(pickup.y%2==0&&arr.x==pickup.x)
@@ -1663,6 +1692,7 @@ void CQuoridor::playerActionRule()
 					gameData[arr.x][arr.y]=GD_WALL;
 					gameData[arr.x][arr.y+1]=GD_WALL;
 					gameData[pickup.x][pickup.y]=GD_WALL;
+					goto SEND_BOX_EXIT;
 				}
 				// 如果这次选择的在上一次选择的上面一块
 				// 并且两块连接的中间位置是可用的
@@ -1675,11 +1705,8 @@ void CQuoridor::playerActionRule()
 					gameData[arr.x][arr.y]=GD_WALL;
 					gameData[arr.x][arr.y-1]=GD_WALL;
 					gameData[pickup.x][pickup.y]=GD_WALL;
-				}
-				// 预选墙清空
-				pickup.x=-1;
-				pickup.y=-1;
-				return ;
+					goto SEND_BOX_EXIT;
+				}	
 			}
 		}
 		if ( gameData[arr.x][arr.y]!=GD_WALL )
@@ -1689,4 +1716,10 @@ void CQuoridor::playerActionRule()
 			pickup.y=arr.y;
 		}
 	}
+	return ;
+SEND_BOX_EXIT:
+	// 清空预选位置
+	pickup.x=-1;
+	pickup.y=-1;
+	return ;
 }

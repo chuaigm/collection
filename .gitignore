@@ -2,4 +2,11 @@
 *.ncb
 *.user
 *.suo
-
+*.pch
+*.obj
+*.pdb
+*.idb
+*.sbr
+*.dep
+*.res
+*.ilk
