@@ -1345,14 +1345,16 @@ void CQuoridor::playerActionRule()
 		{
 			playerMovablePos(pickup);
 		}
+		// 这里是if else 后面有return，这里相当于return
 	}
+	// 之前有选取的位置
 	else
 	{	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
 		if (arr == pickup)
 		{
 			pickup.x = -1;
 			pickup.y = -1;
-			return ;
+			return ;	// 连续点击两次相同坐标视为重选
 		}
 		// 并且鼠标再次点击时，选取的位置是在玩家棋子可以移动的位置
 		// 要走的位置在可走位置的向量中
@@ -1416,8 +1418,16 @@ void CQuoridor::playerActionRule()
 			// 这里，是重要的算法流转。控制玩家移动后
 			goto ACTION_RULE_EXIT;
 		}
-		// 在选墙的过程中，跳过玩家位置
-		else if (0==arr.x%2 && 0==arr.y%2/* && gameData[arr.x][arr.y]==GD_BLANK*/)
+		// 能走到这里，应该是只有已经选了墙的情况，
+		// 这里单独过滤，如果又点击了当前玩家，则按选中玩家处理
+		else if (gameData[arr.x][arr.y]==ply_head->color)
+		{
+			pickup.x=arr.x;
+			pickup.y=arr.y;
+			playerMovablePos(pickup);
+		}
+		// 在选墙的过程中，跳过所有非墙的位置
+		else if ((arr.x+arr.y)%2!=1)
 		{
 			return ;
 		}
@@ -1513,14 +1523,51 @@ void CQuoridor::playerMovablePos( pos2d selected )
 	// 清空vector
 	preselect_pos.swap(std::vector<pos2d>());
 	// 判断玩家可走的可能位置
+	// 如果不在最左边一列，且左边没有墙
 	if ( selected.x > 0 
-		&& gameData[selected.x-1][selected.y]==GD_BLANK 
-		&& gameData[selected.x-2][selected.y]==GD_BLANK )
-	{
-		tmppos.x=selected.x-2;
-		tmppos.y=selected.y;
-		preselect_pos.push_back(tmppos);
+		&& gameData[selected.x-1][selected.y]!=GD_WALL )
+	{	// 且左边一格可走
+		if (gameData[selected.x-2][selected.y]==GD_BLANK)
+		{
+			tmppos.x=selected.x-2;
+			tmppos.y=selected.y;
+			preselect_pos.push_back(tmppos);
+		}
+		// 由上，隐含左边一格有敌人玩家占位
+		else if ( selected.x > 2 )
+		{
+			if (gameData[selected.x-3][selected.y]!=GD_WALL)
+			{
+				if (gameData[selected.x-4][selected.y]==GD_BLANK)
+				{
+					tmppos.x=selected.x-4;
+					tmppos.y=selected.y;
+					preselect_pos.push_back(tmppos);
+				}
+			}
+			// 这里，表示敌人玩家身后有墙
+			// 如果左面敌人上面位置没有墙
+			else
+			{
+				if (gameData[selected.x-2][selected.y+1]!=GD_WALL 
+					&& gameData[selected.x-2][selected.y+2]==GD_BLANK )
+				{
+					tmppos.x=selected.x-2;
+					tmppos.y=selected.y+2;
+					preselect_pos.push_back(tmppos);
+				}
+				if (gameData[selected.x-2][selected.y-1]!=GD_WALL 
+					&& gameData[selected.x-2][selected.y-2]==GD_BLANK )
+				{
+					tmppos.x=selected.x-2;
+					tmppos.y=selected.y-2;
+					preselect_pos.push_back(tmppos);
+				}
+			}
+		}
 	}
+	
+	// 如果不在最右边一列，且右边没有墙，且右边一格可走
 	if ( selected.x < 16 
 		&& gameData[selected.x+1][selected.y]==GD_BLANK 
 		&& gameData[selected.x+2][selected.y]==GD_BLANK )
@@ -1529,6 +1576,17 @@ void CQuoridor::playerMovablePos( pos2d selected )
 		tmppos.y=selected.y;
 		preselect_pos.push_back(tmppos);
 	}
+	// 如果不是位于右边第二列，且右边有玩家，则可以跳过玩家
+	else if (selected.x < 14
+		&& gameData[selected.x+1][selected.y]!=GD_WALL 
+		&& gameData[selected.x+2][selected.y]!=GD_BLANK 
+		&& gameData[selected.x+4][selected.y]==GD_BLANK )
+	{
+		tmppos.x=selected.x+4;
+		tmppos.y=selected.y;
+		preselect_pos.push_back(tmppos);
+	}
+	// 如果不在最下边一行，且下边没有墙，且下边一格可走
 	if ( selected.y > 0 
 		&& gameData[selected.x][selected.y-1]==GD_BLANK 
 		&& gameData[selected.x][selected.y-2]==GD_BLANK )
@@ -1537,12 +1595,33 @@ void CQuoridor::playerMovablePos( pos2d selected )
 		tmppos.y=selected.y-2;
 		preselect_pos.push_back(tmppos);
 	}
+	// 如果不是位于下边第二列，且下边有玩家，则可以跳过玩家
+	else if (selected.y > 2 
+		&& gameData[selected.x][selected.y-1]!=GD_WALL 
+		&& gameData[selected.x][selected.y-2]!=GD_BLANK 
+		&& gameData[selected.x][selected.y-4]==GD_BLANK )
+	{
+		tmppos.x=selected.x;
+		tmppos.y=selected.y-4;
+		preselect_pos.push_back(tmppos);
+	}
+	// 如果不在最上边一行，且上边没有墙，且上边一格可走
 	if ( selected.y < 16 
 		&& gameData[selected.x][selected.y+1]==GD_BLANK 
 		&& gameData[selected.x][selected.y+2]==GD_BLANK )
 	{
 		tmppos.x=selected.x;
 		tmppos.y=selected.y+2;
+		preselect_pos.push_back(tmppos);
+	}
+	// 如果不是位于下边第二列，且下边有玩家，则可以跳过玩家
+	else if (selected.y < 14 
+		&& gameData[selected.x][selected.y+1]!=GD_WALL 
+		&& gameData[selected.x][selected.y+2]!=GD_BLANK 
+		&& gameData[selected.x][selected.y+4]==GD_BLANK )
+	{
+		tmppos.x=selected.x;
+		tmppos.y=selected.y+4;
 		preselect_pos.push_back(tmppos);
 	}
 }
