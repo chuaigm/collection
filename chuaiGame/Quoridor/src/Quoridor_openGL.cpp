@@ -1523,106 +1523,130 @@ void CQuoridor::playerMovablePos( pos2d selected )
 	// 清空vector
 	preselect_pos.swap(std::vector<pos2d>());
 	// 判断玩家可走的可能位置
-	// 如果不在最左边一列，且左边没有墙
+
+	// 如果不在最左边一列，且左边没有墙，且左边一格可走
 	if ( selected.x > 0 
-		&& gameData[selected.x-1][selected.y]!=GD_WALL )
-	{	// 且左边一格可走
-		if (gameData[selected.x-2][selected.y]==GD_BLANK)
-		{
-			tmppos.x=selected.x-2;
-			tmppos.y=selected.y;
-			preselect_pos.push_back(tmppos);
-		}
-		// 由上，隐含左边一格有敌人玩家占位
-		else if ( selected.x > 2 )
-		{
-			if (gameData[selected.x-3][selected.y]!=GD_WALL)
-			{
-				if (gameData[selected.x-4][selected.y]==GD_BLANK)
-				{
-					tmppos.x=selected.x-4;
-					tmppos.y=selected.y;
-					preselect_pos.push_back(tmppos);
-				}
-			}
-			// 这里，表示敌人玩家身后有墙
-			// 如果左面敌人上面位置没有墙
-			else
-			{
-				if (gameData[selected.x-2][selected.y+1]!=GD_WALL 
-					&& gameData[selected.x-2][selected.y+2]==GD_BLANK )
-				{
-					tmppos.x=selected.x-2;
-					tmppos.y=selected.y+2;
-					preselect_pos.push_back(tmppos);
-				}
-				if (gameData[selected.x-2][selected.y-1]!=GD_WALL 
-					&& gameData[selected.x-2][selected.y-2]==GD_BLANK )
-				{
-					tmppos.x=selected.x-2;
-					tmppos.y=selected.y-2;
-					preselect_pos.push_back(tmppos);
-				}
-			}
-		}
+		&& gameData[selected.x-1][selected.y]!=GD_WALL 
+		&& gameData[selected.x-2][selected.y]==GD_BLANK )
+	{
+		tmppos.x=selected.x-2;
+		tmppos.y=selected.y;
+		preselect_pos.push_back(tmppos);
 	}
-	
+	// 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
+	else if (selected.x > 2
+		&& gameData[selected.x-1][selected.y]!=GD_WALL 
+		&& gameData[selected.x-2][selected.y]!=GD_BLANK 
+		&& gameData[selected.x-3][selected.y]!=GD_WALL 
+		&& gameData[selected.x-4][selected.y]==GD_BLANK )
+	{
+		tmppos.x=selected.x-4;
+		tmppos.y=selected.y;
+		preselect_pos.push_back(tmppos);
+	}
 	// 如果不在最右边一列，且右边没有墙，且右边一格可走
 	if ( selected.x < 16 
-		&& gameData[selected.x+1][selected.y]==GD_BLANK 
+		&& gameData[selected.x+1][selected.y]!=GD_WALL 
 		&& gameData[selected.x+2][selected.y]==GD_BLANK )
 	{
 		tmppos.x=selected.x+2;
 		tmppos.y=selected.y;
 		preselect_pos.push_back(tmppos);
 	}
-	// 如果不是位于右边第二列，且右边有玩家，则可以跳过玩家
+	// 如果不是位于右边第二列或第一列，且右边有玩家，且右边玩家左边没有墙，且右边位置可跳
 	else if (selected.x < 14
 		&& gameData[selected.x+1][selected.y]!=GD_WALL 
 		&& gameData[selected.x+2][selected.y]!=GD_BLANK 
+		&& gameData[selected.x+3][selected.y]!=GD_WALL 
 		&& gameData[selected.x+4][selected.y]==GD_BLANK )
 	{
 		tmppos.x=selected.x+4;
 		tmppos.y=selected.y;
 		preselect_pos.push_back(tmppos);
 	}
-	// 如果不在最下边一行，且下边没有墙，且下边一格可走
+	// 如果不在最下边一列，且左边没有墙，且左边一格可走
 	if ( selected.y > 0 
-		&& gameData[selected.x][selected.y-1]==GD_BLANK 
+		&& gameData[selected.x][selected.y-1]!=GD_WALL 
 		&& gameData[selected.x][selected.y-2]==GD_BLANK )
 	{
 		tmppos.x=selected.x;
 		tmppos.y=selected.y-2;
 		preselect_pos.push_back(tmppos);
 	}
-	// 如果不是位于下边第二列，且下边有玩家，则可以跳过玩家
-	else if (selected.y > 2 
+	// 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
+	else if (selected.y > 2
 		&& gameData[selected.x][selected.y-1]!=GD_WALL 
 		&& gameData[selected.x][selected.y-2]!=GD_BLANK 
+		&& gameData[selected.x][selected.y-3]!=GD_WALL 
 		&& gameData[selected.x][selected.y-4]==GD_BLANK )
 	{
 		tmppos.x=selected.x;
 		tmppos.y=selected.y-4;
 		preselect_pos.push_back(tmppos);
 	}
-	// 如果不在最上边一行，且上边没有墙，且上边一格可走
+	// 如果不在最右边一列，且右边没有墙，且右边一格可走
 	if ( selected.y < 16 
-		&& gameData[selected.x][selected.y+1]==GD_BLANK 
+		&& gameData[selected.x][selected.y+1]!=GD_WALL 
 		&& gameData[selected.x][selected.y+2]==GD_BLANK )
 	{
 		tmppos.x=selected.x;
 		tmppos.y=selected.y+2;
 		preselect_pos.push_back(tmppos);
 	}
-	// 如果不是位于下边第二列，且下边有玩家，则可以跳过玩家
-	else if (selected.y < 14 
+	// 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
+	else if (selected.y < 14
 		&& gameData[selected.x][selected.y+1]!=GD_WALL 
 		&& gameData[selected.x][selected.y+2]!=GD_BLANK 
+		&& gameData[selected.x][selected.y+3]!=GD_WALL 
 		&& gameData[selected.x][selected.y+4]==GD_BLANK )
 	{
 		tmppos.x=selected.x;
 		tmppos.y=selected.y+4;
 		preselect_pos.push_back(tmppos);
+	}
+
+	// 对左上角可走的情况进行判断(不包含边界值)
+	if ( selected.x > 2 && selected.y < 14 && gameData[selected.x-2][selected.y+2]==GD_BLANK )
+	{
+		if ( (gameData[selected.x-2][selected.y]!=GD_BLANK && gameData[selected.x-3][selected.y]==GD_WALL ) || (gameData[selected.x][selected.y+2]!=GD_BLANK && gameData[selected.x][selected.y+3]==GD_WALL ) )
+		{
+			tmppos.x=selected.x-2;
+			tmppos.y=selected.y+2;
+			preselect_pos.push_back(tmppos);
+		}
+	}
+	/*else if ( selected.x == 2 && selected.y < 14)
+	{
+	}*/
+	// 对右上角可走的情况进行判断(不包含边界值)
+	if ( selected.x < 14 && selected.y < 14 && gameData[selected.x+2][selected.y+2]==GD_BLANK )
+	{
+		if ( (gameData[selected.x+2][selected.y]!=GD_BLANK && gameData[selected.x+3][selected.y]==GD_WALL ) || (gameData[selected.x][selected.y+2]!=GD_BLANK && gameData[selected.x][selected.y+3]==GD_WALL ) )
+		{
+			tmppos.x=selected.x+2;
+			tmppos.y=selected.y+2;
+			preselect_pos.push_back(tmppos);
+		}
+	}
+	// 对左下角可走的情况进行判断(不包含边界值)
+	if ( selected.x > 2 && selected.y >2 && gameData[selected.x-2][selected.y-2]==GD_BLANK )
+	{
+		if ( (gameData[selected.x-2][selected.y]!=GD_BLANK && gameData[selected.x-3][selected.y]==GD_WALL ) || (gameData[selected.x][selected.y-2]!=GD_BLANK && gameData[selected.x][selected.y-3]==GD_WALL ) )
+		{
+			tmppos.x=selected.x-2;
+			tmppos.y=selected.y-2;
+			preselect_pos.push_back(tmppos);
+		}
+	}
+	// 对右下角可走的情况进行判断(不包含边界值)
+	if ( selected.x < 14 && selected.y > 2 && gameData[selected.x+2][selected.y-2]==GD_BLANK )
+	{
+		if ( (gameData[selected.x+2][selected.y]!=GD_BLANK && gameData[selected.x+3][selected.y]==GD_WALL ) || (gameData[selected.x][selected.y-2]!=GD_BLANK && gameData[selected.x][selected.y-3]==GD_WALL ) )
+		{
+			tmppos.x=selected.x+2;
+			tmppos.y=selected.y-2;
+			preselect_pos.push_back(tmppos);
+		}
 	}
 }
 
