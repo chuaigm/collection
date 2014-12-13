@@ -11,6 +11,8 @@
 #include "stdio.h"
 #include "time.h"
 
+extern int g_refresh_rate;
+
 class MYCLOCK
 {
 public:
@@ -22,7 +24,7 @@ public:
 
 		timenow=clock();
 		// 这个值是时间触发间隔, 1000/40=25 每隔25毫秒触发一次，每秒触发40次
-		timeclip=CLOCKS_PER_SEC/40;
+		timeclip=CLOCKS_PER_SEC/g_refresh_rate;
 	}
 	~MYCLOCK()
 	{

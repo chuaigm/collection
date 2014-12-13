@@ -393,6 +393,7 @@ void CQuoridor::lbuttonproc(int lparam)
 			break;
 		case MENU_SENDBOX:
 			iGameState=GAME_SENDBOX;
+			resetGameData();
 			break;
 		case MENU_HELP:
 			iGameState=GAME_HELP;
@@ -416,7 +417,7 @@ void CQuoridor::lbuttonproc(int lparam)
 			player* tail=NULL;
 			// 这里也可以考虑清一下每个玩家的next指针
 			for (int i=0; i<4; i++)
-			{
+			{	// 如果当前的玩家状态是参与游戏的(可能是人控制，也可能是电脑)
 				if (plyer[i].id!=2)
 				{
 					if (ply_head==NULL)
@@ -428,10 +429,16 @@ void CQuoridor::lbuttonproc(int lparam)
 					tail=&plyer[i];
 					nn++;
 				}
+				// 如果当前玩家的状态是关闭的，不参与游戏的
+				else
+				{	// 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
+					// 如果不参与游戏，需要再清空这个游戏数据
+					gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLANK;
+				}
 			}
 			// 当可用玩家数量，少于2时，无法进行游戏
 			if (nn<2)
-			{	// 以后添加弹窗提示, 玩家人数不能少于2人
+			{	// TODO 以后添加弹窗提示, 玩家人数不能少于2人
 				ply_head=NULL;
 				break;
 			}
@@ -440,13 +447,15 @@ void CQuoridor::lbuttonproc(int lparam)
 			player* tmp_head=ply_head;
 			// 循环给剩余墙数赋值
 			do
-			{	// 整形数除法
+			{	// 整形数除法,21除2，取整=10
+				//            21除3，取整=7
+				//            21除4，取整=5
 				tmp_head->wall_num_left=wall_total_num/nn;
 				tmp_head=tmp_head->next;
 			}while (ply_head!=tmp_head);
 			iGameState=GAME_SINGE;
 		}
-
+		// 鼠标选取不同玩家的三个选项时的处理，
 		// 遍历玩家
 		for (size_t j=0; j<4; j++)
 		{
@@ -463,46 +472,6 @@ void CQuoridor::lbuttonproc(int lparam)
 				}
 			}
 		}
-		
-/*
-// 注释掉旧方法
-		// 绿色玩家
-		for (int i=0; i< 3; i++)
-		{
-			if (m_OpenGL->Xmouse>(float)board_x+i*3*(roadw+wall_w)
-				&& m_OpenGL->Xmouse<(float)board_x+i*3*(roadw+wall_w)+menu_w
-				&& m_OpenGL->Ymouse>(player_info_h-menu_h)/2+player_info_h
-				&& m_OpenGL->Ymouse<(player_info_h-menu_h)/2+menu_h+player_info_h
-				)
-			{
-				plyer[2].id=i;
-			}
-		}
-		// 红色玩家
-		for (int i=0; i< 3; i++)
-		{
-			if (m_OpenGL->Xmouse>(float)board_x+i*3*(roadw+wall_w)
-				&& m_OpenGL->Xmouse<(float)board_x+i*3*(roadw+wall_w)+menu_w
-				&& m_OpenGL->Ymouse>(player_info_h-menu_h)/2+player_info_h*2
-				&& m_OpenGL->Ymouse<(player_info_h-menu_h)/2+menu_h+player_info_h*2
-				)
-			{
-				plyer[1].id=i;
-			}
-		}
-		// 黄色玩家
-		for (int i=0; i< 3; i++)
-		{
-			if (m_OpenGL->Xmouse>(float)board_x+i*3*(roadw+wall_w)
-				&& m_OpenGL->Xmouse<(float)board_x+i*3*(roadw+wall_w)+menu_w
-				&& m_OpenGL->Ymouse>(player_info_h-menu_h)/2+player_info_h*3
-				&& m_OpenGL->Ymouse<(player_info_h-menu_h)/2+menu_h+player_info_h*3
-				)
-			{
-				plyer[0].id=i;
-			}
-		}
-*/
 		break;
 	case GAME_SINGE:
 		playerActionRule();
@@ -525,7 +494,9 @@ void CQuoridor::rbuttonproc( int lparam )
 	switch(iGameState)
 	{
 	case GAME_SINGE:
+		break;
 	case GAME_MULTIP:
+		break;
 	case GAME_SENDBOX:
 		switch (gameData[arr.x][arr.y])
 		{
@@ -642,7 +613,7 @@ bool CQuoridor::LoadT8(char *filename, GLuint &texture)
 					 );
 	//释放内存
 	free(pImage->data);      
-	free(pImage);	
+	free(pImage);
 	return true;      
 }
 
@@ -1172,6 +1143,56 @@ void CQuoridor::drawPlayerWall()
 
 void CQuoridor::drawPickMask()
 {
+	//static int det=1;
+	int det = 2;
+	//static int ctick=0;
+	if (ply_head!=NULL)
+	{
+		// 轮到谁走，在玩家图标上，给个动态提示
+		float cx=board_x+lace+ply_head->x*(roadw+wall_w);
+		float cy=        lace+ply_head->y*(roadw+wall_w);
+		//属性进栈
+		glPushAttrib(GL_CURRENT_BIT);
+		glPushMatrix();
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glBegin(GL_LINES);
+		// 左下
+		glVertex3f( cx-det,  cy-det,  0.5f);
+		glVertex3f( cx-det,  cy-det+roadw/4.0f,  0.5f);	// 竖线
+		glVertex3f( cx-det,  cy-det,  0.5f);
+		glVertex3f( cx-det+roadw/4.0f,  cy-det,  0.5f);	//	横线
+		// 左上
+		glVertex3f( cx-det,  cy+roadw+det,  0.5f);
+		glVertex3f( cx-det+roadw/4.0f,  cy+roadw+det,  0.5f);	// 横线
+		glVertex3f( cx-det,  cy+roadw+det,  0.5f);
+		glVertex3f( cx-det,  cy+roadw+det-roadw/4,  0.5f);	// 竖线
+		// 右上
+		glVertex3f( cx+roadw+det,  cy+roadw+det,  0.5f);
+		glVertex3f( cx+roadw+det-roadw/4,  cy+roadw+det,  0.5f);	// 横线
+		glVertex3f( cx+roadw+det,  cy+roadw+det,  0.5f);
+		glVertex3f( cx+roadw+det,  cy+roadw+det-roadw/4,  0.5f);	// 竖线
+		// 右下
+		glVertex3f( cx+roadw+det,  cy-det,  0.5f);
+		glVertex3f( cx+roadw+det-roadw/4,  cy-det,  0.5f);	// 横线
+		glVertex3f( cx+roadw+det,  cy-det,  0.5f);
+		glVertex3f( cx+roadw+det,  cy-det+roadw/4,  0.5f);	// 竖线
+		glEnd();
+		glEnable(GL_TEXTURE_2D);
+		glPopMatrix();
+		glPopAttrib();
+		//if (ctick>g_refresh_rate/10)
+		//{
+		//	det++;
+		//	if (det>3)
+		//	{
+		//		det=1;
+		//	}
+		//	ctick=0;
+		//}
+		//ctick++;
+	}
+
 	if (pickup.x < 0 && pickup.y < 0)
 	{
 		return ;
@@ -1240,6 +1261,20 @@ void CQuoridor::resetGameData()
 	plyer[3].y=0;
 	plyer[3].wall_num_left=0;
 	plyer[3].next=NULL;
+	if (iGameState==GAME_SENDBOX)
+	{
+		plyer[0].id=0;
+		plyer[1].id=0;
+		plyer[2].id=0;
+		plyer[3].id=0;
+	}
+	else if (iGameState==GAME_IN_CONFIG)
+	{
+		plyer[0].id=2;
+		plyer[1].id=1;
+		plyer[2].id=2;
+		plyer[3].id=0;
+	}
 	// 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
 	gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
 	gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
@@ -1354,6 +1389,8 @@ void CQuoridor::playerActionRule()
 		{
 			pickup.x = -1;
 			pickup.y = -1;
+			// 清除玩家可走待选位置(虽然不清也是可以的)
+			preselect_pos.clear();
 			return ;	// 连续点击两次相同坐标视为重选
 		}
 		// 并且鼠标再次点击时，选取的位置是在玩家棋子可以移动的位置
@@ -1496,11 +1533,13 @@ void CQuoridor::playerActionRule()
 				}
 			}
 		}
-		if ( gameData[arr.x][arr.y]!=GD_WALL )
+		else if ( gameData[arr.x][arr.y]!=GD_WALL )
 		{
 			// 其他情况，一律视为重新选取
 			pickup.x=arr.x;
 			pickup.y=arr.y;
+			// 清除玩家可走待选位置
+			preselect_pos.clear();
 		}
 	}
 	return ;
@@ -1513,6 +1552,8 @@ ACTION_RULE_EXIT:
 	// 清空预选位置
 	pickup.x=-1;
 	pickup.y=-1;
+	// 清除玩家可走待选位置
+	preselect_pos.clear();
 	return ;
 }
 // 此函数的前提是，selected是在棋盘上选取的可用位置
