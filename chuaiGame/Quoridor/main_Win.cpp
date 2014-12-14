@@ -12,6 +12,7 @@
 #include "Quoridor_openGL.h"
 #include "glfont.h"
 #include "inifileop.h"
+#include <ctime>
 
 //#include "filereport.h"
 
@@ -166,6 +167,8 @@ int APIENTRY WinMain(HINSTANCE hInst,
                      LPSTR     lpCmdLine,
                      int       nCmdShow)
 {
+	// 首先设置随机数种子
+	srand(unsigned(time(0)));
 	//--------------------------------------------------
 	// 文件检查
 	char errstr[]="缺少数据文件，请修复后重启游戏";

@@ -9,6 +9,7 @@
 //
 //=======================================
 #include <vector>
+#include <deque>
 #include <algorithm>
 // Game state
 enum {
@@ -18,7 +19,8 @@ enum {
 	GAME_IN_CONFIG,
 	GAME_MULTIP,
 	GAME_SENDBOX,
-	GAME_HELP
+	GAME_HELP,
+	GAME_WIN
 };
 // 菜单数量
 #define MENU_NUM 5
@@ -44,6 +46,12 @@ enum {
 	GD_BLUE,
 	GD_WALL
 };
+//// 定义玩家状态
+//enum {
+//	HUMAN,
+//	COMPUTER,
+//	CLOSE
+//};
 
 struct pos2d{
 	int x;
@@ -62,6 +70,7 @@ public:
 	player():id(0),x(0),y(0),wall_num_left(0),next(NULL){};
 	~player(){};
 	// 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭
+	// (不用枚举是因为赋值时是严格的0,1,2，担心枚举乱入其他值)
 	int id;
 	// 此玩家的颜色，复用GD_枚举数值
 	int color;
@@ -137,6 +146,8 @@ public:
 	void drawPickMask();
 	// 确认窗口
 	void drawConfirm();
+	// 绘制胜利窗口
+	void drawVictory();
 	// 重设游戏数据
 	void resetGameData();
 	// 鼠标左键单击时，需要的游戏规则,正常游戏的规则(放在左键单击时的响应中)
@@ -145,12 +156,24 @@ public:
 	void freeRuleSendBox();
 	// 正常游戏时，点击玩家位置后，生成可移动的位置
 	void playerMovablePos(pos2d selected);
+	// 判断新加入的墙位置是否合法
+	bool judgeWallLegal();
+
+	// 电脑控制行动函数
+	void computer_AI();
+
+	// 随机数产生函数
+	int random(double start, double end)
+	{
+		return (int)(start+(end-start)*rand()/(RAND_MAX + 1));
+	};
 
 	////////////////////////////////////////////////////////////
 	//data
 	int iGameState;		// 当前游戏状态
 	int iMenu;			// 当前选择的菜单项
 	int iButton;		// 按钮选择的结果
+	int win_flag;		// 哪位玩家获得了胜利，0没人胜利，1，黄色....(复用GD_系列数据)
 	bool g_debug_flag;	// 显示调试信息
 	
 	//images
@@ -173,9 +196,9 @@ public:
 	int menu_w;
 	int menu_h;
 	// 帮助界面返回菜单按钮宽度
-	int helpRetButtonW;
+	//int helpRetButtonW;
 	// 帮助界面返回菜单按钮横坐标
-	int rButtonx;
+	//int rButtonx;
 	// 主菜单上下间距
 	int menu_dis;
 
@@ -225,6 +248,11 @@ public:
 	//------------------------------------
 	// 游戏随时间计数的变量
 	unsigned int tcounter;
+
+
+	//test
+	// 9x9的临时标记，记录玩家可走的位置,0为空，1为遍历过，可走，2为已经处理过
+	//char tmpflag[9][9];
 };
 
 #endif

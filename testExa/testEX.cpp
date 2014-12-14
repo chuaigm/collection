@@ -65,8 +65,19 @@ union obj{
 	char data[1];
 };
 
+int random(double start, double end)
+{
+	return (int)(start+(end-start)*rand()/(RAND_MAX + 1.0));
+};
+
 int main()
 {
+	srand(unsigned(time(0)));
+	for(int i=0; i<10;i++)
+	{
+		cout<<random(0,10)<<endl;
+	}
+#if 0
 	char* a= (char*)malloc(24);
 	char* b= (char*)malloc(15);
 	char* c= (char*)malloc(43);
@@ -124,6 +135,7 @@ int main()
 	}
 	printf("\n");
 	printf("\n");
+#endif
 
 #if 0
 // break 到第几层

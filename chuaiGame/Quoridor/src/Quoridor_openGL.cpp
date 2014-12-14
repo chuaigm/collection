@@ -12,6 +12,7 @@
 #include "glfont.h"
 #include "OpenGLbase.h"
 #include "Quoridor_openGL.h"
+#include <stdlib.h>
 
 //font
 extern CGLFont myfont;
@@ -40,9 +41,9 @@ CQuoridor::CQuoridor()
 	menu_w=10;
 	menu_h=10;
 	// 帮助界面返回菜单按钮宽度
-	helpRetButtonW=10;
+	//helpRetButtonW=10;
 	// 帮助界面返回菜单按钮横坐标
-	rButtonx=10;
+	//rButtonx=10;
 	// 菜单上下间距
 	menu_dis=10;
 	// 游戏棋盘与窗口边界间距
@@ -94,6 +95,8 @@ CQuoridor::CQuoridor()
 	pickup.y=-1;
 	// 正式游戏时，玩家轮流的顺序
 	ply_head=NULL;
+	// 玩家胜利标志
+	win_flag=GD_BLANK;
 	// 显示调试信息
 	g_debug_flag=false;
 }
@@ -117,6 +120,7 @@ int CQuoridor::haveDataFile()
 		"data/images/diting1.bmp",
 		"data/images/xiaohei1.bmp",
 		"data/images/wall1.bmp",
+		"data/images/computer_logo.bmp",
 		//sound
 		//"data/sound/explode1.wav"
 		};
@@ -164,6 +168,7 @@ void CQuoridor::init()
 	LoadT8("data/images/diting1.bmp", g_cactus[5]);				// 玩家2形象
 	LoadT8("data/images/xiaohei1.bmp", g_cactus[6]);			// 玩家3形象
 	LoadT8("data/images/wall1.bmp", g_cactus[7]);				// 玩家4形象
+	LoadT8("data/images/computer_logo.bmp", g_cactus[8]);		// 电脑图标
 	//button
 	LoadT8("data/images/button.bmp", g_cactus[9]);				// 按钮
 
@@ -202,8 +207,8 @@ void CQuoridor::initView()
 	menu_w=m_OpenGL->RCwidth/9;
 	menu_h=m_OpenGL->RCheight/20;
 	// 帮助界面返回菜单按钮宽度
-	helpRetButtonW=m_OpenGL->RCwidth/5;
-	rButtonx=(m_OpenGL->RCwidth-helpRetButtonW)/2;
+	//helpRetButtonW=m_OpenGL->RCwidth/5;
+	//rButtonx=(m_OpenGL->RCwidth-helpRetButtonW)/2;
 	// 菜单坐标位置
 	menu.x=m_OpenGL->RCwidth-menu_dis/2-menu_w;
 	menu.y=/*menu_dis/2 +*/ menu_h;
@@ -252,6 +257,11 @@ void CQuoridor::showMain()
 		// 注意此处，透明图层与绘制顺序有关
 		drawPickMask();
 		break;
+	case GAME_WIN:
+		drawAccessory();
+		drawChessBorad();
+		drawPlayerWall();
+		drawVictory();
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
 		drawAccessory();
@@ -318,6 +328,10 @@ void CQuoridor::check()
 		}
 		break;
 	case GAME_SINGE:
+		if (ply_head->id==1)
+		{
+			computer_AI();
+		}
 	case GAME_IN_CONFIG:
 	case GAME_MULTIP:
 	case GAME_SENDBOX:
@@ -358,8 +372,21 @@ void CQuoridor::check()
 			}
 		}
 		break;
+	case GAME_WIN:
+		if (x>menu.x&&x<menu.x+menu_w)
+		{
+			if (y>menu.y&&y<menu.y+menu_h)
+			{
+				iButton=BUTTON_INIT_OR_CONFIRM;
+			}
+			else if (y>m_OpenGL->RCheight-menu.y-menu_h&&y<m_OpenGL->RCheight-menu.y)
+			{
+				iButton=BUTTON_RETURN;
+			}
+		}
+		break;
 	case GAME_HELP:
-		if (x>rButtonx&&x<rButtonx+helpRetButtonW&&y>menu.y&&y<menu.y+menu_h)
+		if (x>menu.x&&x<menu.x+menu_w&&y>menu.y&&y<menu.y+menu_h)
 		{
 			iButton=BUTTON_RETURN;
 		}
@@ -474,7 +501,11 @@ void CQuoridor::lbuttonproc(int lparam)
 		}
 		break;
 	case GAME_SINGE:
-		playerActionRule();
+		// 如果是玩家可控的角色
+		if (ply_head->id==0)
+		{
+			playerActionRule();
+		}
 		break;
 	case GAME_MULTIP:
 		break;
@@ -800,7 +831,7 @@ void CQuoridor::showmenu()
 	glPopMatrix();
 
 	//  对应枚举关系     0          1          2          3          4
-	char *menustr[]={"退    出","游戏帮助","沙盒模式","联网游戏","单机游戏"};
+	char *menustr[]={"退    出","游戏说明","沙盒模式","联网游戏","单机游戏"};
 	//char *menustr[]={"单机游戏","联网游戏","沙盒模式","游戏帮助","退    出"};
 
 	// 在glOrtho模式下绘制菜单
@@ -844,6 +875,15 @@ void CQuoridor::show_Font_test()
 	char tmpstr[64]={0};
 	sprintf(tmpstr, "iMenu=%d",iMenu);
 	myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+
+	//for (int i=0; i<9;i++)
+	//{
+	//	for (int j=0; j<9;j++)
+	//	{
+	//		sprintf(tmpstr, "%d,",tmpflag[j][i]);
+	//		myfont.Print2D(10*(j+1),260+10*i,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+	//	}
+	//}
 
 	for (int i=0; i<17;i++)
 	{
@@ -889,20 +929,19 @@ void CQuoridor::showHelp()
 	sprintf(tmpstr,"具体内容以后在写吧");
 	myfont.Print2D(board_x+lace,300,tmpstr,FONT1,1.0,1.0,0.0);
 
-
 	//文字
-	sprintf(tmpstr,"按ESC返回主菜单");
-	myfont.Print2D(rButtonx+10,menu.y+5,tmpstr,FONT1,1,1,1);
+	sprintf(tmpstr,"按ESC返回");
+	myfont.Print2D(menu.x+5,menu.y+5,tmpstr,FONT1,1,1,1);
 
 	//图片
 	texture_select(g_cactus[9]);
 	if(iButton==BUTTON_RETURN)
 	{
-		tPicButton((float)rButtonx,(float)menu.y,(float)helpRetButtonW,(float)menu_h,0.0f);
+		tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.0f);
 	}
 	else
 	{
-		tPicButton((float)rButtonx,(float)menu.y,(float)helpRetButtonW,(float)menu_h,0.5f);
+		tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.5f);
 	}
 }
 
@@ -1015,6 +1054,11 @@ void CQuoridor::drawAccessory()
 			// 这里需要注意贴图的标号顺序
 			texture_select(g_cactus[3+i]);
 			tPicRectangle(0,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
+			if (plyer[i].id==1)
+			{	// 绘制电脑的图标
+				texture_select(g_cactus[8]);
+				tPicRectangle((roadw+wall_w),(3-i+1/2.0f)*player_info_h,roadw*0.6f,roadw*0.6f,layer+0.1f);
+			}
 			sprintf(tmpstr,"墙剩余: %d",plyer[i].wall_num_left);
 			myfont.Print2D(10,(int)((3-i+1/4.0f)*player_info_h),tmpstr,FONT1,1,1,1);
 		}
@@ -1062,6 +1106,7 @@ void CQuoridor::drawAccessory()
 	{
 	case GAME_IN_CONFIG:
 	case GAME_SINGE:
+	case GAME_WIN:
 		sprintf(tmpstr,"确    认");
 		break;
 	case GAME_SENDBOX:
@@ -1181,6 +1226,7 @@ void CQuoridor::drawPickMask()
 		glEnable(GL_TEXTURE_2D);
 		glPopMatrix();
 		glPopAttrib();
+		// 暂时注释掉动态显示
 		//if (ctick>g_refresh_rate/10)
 		//{
 		//	det++;
@@ -1192,7 +1238,6 @@ void CQuoridor::drawPickMask()
 		//}
 		//ctick++;
 	}
-
 	if (pickup.x < 0 && pickup.y < 0)
 	{
 		return ;
@@ -1207,6 +1252,27 @@ void CQuoridor::drawPickMask()
 			for (size_t i=0; i<preselect_pos.size();i++)
 			{
 				tRectangle(board_x+lace+preselect_pos[i].x/2*(roadw+wall_w),lace+preselect_pos[i].y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
+			}
+			// 单人模式时，提示玩家的目的地
+			for (int i=0; i<9; i++)
+			{
+				switch(ply_head->color)
+				{
+				case GD_YELLOW:
+					tRectangle(board_x+lace+8*(roadw+wall_w)+roadw-wall_w, lace+i*(roadw+wall_w),0,(float)wall_w,roadw,0.9f,0.9f,0.0f,0.6f);
+					break;
+				case GD_RED:
+					tRectangle(board_x+lace+i*(roadw+wall_w), (float)lace,0,roadw,(float)wall_w,1.0f,0.0f,0.0f,0.8f);
+					break;
+				case GD_GREEN:
+					tRectangle((float)board_x+lace, lace+i*(roadw+wall_w),0,(float)wall_w,roadw,0.0f,0.9f,0,0.6f);
+					break;
+				case GD_BLUE:
+					tRectangle(board_x+lace+i*(roadw+wall_w),lace+8*(roadw+wall_w)+roadw-wall_w,0,roadw,(float)wall_w,0.0f,0.0f,0.9f,0.6f);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 		else if (iGameState==GAME_SENDBOX)
@@ -1285,6 +1351,8 @@ void CQuoridor::resetGameData()
 	pickup.y=-1;
 	// 玩家环装链表头指针
 	ply_head=NULL;
+	// 玩家胜利标志
+	win_flag=GD_BLANK;
 }
 
 void CQuoridor::drawInConfig()
@@ -1412,46 +1480,67 @@ void CQuoridor::playerActionRule()
 			case GD_YELLOW:
 				plyer[0].x=arr.x/2;
 				plyer[0].y=arr.y/2;
+				if (plyer[0].x==8)
+				{
+					win_flag=GD_YELLOW;
+					iGameState=GAME_WIN;
+				}
 				break;
 			case GD_RED:
 				plyer[1].x=arr.x/2;
 				plyer[1].y=arr.y/2;
+				if (plyer[1].y==0)
+				{
+					win_flag=GD_RED;
+					iGameState=GAME_WIN;
+				}
 				break;
 			case GD_GREEN:
 				plyer[2].x=arr.x/2;
 				plyer[2].y=arr.y/2;
+				if (plyer[2].x==0)
+				{
+					win_flag=GD_GREEN;
+					iGameState=GAME_WIN;
+				}
 				break;
 			case GD_BLUE:
 				plyer[3].x=arr.x/2;
 				plyer[3].y=arr.y/2;
+				if (plyer[3].y==8)
+				{
+					win_flag=GD_BLUE;
+					iGameState=GAME_WIN;
+				}
 				break;
 			default:
 				break;
 			}
-			// 对于旧的位置上，更新玩家变量
-			switch (gameData[pickup.x][pickup.y])
-			{
-			case GD_BLANK:
-				break;
-			case GD_YELLOW:
-				plyer[0].x=pickup.x/2;
-				plyer[0].y=pickup.y/2;
-				break;
-			case GD_RED:
-				plyer[1].x=pickup.x/2;
-				plyer[1].y=pickup.y/2;
-				break;
-			case GD_GREEN:
-				plyer[2].x=pickup.x/2;
-				plyer[2].y=pickup.y/2;
-				break;
-			case GD_BLUE:
-				plyer[3].x=pickup.x/2;
-				plyer[3].y=pickup.y/2;
-				break;
-			default:
-				break;
-			}
+			// 实际游戏时，非沙盒模式，目的位置上，一定是空
+			//// 对于旧的位置上，更新玩家变量
+			//switch (gameData[pickup.x][pickup.y])
+			//{
+			//case GD_BLANK:
+			//	break;
+			//case GD_YELLOW:
+			//	plyer[0].x=pickup.x/2;
+			//	plyer[0].y=pickup.y/2;
+			//	break;
+			//case GD_RED:
+			//	plyer[1].x=pickup.x/2;
+			//	plyer[1].y=pickup.y/2;
+			//	break;
+			//case GD_GREEN:
+			//	plyer[2].x=pickup.x/2;
+			//	plyer[2].y=pickup.y/2;
+			//	break;
+			//case GD_BLUE:
+			//	plyer[3].x=pickup.x/2;
+			//	plyer[3].y=pickup.y/2;
+			//	break;
+			//default:
+			//	break;
+			//}
 			// 这里，是重要的算法流转。控制玩家移动后
 			goto ACTION_RULE_EXIT;
 		}
@@ -1470,9 +1559,11 @@ void CQuoridor::playerActionRule()
 		}
 		// 如果上次选取的位置也是墙，这次选取的也是墙，并且这次选取的位置是空
 		// 连续选取相同位置已经在最开始过滤
+		// 这里是产生实际墙位置的唯一入口，所以在这里判定玩家墙剩余数是否可用
 		else if ((pickup.x+pickup.y)%2==1 
 			&& (arr.x+arr.y)%2==1 
-			&& GD_BLANK == gameData[arr.x][arr.y])
+			&& GD_BLANK == gameData[arr.x][arr.y]
+			&& ply_head->wall_num_left>0)
 		{
 			// 如果是横墙,并且这次选的和上次选的在同一行上
 			if (pickup.x%2==0&&arr.y==pickup.y)
@@ -1532,10 +1623,14 @@ void CQuoridor::playerActionRule()
 					goto RULE_WALL_EXIT;
 				}
 			}
+			// 上面使用goto语句，如果能够成功放置墙，那么已经跳出去了，
+			// 这里，如果不满足一个可放墙的条件，视为重新选取
+			pickup.x=arr.x;
+			pickup.y=arr.y;
 		}
+		// 其他情况，一律视为重新选取墙
 		else if ( gameData[arr.x][arr.y]!=GD_WALL )
 		{
-			// 其他情况，一律视为重新选取
 			pickup.x=arr.x;
 			pickup.y=arr.y;
 			// 清除玩家可走待选位置
@@ -1544,9 +1639,29 @@ void CQuoridor::playerActionRule()
 	}
 	return ;
 RULE_WALL_EXIT:
+	// 这里判断，加入的墙是否合法的判定，如果新放的一堵墙，使得任何一个玩家无解，那么此墙非法
+	// 如果不合法，那么需要还原原来的游戏数据
+	if (!judgeWallLegal())
+	{
+		// 还原游戏算法数据
+		gameData[arr.x][arr.y]=GD_BLANK;
+		gameData[(arr.x+pickup.x)/2][(arr.y+pickup.y)/2]=GD_BLANK;
+		gameData[pickup.x][pickup.y]=GD_BLANK;
+		// 弹出刚压入的墙坐标(两个点)
+		wall_vec.pop_back();
+		wall_vec.pop_back();
+		// 清空预选位置
+		pickup.x=-1;
+		pickup.y=-1;
+		// 清除玩家可走待选位置
+		preselect_pos.clear();
+		return ;
+	}
 	// 当前玩家的可用墙数减1
 	ply_head->wall_num_left--;
 ACTION_RULE_EXIT:
+	////sound
+	//sndPlaySound("data/sound/explode1.wav",SND_ASYNC);
 	// 当玩家选择了移动人物，那么此玩家的行动就结束了，控制权应该交由下一位玩家
 	ply_head=ply_head->next;
 	// 清空预选位置
@@ -2018,4 +2133,230 @@ SEND_BOX_EXIT:
 	pickup.x=-1;
 	pickup.y=-1;
 	return ;
+}
+
+bool CQuoridor::judgeWallLegal()
+{
+	// 定义一个临时的存放玩家可走位置的队列
+	std::deque<pos2d> que;
+	// 9x9的临时标记，记录玩家可走的位置,0为空，1为遍历过，可走，2为已经处理过
+	char tmpflag[9][9];
+	bool jump_flag=false;
+	for (int i=0; i<4; i++)
+	{	// 清空当前玩家可走位置的标记
+		memset(tmpflag,0,sizeof(tmpflag));
+		// 清空待选队列
+		que.clear();
+		// 证明可以找到出口的跳转标志置为false
+		jump_flag=false;
+		// 只要不是关闭的玩家
+		if (plyer[i].id!=2)
+		{	// 先将当前玩家的位置传入，注意，玩家坐标是0~8的范围，转换为0~16的范围
+			// 因为，选点算法返回的是0~16的范围
+			pos2d tmpp;
+			tmpp.x=plyer[i].x*2;
+			tmpp.y=plyer[i].y*2;
+			// 可走点标记二维数组是按照0~8设计的
+			tmpflag[plyer[i].x][plyer[i].y]=1;
+			que.push_back(tmpp);
+			// 如果可走队列里还有内容，且没有找到终点的可走位置
+			while (que.size()>0 && jump_flag == false)
+			{	// 使用队列的头重新搜索可走位置
+				playerMovablePos(*que.begin());
+				// 其实正常来说，选可走点算法是不可能返回空向量的
+				if (preselect_pos.size()>0)
+				{
+					for (size_t j=0;j<preselect_pos.size();j++)
+					{	// 不同玩家不同的到达终点的条件
+						switch(plyer[i].color)
+						{
+						case GD_YELLOW:
+							if (preselect_pos[j].x==16)
+								jump_flag=true;
+							break;
+						case GD_RED:
+							if (preselect_pos[j].y==0)
+								jump_flag=true;
+							break;
+						case GD_GREEN:
+							if (preselect_pos[j].x==0)
+								jump_flag=true;
+							break;
+						case GD_BLUE:
+							if (preselect_pos[j].y==16)
+								jump_flag=true;
+							break;
+						default:
+							break;
+						}
+						if (jump_flag)
+							break;
+						// 如果这一位置还没有被考虑过,没有被标记
+						if (tmpflag[preselect_pos[j].x/2][preselect_pos[j].y/2]==0)
+						{
+							// 可走点标记二维数组是按照0~8设计的, 将预选位置转为标记位置
+							tmpflag[preselect_pos[j].x/2][preselect_pos[j].y/2]=1;
+							que.push_back(preselect_pos[j]);
+						}
+					}
+				}
+				// 由这一点去计算的可走位置已经计算结束，弹出当前点
+				que.pop_front();
+			}
+			if (jump_flag==false /*&& que.size()==0*/)
+			{	// 如果当前玩家没有检测到可走的终点
+				return false;
+			}
+		}
+	}
+	// 参与游戏的玩家全都有解
+	return true;
+}
+
+void CQuoridor::drawVictory()
+{
+	if (win_flag==GD_BLANK)
+	{
+		return ;
+	}
+	char tmpstr[64]={0};
+	float layer=0.3f;
+	float tri_w=m_OpenGL->RCwidth/3.0f;
+	float tri_h=m_OpenGL->RCheight/3.0f;
+	//绘制背景半透明底纹窗口
+	tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.8f);
+
+	glPushMatrix();
+	glTranslatef(0,0,0.5f);
+	switch (win_flag)
+	{
+	case GD_YELLOW:
+		sprintf(tmpstr,"黄 色 玩 家");
+		myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,1,1,0);
+		break;
+	case GD_RED:
+		sprintf(tmpstr,"红 色 玩 家");
+		myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,1,0,0);
+		break;
+	case GD_GREEN:
+		sprintf(tmpstr,"绿 色 玩 家");
+		myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,0,1,0);
+		break;
+	case GD_BLUE:
+		sprintf(tmpstr,"蓝 色 玩 家");
+		myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,0,0,1);
+		break;
+	default:
+		break;
+	}
+	sprintf(tmpstr,"  胜  利 ");
+	myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+3/7.0)),tmpstr,FONT2,1,1,1);
+	sprintf(tmpstr," 好 厉 害！");
+	myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+1/8.0)),tmpstr,FONT2,1,1,1);
+	glPopMatrix();
+
+	// 这里可以写一个烟花函数 
+}
+
+void CQuoridor::computer_AI()
+{	// 只有当前玩家是电脑才做处理
+	if (ply_head->id==1)
+	{
+		//Sleep(800);
+		//if (random(0,2.0)==0)
+		if (random(0,1.0)==0)
+		{
+			/*
+			switch (ply_head->color)
+			{
+			case GD_YELLOW:
+				break;
+			case GD_RED:
+				break;
+			case GD_GREEN:
+				break;
+			case GD_BLUE:
+				break;
+			}
+			*/
+			pos2d tmppoint;
+			tmppoint.x=ply_head->x*2;
+			tmppoint.y=ply_head->y*2;
+			playerMovablePos(tmppoint);
+			pos2d targ=preselect_pos[random(0,preselect_pos.size())];
+			// 这种情况，进入到人物棋子处理阶段
+			char tmp=0;
+			// 交换
+			tmp=gameData[targ.x][targ.y];
+			gameData[targ.x][targ.y]=gameData[ply_head->x*2][ply_head->y*2];
+			gameData[ply_head->x*2][ply_head->y*2]=tmp;
+
+			ply_head->x=targ.x/2;
+			ply_head->y=targ.y/2;
+
+			preselect_pos.clear();
+			// 在目标位置上，更新玩家变量
+			switch (ply_head->color)
+			{
+			case GD_YELLOW:
+				if (ply_head->x==8)
+				{
+					win_flag=GD_YELLOW;
+					iGameState=GAME_WIN;
+				}
+				break;
+			case GD_RED:
+				if (ply_head->y==0)
+				{
+					win_flag=GD_RED;
+					iGameState=GAME_WIN;
+				}
+				break;
+			case GD_GREEN:
+				if (ply_head->x==0)
+				{
+					win_flag=GD_GREEN;
+					iGameState=GAME_WIN;
+				}
+				break;
+			case GD_BLUE:
+				if (ply_head->y==8)
+				{
+					win_flag=GD_BLUE;
+					iGameState=GAME_WIN;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{	// 在敌人玩家前面放墙
+			switch (ply_head->next->color)
+			{
+			case GD_YELLOW:
+				break;
+			case GD_RED:
+				break;
+			case GD_GREEN:
+				break;
+			case GD_BLUE:
+				if (ply_head->next->x>0&&ply_head->next->x<8)
+				{
+					//int x=ply_head->next->x;
+					//int y=ply_head->next->y;
+					//pos2d tpwall1,tmpwall2;
+					//tpwall1.x=x;
+					//tpwall1.y=y+1;
+					//tpwall2.x=x+1;
+					//tpwall2.y=y;
+					//wall_vec.push_back()
+					//gameData[][]=GD_WALL;
+				}
+				break;
+			}
+		}
+		// 下一位玩家
+		ply_head=ply_head->next;
+	}
 }

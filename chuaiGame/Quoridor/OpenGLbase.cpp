@@ -197,7 +197,7 @@ void COpenGLbase::Render()
 
 	glLoadIdentity();
 	// 输出GL本类的一些参数
-	text_Debug();
+	//text_Debug();
 	// 游戏主体的绘制
 	gm.showMain();
 
