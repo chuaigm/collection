@@ -23,32 +23,32 @@
 class COpenGLbase
 {
 public:	
-	COpenGLbase();
-	virtual ~COpenGLbase();
-	
+    COpenGLbase();
+    virtual ~COpenGLbase();
+    
 public:
-	//-----------------------------------------
-	BOOL	SetupPixelFormat(HDC hDC);
-	void	SetViewSize(int w,int h);
-	void	init_3D();
-	void	init_2D();
-	void	Render();
-	void	CleanUp();
-	// 输出本OpenGL类一些调试测试参数
-	void	text_Debug();
-	// 处理鼠标
-	void	mouseProc(long long lparam);
-	//-----------------------------------------
-	HDC		hDC;		// 外部传入的上下位
-	HGLRC	hRC;		// 生成的描述句柄
-	// 在不重启程序的前提下，视口宽高应该是不变的
-	int		RCwidth;	// 此OpenGL实例内部的视口宽度
-	int		RCheight;	// 此OpenGL实例内部的视口高度
-	//鼠标位置
-	int		Xmouse;
-	int		Ymouse;
-	int		XmouseOld;
-	int		YmouseOld;
+    //-----------------------------------------
+    BOOL	SetupPixelFormat(HDC hDC);
+    void	SetViewSize(int w,int h);
+    void	init_3D();
+    void	init_2D();
+    void	Render();
+    void	CleanUp();
+    // 输出本OpenGL类一些调试测试参数
+    void	text_Debug();
+    // 处理鼠标
+    void	mouseProc(long long lparam);
+    //-----------------------------------------
+    HDC		hDC;		// 外部传入的上下位
+    HGLRC	hRC;		// 生成的描述句柄
+    // 在不重启程序的前提下，视口宽高应该是不变的
+    int		RCwidth;	// 此OpenGL实例内部的视口宽度
+    int		RCheight;	// 此OpenGL实例内部的视口高度
+    //鼠标位置
+    int		Xmouse;
+    int		Ymouse;
+    int		XmouseOld;
+    int		YmouseOld;
 };
 
 #endif // !defined(AFX_OPENGL_H__17B7289C_7956_41C5_89B9_621E3C435389__INCLUDED_)

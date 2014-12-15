@@ -92,23 +92,23 @@ extern void INIFileTestReadMain(void);
 ***********************************************************************/
 char * strtrimr(char * buf)
 {
-	int len,i;
-	char * tmp = NULL;
-	len = strlen(buf);
-	tmp = (char*)malloc(len);
-	
-	memset(tmp,0x00,len);
-	for(i = 0;i < len;i++)
-	{
-		if (buf[i] !=' ')
-			break;
-	}
-	if (i < len) {
-		strncpy(tmp,(buf+i),(len-i));
-	}
-	strncpy(buf,tmp,len);
-	free(tmp);
-	return buf;
+    int len,i;
+    char * tmp = NULL;
+    len = strlen(buf);
+    tmp = (char*)malloc(len);
+    
+    memset(tmp,0x00,len);
+    for(i = 0;i < len;i++)
+    {
+        if (buf[i] !=' ')
+            break;
+    }
+    if (i < len) {
+        strncpy(tmp,(buf+i),(len-i));
+    }
+    strncpy(buf,tmp,len);
+    free(tmp);
+    return buf;
 }
 
 /**********************************************************************
@@ -127,22 +127,22 @@ char * strtrimr(char * buf)
 ***********************************************************************/
 char * strtriml(char * buf)
 {
-	int len,i;	
-	char * tmp=NULL;
-	len = strlen(buf);
-	tmp = (char*)malloc(len);
-	memset(tmp,0x00,len);
-	for(i = 0;i < len;i++)
-	{
-		if (buf[len-i-1] !=' ')
-			break;
-	}
-	if (i < len) {
-		strncpy(tmp,buf,len-i);
-	}
-	strncpy(buf,tmp,len);
-	free(tmp);
-	return buf;
+    int len,i;	
+    char * tmp=NULL;
+    len = strlen(buf);
+    tmp = (char*)malloc(len);
+    memset(tmp,0x00,len);
+    for(i = 0;i < len;i++)
+    {
+        if (buf[len-i-1] !=' ')
+            break;
+    }
+    if (i < len) {
+        strncpy(tmp,buf,len-i);
+    }
+    strncpy(buf,tmp,len);
+    free(tmp);
+    return buf;
 }
 
 /**********************************************************************
@@ -161,34 +161,34 @@ char * strtriml(char * buf)
 ***********************************************************************/
 int  FileGetLine(FILE *fp, char *buffer, int maxlen)
 {
-	int  i, j; 
-	char ch1; 
-	
-	for(i = 0, j = 0; i < maxlen; j++) 
-	{ 
-		if(fread(&ch1, sizeof(char), 1, fp) != 1) 
-		{ 
-			if(feof(fp) != 0) 
-			{ 
-				if(j == 0) return -1;               /* 文件结束 */ 
-				else break; 
-			} 
-			if(ferror(fp) != 0) return -2;        /* 读文件出错 */ 
-			return -2; 
-		} 
-		else 
-		{ 
-			if(ch1 == '\n' || ch1 == 0x00) break; /* 换行 */ 
-			if(ch1 == '\f' || ch1 == 0x1A)        /* '\f':换页符也算有效字符 */ 
-			{ 
-				buffer[i++] = ch1; 
-				break; 
-			} 
-			if(ch1 != '\r') buffer[i++] = ch1;    /* 忽略回车符 */ 
-		} 
-	} 
-	buffer[i] = '\0'; 
-	return i; 
+    int  i, j; 
+    char ch1; 
+    
+    for(i = 0, j = 0; i < maxlen; j++) 
+    { 
+        if(fread(&ch1, sizeof(char), 1, fp) != 1) 
+        { 
+            if(feof(fp) != 0) 
+            { 
+                if(j == 0) return -1;               /* 文件结束 */ 
+                else break; 
+            } 
+            if(ferror(fp) != 0) return -2;        /* 读文件出错 */ 
+            return -2; 
+        } 
+        else 
+        { 
+            if(ch1 == '\n' || ch1 == 0x00) break; /* 换行 */ 
+            if(ch1 == '\f' || ch1 == 0x1A)        /* '\f':换页符也算有效字符 */ 
+            { 
+                buffer[i++] = ch1; 
+                break; 
+            } 
+            if(ch1 != '\r') buffer[i++] = ch1;    /* 忽略回车符 */ 
+        } 
+    } 
+    buffer[i] = '\0'; 
+    return i; 
 } 
 
 /**********************************************************************
@@ -208,36 +208,36 @@ int  FileGetLine(FILE *fp, char *buffer, int maxlen)
 ***********************************************************************/
 int  FileCopy(const char *source_file, const char *dest_file)
 { 
-	FILE *fp1, *fp2; 
-	char buf[1024+1]; 
-	int  ret; 
-	
-	if((fp1 = fopen(source_file, "r")) == NULL) 
-		return COPYF_ERR_OPEN_FILE; 
-	ret = COPYF_ERR_CREATE_FILE; 
-	
-	if((fp2 = fopen(dest_file, "w")) == NULL) goto copy_end; 
-	
-	while(1) 
-	{ 
-		ret = COPYF_ERR_READ_FILE; 
-		memset(buf, 0x00, 1024+1); 
-		if(fgets((char *)buf, 1024, fp1) == NULL) 
-		{ 
-			if(strlen(buf) == 0) 
-			{ 
-				if(ferror(fp1) != 0) goto copy_end; 
-				break;                                   /* 文件尾 */ 
-			} 
-		} 
-		ret = COPYF_ERR_WRITE_FILE; 
-		if(fputs((char *)buf, fp2) == EOF) goto copy_end; 
-	} 
-	ret = COPYF_OK; 
+    FILE *fp1, *fp2; 
+    char buf[1024+1]; 
+    int  ret; 
+    
+    if((fp1 = fopen(source_file, "r")) == NULL) 
+        return COPYF_ERR_OPEN_FILE; 
+    ret = COPYF_ERR_CREATE_FILE; 
+    
+    if((fp2 = fopen(dest_file, "w")) == NULL) goto copy_end; 
+    
+    while(1) 
+    { 
+        ret = COPYF_ERR_READ_FILE; 
+        memset(buf, 0x00, 1024+1); 
+        if(fgets((char *)buf, 1024, fp1) == NULL) 
+        { 
+            if(strlen(buf) == 0) 
+            { 
+                if(ferror(fp1) != 0) goto copy_end; 
+                break;                                   /* 文件尾 */ 
+            } 
+        } 
+        ret = COPYF_ERR_WRITE_FILE; 
+        if(fputs((char *)buf, fp2) == EOF) goto copy_end; 
+    } 
+    ret = COPYF_OK; 
 copy_end: 
-	if(fp2 != NULL) fclose(fp2); 
-	if(fp1 != NULL) fclose(fp1); 
-	return ret; 
+    if(fp2 != NULL) fclose(fp2); 
+    if(fp1 != NULL) fclose(fp1); 
+    return ret; 
 }
 
 /**********************************************************************
@@ -266,24 +266,24 @@ copy_end:
 ***********************************************************************/
 int  SplitSectionToNameIndex(char *section, char **name, char **index)
 { 
-	int  i, k1, k2, n; 
-	
-	if((n = strlen((char *)section)) < 1) return 0; 
-	for(i = 0; i < n; i++) 
-		if(section[i] != ' ' && section[i] != '\t') break; 
-		if(i >= n) return 0; 
-		if(section[i] == CFG_nis) return -1; 
-		k1 = i; 
-		for(i++; i < n; i++) 
-			if(section[i] == CFG_nis) break; 
-			if(i >= n) return -2; 
-			k2 = i; 
-			for(i++; i < n; i++) 
-				if(section[i] != ' ' && section[i] != '\t') break; 
-				section[k2] = '\0'; 
-				*name = section + k1; 
-				*index = section + i; 
-				return 1; 
+    int  i, k1, k2, n; 
+    
+    if((n = strlen((char *)section)) < 1) return 0; 
+    for(i = 0; i < n; i++) 
+        if(section[i] != ' ' && section[i] != '\t') break; 
+        if(i >= n) return 0; 
+        if(section[i] == CFG_nis) return -1; 
+        k1 = i; 
+        for(i++; i < n; i++) 
+            if(section[i] == CFG_nis) break; 
+            if(i >= n) return -2; 
+            k2 = i; 
+            for(i++; i < n; i++) 
+                if(section[i] != ' ' && section[i] != '\t') break; 
+                section[k2] = '\0'; 
+                *name = section + k1; 
+                *index = section + i; 
+                return 1; 
 } 
 
 /**********************************************************************
@@ -308,16 +308,16 @@ int  SplitSectionToNameIndex(char *section, char **name, char **index)
 ***********************************************************************/
 int  JoinNameIndexToSection(char **section, const char *name, const char *index)
 { 
-	int n1,n2; 
-	
-	if((n1 = strlen((char *)name)) < 1) return 0; 
-	if((n2 = strlen((char *)index)) < 1) return 0;
-	
-	strcat(*section,name);
-	strcat(*section+n1,":");
-	strcat(*section+n1+1,index);
-	*(*section+n1+1+n2) = '\0';
-	return 1; 
+    int n1,n2; 
+    
+    if((n1 = strlen((char *)name)) < 1) return 0; 
+    if((n2 = strlen((char *)index)) < 1) return 0;
+    
+    strcat(*section,name);
+    strcat(*section+n1,":");
+    strcat(*section+n1+1,index);
+    *(*section+n1+1+n2) = '\0';
+    return 1; 
 } 
 /**********************************************************************
 * 函数名称： SplitKeyValue
@@ -343,24 +343,24 @@ int  JoinNameIndexToSection(char **section, const char *name, const char *index)
 ***********************************************************************/
 int  SplitKeyValue(char *buf, char **key, char **val)
 {
-	int  i, k1, k2, n; 
-	
-	if((n = strlen((char *)buf)) < 1) return 0; 
-	for(i = 0; i < n; i++) 
-		if(buf[i] != ' ' && buf[i] != '\t') break; 
-		if(i >= n) return 0; 
-		if(buf[i] == CFG_kvs) return -1; 
-		k1 = i; 
-		for(i++; i < n; i++) 
-			if(buf[i] == CFG_kvs) break; 
-			if(i >= n) return -2; 
-			k2 = i; 
-			for(i++; i < n; i++) 
-				if(buf[i] != ' ' && buf[i] != '\t') break; 
-				buf[k2] = '\0'; 
-				*key = buf + k1; 
-				*val = buf + i; 
-				return 1; 
+    int  i, k1, k2, n; 
+    
+    if((n = strlen((char *)buf)) < 1) return 0; 
+    for(i = 0; i < n; i++) 
+        if(buf[i] != ' ' && buf[i] != '\t') break; 
+        if(i >= n) return 0; 
+        if(buf[i] == CFG_kvs) return -1; 
+        k1 = i; 
+        for(i++; i < n; i++) 
+            if(buf[i] == CFG_kvs) break; 
+            if(i >= n) return -2; 
+            k2 = i; 
+            for(i++; i < n; i++) 
+                if(buf[i] != ' ' && buf[i] != '\t') break; 
+                buf[k2] = '\0'; 
+                *key = buf + k1; 
+                *val = buf + i; 
+                return 1; 
 } 
 
 /**********************************************************************
@@ -383,93 +383,93 @@ int  ConfigGetKeyValue(const char *CFG_file,
                        const char *key, 
                              char *buf)
 { 
-	FILE *fp; 
-	char buf1[MAX_CFG_BUF + 1], buf2[MAX_CFG_BUF + 1]; 
-	char *key_ptr, *val_ptr; 
-	int  line_no, n, ret; 
-	
-	line_no = 0; 
-	CFG_section_line_no = 0; 
-	CFG_key_line_no = 0; 
-	CFG_key_lines = 0; 
-	
-	if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
-	
-	while(1)                                       /* 搜找项section */ 
-	{ 
-		ret = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
-		if(n < -1) goto r_cfg_end; 
-		ret = CFG_SECTION_NOT_FOUND; 
-		if(n < 0) goto r_cfg_end;                    /* 文件尾，未发现 */ 
-		line_no++; 
-		n = strlen(strtriml(strtrimr(buf1))); 
-		if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
-		ret = CFG_ERR_FILE_FORMAT; 
-		if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
-			goto r_cfg_end; 
-		if(buf1[0] == CFG_ssl) 
-		{ 
-			buf1[n-1] = 0x00; 
-			if(strcmp(buf1+1, section) == 0) 
-				break;                                   /* 找到项section */ 
-		} 
-	} 
-	CFG_section_line_no = line_no; 
-	while(1)                                       /* 搜找key */ 
-	{ 
-		ret = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
-		if(n < -1) goto r_cfg_end; 
-		ret = CFG_KEY_NOT_FOUND; 
-		if(n < 0) goto r_cfg_end;                    /* 文件尾，未发现key */ 
-		line_no++; 
-		CFG_key_line_no = line_no; 
-		CFG_key_lines = 1; 
-		n = strlen(strtriml(strtrimr(buf1))); 
-		if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
-		ret = CFG_KEY_NOT_FOUND; 
-		if(buf1[0] == CFG_ssl) goto r_cfg_end; 
-		if(buf1[n-1] == '+')                         /* 遇+号表示下一行继续  */ 
-		{ 
-			buf1[n-1] = 0x00; 
-			while(1) 
-			{ 
-				ret = CFG_ERR_READ_FILE; 
-				n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
-				if(n < -1) goto r_cfg_end; 
-				if(n < 0) break;                         /* 文件结束 */ 
-				line_no++; 
-				CFG_key_lines++; 
-				n = strlen(strtrimr(buf2)); 
-				ret = CFG_ERR_EXCEED_BUF_SIZE; 
-				if(n > 0 && buf2[n-1] == '+')            /* 遇+号表示下一行继续 */ 
-				{ 
-					buf2[n-1] = 0x00; 
-					if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
-						goto r_cfg_end; 
-					strcat(buf1, buf2); 
-					continue; 
-				} 
-				if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
-					goto r_cfg_end; 
-				strcat(buf1, buf2); 
-				break; 
-			} 
-		} 
-		ret = CFG_ERR_FILE_FORMAT; 
-		if(SplitKeyValue(buf1, &key_ptr, &val_ptr) != 1) 
-			goto r_cfg_end; 
-		strtriml(strtrimr(key_ptr)); 
-		if(strcmp(key_ptr, key) != 0) 
-			continue;                                  /* 和key值不匹配 */ 
-		strcpy(buf, val_ptr); 
-		break; 
-	} 
-	ret = CFG_OK; 
+    FILE *fp; 
+    char buf1[MAX_CFG_BUF + 1], buf2[MAX_CFG_BUF + 1]; 
+    char *key_ptr, *val_ptr; 
+    int  line_no, n, ret; 
+    
+    line_no = 0; 
+    CFG_section_line_no = 0; 
+    CFG_key_line_no = 0; 
+    CFG_key_lines = 0; 
+    
+    if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
+    
+    while(1)                                       /* 搜找项section */ 
+    { 
+        ret = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
+        if(n < -1) goto r_cfg_end; 
+        ret = CFG_SECTION_NOT_FOUND; 
+        if(n < 0) goto r_cfg_end;                    /* 文件尾，未发现 */ 
+        line_no++; 
+        n = strlen(strtriml(strtrimr(buf1))); 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
+        ret = CFG_ERR_FILE_FORMAT; 
+        if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
+            goto r_cfg_end; 
+        if(buf1[0] == CFG_ssl) 
+        { 
+            buf1[n-1] = 0x00; 
+            if(strcmp(buf1+1, section) == 0) 
+                break;                                   /* 找到项section */ 
+        } 
+    } 
+    CFG_section_line_no = line_no; 
+    while(1)                                       /* 搜找key */ 
+    { 
+        ret = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
+        if(n < -1) goto r_cfg_end; 
+        ret = CFG_KEY_NOT_FOUND; 
+        if(n < 0) goto r_cfg_end;                    /* 文件尾，未发现key */ 
+        line_no++; 
+        CFG_key_line_no = line_no; 
+        CFG_key_lines = 1; 
+        n = strlen(strtriml(strtrimr(buf1))); 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
+        ret = CFG_KEY_NOT_FOUND; 
+        if(buf1[0] == CFG_ssl) goto r_cfg_end; 
+        if(buf1[n-1] == '+')                         /* 遇+号表示下一行继续  */ 
+        { 
+            buf1[n-1] = 0x00; 
+            while(1) 
+            { 
+                ret = CFG_ERR_READ_FILE; 
+                n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
+                if(n < -1) goto r_cfg_end; 
+                if(n < 0) break;                         /* 文件结束 */ 
+                line_no++; 
+                CFG_key_lines++; 
+                n = strlen(strtrimr(buf2)); 
+                ret = CFG_ERR_EXCEED_BUF_SIZE; 
+                if(n > 0 && buf2[n-1] == '+')            /* 遇+号表示下一行继续 */ 
+                { 
+                    buf2[n-1] = 0x00; 
+                    if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
+                        goto r_cfg_end; 
+                    strcat(buf1, buf2); 
+                    continue; 
+                } 
+                if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
+                    goto r_cfg_end; 
+                strcat(buf1, buf2); 
+                break; 
+            } 
+        } 
+        ret = CFG_ERR_FILE_FORMAT; 
+        if(SplitKeyValue(buf1, &key_ptr, &val_ptr) != 1) 
+            goto r_cfg_end; 
+        strtriml(strtrimr(key_ptr)); 
+        if(strcmp(key_ptr, key) != 0) 
+            continue;                                  /* 和key值不匹配 */ 
+        strcpy(buf, val_ptr); 
+        break; 
+    } 
+    ret = CFG_OK; 
 r_cfg_end: 
-	if(fp != NULL) fclose(fp); 
-	return ret; 
+    if(fp != NULL) fclose(fp); 
+    return ret; 
 } 
 
 /**********************************************************************
@@ -494,84 +494,84 @@ int  ConfigSetKeyValue(const char *CFG_file,
                        const char *key, 
                        const char *buf)
 { 
-	FILE *fp1, *fp2; 
-	char buf1[MAX_CFG_BUF + 1]; 
-	int  line_no, line_no1, n, ret, ret2; 
-	char *tmpfname; 
-	
-	ret = ConfigGetKeyValue(CFG_file, section, key, buf1); 
-	if(ret <= CFG_ERR && ret != CFG_ERR_OPEN_FILE) return ret; 
-	if(ret == CFG_ERR_OPEN_FILE || ret == CFG_SECTION_NOT_FOUND) 
-	{ 
-		if((fp1 = fopen(CFG_file, "a")) == NULL) 
-			return CFG_ERR_CREATE_FILE; 
-		// write [section]
-		if(fprintf(fp1, "%c%s%c\n", CFG_ssl, section, CFG_ssr) == EOF) 
-		{ 
-			fclose(fp1); 
-			return CFG_ERR_WRITE_FILE; 
-		} 
-		// write key=value, the '=' can be customized
-		if(fprintf(fp1, "%s%c%s\n", key, CFG_kvs, buf) == EOF) 
-		{ 
-			fclose(fp1); 
-			return CFG_ERR_WRITE_FILE; 
-		} 
-		fclose(fp1); 
-		return CFG_OK; 
-	} 
-	if((tmpfname = tmpnam(NULL)) == NULL) 
-	//if((tmpfname = mkstemp(NULL)) == NULL) 
-		return CFG_ERR_CREATE_FILE; 
-	
-	if((fp2 = fopen(tmpfname, "w")) == NULL) 
-		return CFG_ERR_CREATE_FILE; 
-	
-	ret2 = CFG_ERR_OPEN_FILE; 
-	
-	if((fp1 = fopen(CFG_file, "rb")) == NULL) goto w_cfg_end; 
-	
-	if(ret == CFG_KEY_NOT_FOUND) 
-		line_no1 = CFG_section_line_no; 
-	else /* ret = CFG_OK */ 
-		line_no1 = CFG_key_line_no - 1; 
-	for(line_no = 0; line_no < line_no1; line_no++) 
-	{ 
-		ret2 = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
-		if(n < 0) goto w_cfg_end; 
-		ret2 = CFG_ERR_WRITE_FILE; 
-		if(fprintf(fp2, "%s\n", buf1) == EOF) goto w_cfg_end; 
-	} 
-	if(ret != CFG_KEY_NOT_FOUND) 
-		for( ; line_no < line_no1+CFG_key_lines; line_no++) 
-		{ 
-			ret2 = CFG_ERR_READ_FILE; 
-			n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
-			if(n < 0) goto w_cfg_end; 
-		} 
-		ret2 = CFG_ERR_WRITE_FILE; 
-		if(fprintf(fp2, "%s%c%s\n", key, CFG_kvs, buf) == EOF) goto w_cfg_end; 
-		while(1) 
-		{ 
-			ret2 = CFG_ERR_READ_FILE; 
-			n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
-			if(n < -1) goto w_cfg_end; 
-			if(n < 0) break; 
-			ret2 = CFG_ERR_WRITE_FILE; 
-			if(fprintf(fp2, "%s\n", buf1) == EOF) goto w_cfg_end; 
-		} 
-		ret2 = CFG_OK; 
+    FILE *fp1, *fp2; 
+    char buf1[MAX_CFG_BUF + 1]; 
+    int  line_no, line_no1, n, ret, ret2; 
+    char *tmpfname; 
+    
+    ret = ConfigGetKeyValue(CFG_file, section, key, buf1); 
+    if(ret <= CFG_ERR && ret != CFG_ERR_OPEN_FILE) return ret; 
+    if(ret == CFG_ERR_OPEN_FILE || ret == CFG_SECTION_NOT_FOUND) 
+    { 
+        if((fp1 = fopen(CFG_file, "a")) == NULL) 
+            return CFG_ERR_CREATE_FILE; 
+        // write [section]
+        if(fprintf(fp1, "%c%s%c\n", CFG_ssl, section, CFG_ssr) == EOF) 
+        { 
+            fclose(fp1); 
+            return CFG_ERR_WRITE_FILE; 
+        } 
+        // write key=value, the '=' can be customized
+        if(fprintf(fp1, "%s%c%s\n", key, CFG_kvs, buf) == EOF) 
+        { 
+            fclose(fp1); 
+            return CFG_ERR_WRITE_FILE; 
+        } 
+        fclose(fp1); 
+        return CFG_OK; 
+    } 
+    if((tmpfname = tmpnam(NULL)) == NULL) 
+    //if((tmpfname = mkstemp(NULL)) == NULL) 
+        return CFG_ERR_CREATE_FILE; 
+    
+    if((fp2 = fopen(tmpfname, "w")) == NULL) 
+        return CFG_ERR_CREATE_FILE; 
+    
+    ret2 = CFG_ERR_OPEN_FILE; 
+    
+    if((fp1 = fopen(CFG_file, "rb")) == NULL) goto w_cfg_end; 
+    
+    if(ret == CFG_KEY_NOT_FOUND) 
+        line_no1 = CFG_section_line_no; 
+    else /* ret = CFG_OK */ 
+        line_no1 = CFG_key_line_no - 1; 
+    for(line_no = 0; line_no < line_no1; line_no++) 
+    { 
+        ret2 = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
+        if(n < 0) goto w_cfg_end; 
+        ret2 = CFG_ERR_WRITE_FILE; 
+        if(fprintf(fp2, "%s\n", buf1) == EOF) goto w_cfg_end; 
+    } 
+    if(ret != CFG_KEY_NOT_FOUND) 
+        for( ; line_no < line_no1+CFG_key_lines; line_no++) 
+        { 
+            ret2 = CFG_ERR_READ_FILE; 
+            n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
+            if(n < 0) goto w_cfg_end; 
+        } 
+        ret2 = CFG_ERR_WRITE_FILE; 
+        if(fprintf(fp2, "%s%c%s\n", key, CFG_kvs, buf) == EOF) goto w_cfg_end; 
+        while(1) 
+        { 
+            ret2 = CFG_ERR_READ_FILE; 
+            n = FileGetLine(fp1, buf1, MAX_CFG_BUF); 
+            if(n < -1) goto w_cfg_end; 
+            if(n < 0) break; 
+            ret2 = CFG_ERR_WRITE_FILE; 
+            if(fprintf(fp2, "%s\n", buf1) == EOF) goto w_cfg_end; 
+        } 
+        ret2 = CFG_OK; 
 w_cfg_end: 
-		if(fp1 != NULL) fclose(fp1); 
-		if(fp2 != NULL) fclose(fp2); 
-		if(ret2 == CFG_OK) 
-		{ 
-			ret = FileCopy(tmpfname, CFG_file); 
-			if(ret != 0) return CFG_ERR_CREATE_FILE; 
-		} 
-		remove(tmpfname); 
-		return ret2; 
+        if(fp1 != NULL) fclose(fp1); 
+        if(fp2 != NULL) fclose(fp2); 
+        if(ret2 == CFG_OK) 
+        { 
+            ret = FileCopy(tmpfname, CFG_file); 
+            if(ret != 0) return CFG_ERR_CREATE_FILE; 
+        } 
+        remove(tmpfname); 
+        return ret2; 
 } 
 
 /**********************************************************************
@@ -591,35 +591,35 @@ w_cfg_end:
 ***********************************************************************/
 int  ConfigGetSections(const char *CFG_file, char *sections[])
 { 
-	FILE *fp; 
-	char buf1[MAX_CFG_BUF + 1]; 
-	int  n, n_sections = 0, ret; 
-	
-	
-	if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
-	
-	while(1)                                       /*搜找项section */ 
-	{ 
-		ret = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
-		if(n < -1) goto cfg_scts_end; 
-		if(n < 0) break;                             /* 文件尾 */ 
-		n = strlen(strtriml(strtrimr(buf1))); 
-		if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
-		ret = CFG_ERR_FILE_FORMAT; 
-		if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
-			goto cfg_scts_end; 
-		if(buf1[0] == CFG_ssl) 
-		{ 
-			buf1[n-1] = 0x00; 
-			strcpy(sections[n_sections], buf1+1); 
-			n_sections++; 
-		} 
-	} 
-	ret = n_sections; 
+    FILE *fp; 
+    char buf1[MAX_CFG_BUF + 1]; 
+    int  n, n_sections = 0, ret; 
+    
+    
+    if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
+    
+    while(1)                                       /*搜找项section */ 
+    { 
+        ret = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
+        if(n < -1) goto cfg_scts_end; 
+        if(n < 0) break;                             /* 文件尾 */ 
+        n = strlen(strtriml(strtrimr(buf1))); 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
+        ret = CFG_ERR_FILE_FORMAT; 
+        if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
+            goto cfg_scts_end; 
+        if(buf1[0] == CFG_ssl) 
+        { 
+            buf1[n-1] = 0x00; 
+            strcpy(sections[n_sections], buf1+1); 
+            n_sections++; 
+        } 
+    } 
+    ret = n_sections; 
 cfg_scts_end: 
-	if(fp != NULL) fclose(fp); 
-	return ret; 
+    if(fp != NULL) fclose(fp); 
+    return ret; 
 } 
 
 /**********************************************************************
@@ -641,80 +641,80 @@ int  ConfigGetKeys(const char *CFG_file,
                    const char *section, 
                          char *keys[])
 { 
-	FILE *fp; 
-	char buf1[MAX_CFG_BUF + 1], buf2[MAX_CFG_BUF + 1]; 
-	char *key_ptr, *val_ptr; 
-	int  n, n_keys = 0, ret; 
-	
-	
-	if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
-	
-	while(1)                                       /* 搜找项section */ 
-	{ 
-		ret = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
-		if(n < -1) goto cfg_keys_end; 
-		ret = CFG_SECTION_NOT_FOUND; 
-		if(n < 0) goto cfg_keys_end;                 /* 文件尾 */ 
-		n = strlen(strtriml(strtrimr(buf1))); 
-		if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
-		ret = CFG_ERR_FILE_FORMAT; 
-		if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
-			goto cfg_keys_end; 
-		if(buf1[0] == CFG_ssl) 
-		{ 
-			buf1[n-1] = 0x00; 
-			if(strcmp(buf1+1, section) == 0) 
-				break;                                   /* 找到项section */ 
-		} 
-	} 
-	while(1) 
-	{ 
-		ret = CFG_ERR_READ_FILE; 
-		n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
-		if(n < -1) goto cfg_keys_end; 
-		if(n < 0) break;                             /* 文件尾 */ 
-		n = strlen(strtriml(strtrimr(buf1))); 
-		if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
-		ret = CFG_KEY_NOT_FOUND; 
-		if(buf1[0] == CFG_ssl) 
-			break;                                     /* 另一个 section */ 
-		if(buf1[n-1] == '+')                         /* 遇+号表示下一行继续 */ 
-		{ 
-			buf1[n-1] = 0x00; 
-			while(1) 
-			{ 
-				ret = CFG_ERR_READ_FILE; 
-				n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
-				if(n < -1) goto cfg_keys_end; 
-				if(n < 0) break;                         /* 文件尾 */ 
-				n = strlen(strtrimr(buf2)); 
-				ret = CFG_ERR_EXCEED_BUF_SIZE; 
-				if(n > 0 && buf2[n-1] == '+')            /* 遇+号表示下一行继续 */ 
-				{ 
-					buf2[n-1] = 0x00; 
-					if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
-						goto cfg_keys_end; 
-					strcat(buf1, buf2); 
-					continue; 
-				} 
-				if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
-					goto cfg_keys_end; 
-				strcat(buf1, buf2); 
-				break; 
-			} 
-		} 
-		ret = CFG_ERR_FILE_FORMAT; 
-		if(SplitKeyValue(buf1, &key_ptr, &val_ptr) != 1) 
-			goto cfg_keys_end; 
-		strtriml(strtrimr(key_ptr));
-		strcpy(keys[n_keys], key_ptr); 
-		n_keys++; 
-	} 
-	ret = n_keys; 
+    FILE *fp; 
+    char buf1[MAX_CFG_BUF + 1], buf2[MAX_CFG_BUF + 1]; 
+    char *key_ptr, *val_ptr; 
+    int  n, n_keys = 0, ret; 
+    
+    
+    if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
+    
+    while(1)                                       /* 搜找项section */ 
+    { 
+        ret = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
+        if(n < -1) goto cfg_keys_end; 
+        ret = CFG_SECTION_NOT_FOUND; 
+        if(n < 0) goto cfg_keys_end;                 /* 文件尾 */ 
+        n = strlen(strtriml(strtrimr(buf1))); 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
+        ret = CFG_ERR_FILE_FORMAT; 
+        if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
+            goto cfg_keys_end; 
+        if(buf1[0] == CFG_ssl) 
+        { 
+            buf1[n-1] = 0x00; 
+            if(strcmp(buf1+1, section) == 0) 
+                break;                                   /* 找到项section */ 
+        } 
+    } 
+    while(1) 
+    { 
+        ret = CFG_ERR_READ_FILE; 
+        n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
+        if(n < -1) goto cfg_keys_end; 
+        if(n < 0) break;                             /* 文件尾 */ 
+        n = strlen(strtriml(strtrimr(buf1))); 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* 空行 或 注释行 */ 
+        ret = CFG_KEY_NOT_FOUND; 
+        if(buf1[0] == CFG_ssl) 
+            break;                                     /* 另一个 section */ 
+        if(buf1[n-1] == '+')                         /* 遇+号表示下一行继续 */ 
+        { 
+            buf1[n-1] = 0x00; 
+            while(1) 
+            { 
+                ret = CFG_ERR_READ_FILE; 
+                n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
+                if(n < -1) goto cfg_keys_end; 
+                if(n < 0) break;                         /* 文件尾 */ 
+                n = strlen(strtrimr(buf2)); 
+                ret = CFG_ERR_EXCEED_BUF_SIZE; 
+                if(n > 0 && buf2[n-1] == '+')            /* 遇+号表示下一行继续 */ 
+                { 
+                    buf2[n-1] = 0x00; 
+                    if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
+                        goto cfg_keys_end; 
+                    strcat(buf1, buf2); 
+                    continue; 
+                } 
+                if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
+                    goto cfg_keys_end; 
+                strcat(buf1, buf2); 
+                break; 
+            } 
+        } 
+        ret = CFG_ERR_FILE_FORMAT; 
+        if(SplitKeyValue(buf1, &key_ptr, &val_ptr) != 1) 
+            goto cfg_keys_end; 
+        strtriml(strtrimr(key_ptr));
+        strcpy(keys[n_keys], key_ptr); 
+        n_keys++; 
+    } 
+    ret = n_keys; 
 cfg_keys_end: 
-	if(fp != NULL) fclose(fp); 
-	return ret; 
+    if(fp != NULL) fclose(fp); 
+    return ret; 
 }
 
 /**********************************************************************
@@ -728,72 +728,72 @@ cfg_keys_end:
 ***********************************************************************/
 void test_iniFileCreate(void)
 {
-	char buf[20]="";
-	char buf1[20]="";
-	char buf2[20]="";
-	char buf3[20]="";
-	int  ret;
-	long abc;
-	int i;
-	
-	char * section;
-	char * key;
-	char * val;
-	char * name;
-	char * index;
-	section = buf1;
-	key = buf2;
-	val = buf3;
-	
-	ret = ConfigSetKeyValue("Config.ini", "Jack:Lio", "Jack", "-12321");
-	if(ret!=0) {
-		printf("ConfigSetKeyValue -- error, error number=%d\n", ret);
-		exit(0);
-	}
-	
-	for(i = 0;i < 20; i++)
-	{
-		memset(buf,0x00,20);
-		memset(buf1,0x00,20);
-		memset(buf2,0x00,20);
-		memset(buf3,0x00,20);
-		sprintf(buf,"%d",i);
-		sprintf(buf2,"Lio%d",i);
-		sprintf(buf3,"%d",i);
-		JoinNameIndexToSection(&section, "Jack", buf);
-		ConfigSetKeyValue("Config.ini", section, key, val);
-	}
-	
-	name = buf2;
-	index = buf3;
-	memset(buf1,0x00,20);
-	memset(buf2,0x00,20);
-	memset(buf3,0x00,20);
-	strcpy(buf1,"Jack:Lio");
-	SplitSectionToNameIndex(section, &name, &index);
-	printf("\n name=%s,index=%s\n",name,index);
-	
-	ret = ConfigGetKeyValue("Config.ini", "Jack:Lio", "Jack", buf);
-	if(ret!=0) {
-		printf("ConfigGetKeyValue -- error, error number=%d\n", ret);
-		exit(0);
-	}
-	if (strcmp(buf,"")!=0) {
-		abc = atol(buf);
-	}
-	
-	printf("\n buf=%s\n",buf);	
-	printf("\n abc=%ld\n",abc);
-	
-	ConfigSetKeyValue("Config.ini","Jack:Lio", "Email", "liaoyuewang@163.com");
+    char buf[20]="";
+    char buf1[20]="";
+    char buf2[20]="";
+    char buf3[20]="";
+    int  ret;
+    long abc;
+    int i;
+    
+    char * section;
+    char * key;
+    char * val;
+    char * name;
+    char * index;
+    section = buf1;
+    key = buf2;
+    val = buf3;
+    
+    ret = ConfigSetKeyValue("Config.ini", "Jack:Lio", "Jack", "-12321");
+    if(ret!=0) {
+        printf("ConfigSetKeyValue -- error, error number=%d\n", ret);
+        exit(0);
+    }
+    
+    for(i = 0;i < 20; i++)
+    {
+        memset(buf,0x00,20);
+        memset(buf1,0x00,20);
+        memset(buf2,0x00,20);
+        memset(buf3,0x00,20);
+        sprintf(buf,"%d",i);
+        sprintf(buf2,"Lio%d",i);
+        sprintf(buf3,"%d",i);
+        JoinNameIndexToSection(&section, "Jack", buf);
+        ConfigSetKeyValue("Config.ini", section, key, val);
+    }
+    
+    name = buf2;
+    index = buf3;
+    memset(buf1,0x00,20);
+    memset(buf2,0x00,20);
+    memset(buf3,0x00,20);
+    strcpy(buf1,"Jack:Lio");
+    SplitSectionToNameIndex(section, &name, &index);
+    printf("\n name=%s,index=%s\n",name,index);
+    
+    ret = ConfigGetKeyValue("Config.ini", "Jack:Lio", "Jack", buf);
+    if(ret!=0) {
+        printf("ConfigGetKeyValue -- error, error number=%d\n", ret);
+        exit(0);
+    }
+    if (strcmp(buf,"")!=0) {
+        abc = atol(buf);
+    }
+    
+    printf("\n buf=%s\n",buf);	
+    printf("\n abc=%ld\n",abc);
+    
+    ConfigSetKeyValue("Config.ini","Jack:Lio", "Email", "liaoyuewang@163.com");
 
-	//FileCopy("Config.ini", "Configbak.dat");
+    //FileCopy("Config.ini", "Configbak.dat");
 
-	printf("\nFile %s line%d\n",__FILE__,__LINE__);
+    printf("\nFile %s line%d\n",__FILE__,__LINE__);
 
-	printf("\n******** This test is created by chuaiGM. ********\n\n");
-	
-	
+    printf("\n******** This test is created by chuaiGM. ********\n\n");
+    
+    
 }
 
 /**********************************************************************
@@ -806,28 +806,24 @@ void test_iniFileCreate(void)
 ***********************************************************************/
 void test_iniFileRead(void)
 {
-	char buf[20]={0};
-	
-	ConfigSetKeyValue("Config.ini", "system", "rootkey", "000");
-	ConfigSetKeyValue("Config.ini", "system", "trankey", "000");
-	ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
-	
-	printf("取到的rootkey信息如下：%s\n",buf);
-	
-	ConfigSetKeyValue("Config.ini", "system", "rootkey", "0001");
-	ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
-	
-	printf("取到的rootkey信息如下：%s\n",buf);
-	
-	ConfigSetKeyValue("Config.ini", "system", "rootkey", "000");
-	ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
+    char buf[20]={0};
+    
+    ConfigSetKeyValue("Config.ini", "system", "rootkey", "000");
+    ConfigSetKeyValue("Config.ini", "system", "trankey", "000");
+    ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
+    
+    printf("取到的rootkey信息如下：%s\n",buf);
+    
+    ConfigSetKeyValue("Config.ini", "system", "rootkey", "0001");
+    ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
+    
+    printf("取到的rootkey信息如下：%s\n",buf);
+    
+    ConfigSetKeyValue("Config.ini", "system", "rootkey", "000");
+    ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
 
-	printf("取到的rootkey信息如下：%s\n",buf);
+    printf("取到的rootkey信息如下：%s\n",buf);
 
 }
 
-
-
-
 #endif
-

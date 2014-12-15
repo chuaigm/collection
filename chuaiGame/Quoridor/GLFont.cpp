@@ -22,30 +22,30 @@ static char THIS_FILE[]=__FILE__;
 
 CGLFont::CGLFont()
 {
-	//inti font
-	int i=0;
+    //inti font
+    int i=0;
 
-	for(i=0;i<6;i++)
-	{
-		hFontAr[i]=CreateFont(
-			(i+1)*12,			// 字体的高度
-			0,					// 字体的宽度
-			0,					// 字体的倾斜角
-			0,					// 字体的倾斜角
-			500,				// 字体的粗细,400表示标准体，700表示黑(粗)体
-			0,					// 字体是否斜体
-			0,					// 字体是否有下划线
-			0,					// 字体是否有删除线
-			GB2312_CHARSET,		// 字体使用的字符集
-			0,					// 指定如何选择合适的字体
-			0,					// 用来确定裁剪的精度
-			0,					// 怎么样跟选择的字体相符合
-			FF_MODERN,			// 间距标志和属性标志
-			"楷体"	// 字体的名称
-			);
-	}
+    for(i=0;i<6;i++)
+    {
+        hFontAr[i]=CreateFont(
+            (i+1)*12,           // 字体的高度
+            0,                  // 字体的宽度
+            0,                  // 字体的倾斜角
+            0,                  // 字体的倾斜角
+            500,                // 字体的粗细,400表示标准体，700表示黑(粗)体
+            0,                  // 字体是否斜体
+            0,                  // 字体是否有下划线
+            0,                  // 字体是否有删除线
+            GB2312_CHARSET,     // 字体使用的字符集
+            0,                  // 指定如何选择合适的字体
+            0,                  // 用来确定裁剪的精度
+            0,                  // 怎么样跟选择的字体相符合
+            FF_MODERN,          // 间距标志和属性标志
+            "楷体"              // 字体的名称
+            );
+    }
 
-	//hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
+    //hFontAr[6]=CreateFont(20,0,0,0,800,0,0,0,GB2312_CHARSET,0,0,0,FF_MODERN,"Arial");
 }
 CGLFont::~CGLFont()
 {
@@ -55,47 +55,47 @@ CGLFont::~CGLFont()
 // 由于光栅定位到z=0处，在gluPerspective投影下需要后移
 void CGLFont::settextTest(int x,int y,const char* str,int ifont,float r,float g,float b)
 {
-	glPushMatrix();
-	glPushAttrib(GL_CURRENT_BIT);
-	glDisable(GL_TEXTURE_2D);    
-	//glDisable(GL_LIGHTING); 
-	/////////////////////////
-	//指定颜色
-	glColor3f(r,g,b);             
-	//输出文字
-	Printftext (x,y, str,hFontAr[ifont]);   
-	/////////////////////////
-	//glEnable(GL_LIGHTING);         
-	glEnable(GL_TEXTURE_2D);          
-	glPopAttrib();
-	glPopMatrix();
+    glPushMatrix();
+    glPushAttrib(GL_CURRENT_BIT);
+    glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_LIGHTING);
+    /////////////////////////
+    //指定颜色
+    glColor3f(r,g,b);
+    //输出文字
+    Printftext (x,y, str,hFontAr[ifont]);   
+    /////////////////////////
+    //glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glPopAttrib();
+    glPopMatrix();
 }
 
 void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,float b)
 {
-	glPushMatrix();
+    glPushMatrix();
 
-	glLoadIdentity();
+    glLoadIdentity();
 
-	//属性进栈
-	glPushAttrib(GL_CURRENT_BIT);
-	glDisable(GL_TEXTURE_2D);
-	//glDisable(GL_LIGHTING);
-	
-	//指定颜色
-	glColor3f(r,g,b);             
-	//坐标转换，移动
-	//glTranslatef(-(420-x)/800,(260-y)/600,-1.0f);
-	glTranslatef(-(400-x)/600,(300-y)/600,-1.0f);
-	//输出文字
-	Printftext (0,0, str,hFontAr[ifont]);   
+    //属性进栈
+    glPushAttrib(GL_CURRENT_BIT);
+    glDisable(GL_TEXTURE_2D);
+    //glDisable(GL_LIGHTING);
+    
+    //指定颜色
+    glColor3f(r,g,b);
+    //坐标转换，移动
+    //glTranslatef(-(420-x)/800,(260-y)/600,-1.0f);
+    glTranslatef(-(400-x)/600,(300-y)/600,-1.0f);
+    //输出文字
+    Printftext (0,0, str,hFontAr[ifont]);
 
-	/////////////////////////
-	//glEnable(GL_LIGHTING);         
-	glEnable(GL_TEXTURE_2D);          
-	glPopAttrib();
+    /////////////////////////
+    //glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glPopAttrib();
 
-	glPopMatrix();
+    glPopMatrix();
 }
 
 // int x, y [窗口左下角为起点位置的坐标]
@@ -104,25 +104,25 @@ void CGLFont::settext(float x,float y,const char* str,int ifont,float r,float g,
 // float r,g,b 文字颜色
 void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,float b, float a)
 {
-	//glDisable(GL_DEPTH_TEST);
-	glPushMatrix();
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glDisable(GL_DEPTH_TEST);
+    glPushMatrix();
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-	glDisable(GL_TEXTURE_2D);
+    glDisable(GL_TEXTURE_2D);
 
-	//指定颜色
-	glColor4f(r,g,b,a);             
-	//坐标转换，移动
-	//glTranslatef(x, y, -0.5f);
-	//输出文字
-	Printftext (x,y, str, hFontAr[ifont]);   
+    //指定颜色
+    glColor4f(r,g,b,a);
+    //坐标转换，移动
+    //glTranslatef(x, y, -0.5f);
+    //输出文字
+    Printftext (x,y, str, hFontAr[ifont]);
 
-	glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
 
-	glPopAttrib();
-	glPopMatrix();
+    glPopAttrib();
+    glPopMatrix();
 
-	//glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
 }
 
 // 在屏幕光栅输出字符，默认灰色字体
@@ -131,64 +131,64 @@ void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,floa
 // HFONT hFont [字体]
 void CGLFont:: Printftext (int x, int y, LPCTSTR lpszText,HFONT hFont)
 {
-	glPushAttrib(GL_CURRENT_BIT);
-	glPushMatrix();
-	// 在屏幕上输出平面字符
-	CBitmap bitmap;						
-	BITMAP bm;                           
-	SIZE size;                          
-	
-	//建立当前屏幕相关的DC
-	HDC MDC = ::CreateCompatibleDC(0);
-	//选入字体
-	SelectObject(MDC,hFont);		
-	//得到宽高
-	::GetTextExtentPoint32(MDC,lpszText,strlen(lpszText),&size);
-	
-	//创建位图
-	bitmap.CreateBitmap(size.cx, size.cy, 1, 1, NULL);
-	//选入位图
-	HBITMAP oldBmp=(HBITMAP)SelectObject(MDC,bitmap);
-	//设置文字背景色
-	SetBkColor  (MDC, RGB(  0,   0,   0));	
-	//文字颜色
-	SetTextColor(MDC, RGB(255, 255, 255));	
-	//DC中输出文字
-	TextOut(MDC, 0, 0, lpszText, strlen(lpszText));
-	
-	bitmap.GetBitmap(&bm);				
-	//得到32的倍数
-	size.cx = (bm.bmWidth + 31) & (~31);		
+    glPushAttrib(GL_CURRENT_BIT);
+    glPushMatrix();
+    // 在屏幕上输出平面字符
+    CBitmap bitmap;
+    BITMAP bm;
+    SIZE size;
+    
+    //建立当前屏幕相关的DC
+    HDC MDC = ::CreateCompatibleDC(0);
+    //选入字体
+    SelectObject(MDC,hFont);
+    //得到宽高
+    ::GetTextExtentPoint32(MDC,lpszText,strlen(lpszText),&size);
+    
+    //创建位图
+    bitmap.CreateBitmap(size.cx, size.cy, 1, 1, NULL);
+    //选入位图
+    HBITMAP oldBmp=(HBITMAP)SelectObject(MDC,bitmap);
+    //设置文字背景色
+    SetBkColor  (MDC, RGB(  0,   0,   0));
+    //文字颜色
+    SetTextColor(MDC, RGB(255, 255, 255));
+    //DC中输出文字
+    TextOut(MDC, 0, 0, lpszText, strlen(lpszText));
+    
+    bitmap.GetBitmap(&bm);
+    //得到32的倍数
+    size.cx = (bm.bmWidth + 31) & (~31);
 
-	int bufsize =size.cy * size.cx;	
-	
-	struct {
-		BITMAPINFOHEADER bih;
-		RGBQUAD col[2];
- 		 }bic;                                 
-	BITMAPINFO *binf = (BITMAPINFO *)&bic;       
-	binf->bmiHeader.biSize     = sizeof(binf->bmiHeader);
-	binf->bmiHeader.biWidth    = bm.bmWidth;	
-	binf->bmiHeader.biHeight   = bm.bmHeight;	
-	binf->bmiHeader.biPlanes   = 1;         
-	binf->bmiHeader.biBitCount = 1;             
-	binf->bmiHeader.biCompression = BI_RGB;     
-	binf->bmiHeader.biSizeImage   = bufsize; 
-	//分配内存
-	UCHAR* Bits = new UCHAR[bufsize];
-	//得到图像
-	::GetDIBits(MDC,bitmap,0,bm.bmHeight,Bits,binf,DIB_RGB_COLORS); 
+    int bufsize =size.cy * size.cx;	
+    
+    struct {
+        BITMAPINFOHEADER bih;
+        RGBQUAD col[2];
+         }bic;
+    BITMAPINFO *binf = (BITMAPINFO *)&bic;
+    binf->bmiHeader.biSize     = sizeof(binf->bmiHeader);
+    binf->bmiHeader.biWidth    = bm.bmWidth;
+    binf->bmiHeader.biHeight   = bm.bmHeight;
+    binf->bmiHeader.biPlanes   = 1;
+    binf->bmiHeader.biBitCount = 1;
+    binf->bmiHeader.biCompression = BI_RGB;
+    binf->bmiHeader.biSizeImage   = bufsize;
+    //分配内存
+    UCHAR* Bits = new UCHAR[bufsize];
+    //得到图像
+    ::GetDIBits(MDC,bitmap,0,bm.bmHeight,Bits,binf,DIB_RGB_COLORS); 
  
-	//在RC中输出文字
-	glPixelStorei(GL_UNPACK_ALIGNMENT ,1);
-	//设置光栅位置
-	glRasterPos2i(x,y);
-	glBitmap(size.cx,size.cy,0,0,0,0,Bits);
-	
-	delete [] Bits;
-	SelectObject(MDC, oldBmp);
-	::DeleteDC(MDC);
+    //在RC中输出文字
+    glPixelStorei(GL_UNPACK_ALIGNMENT ,1);
+    //设置光栅位置
+    glRasterPos2i(x,y);
+    glBitmap(size.cx,size.cy,0,0,0,0,Bits);
+    
+    delete [] Bits;
+    SelectObject(MDC, oldBmp);
+    ::DeleteDC(MDC);
 
-	glPopAttrib();
-	glPopMatrix();
+    glPopAttrib();
+    glPopMatrix();
 }
