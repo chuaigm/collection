@@ -14,8 +14,6 @@
 #include "inifileop.h"
 #include <ctime>
 
-//#include "filereport.h"
-
 // 时钟
 MYCLOCK c1;
 // OpenGl对象
@@ -31,6 +29,8 @@ int WinWidth = WIN_WIDTH;
 int WinHeight= WIN_HEIGHT;
 // 屏幕刷新频率
 int g_refresh_rate = 40;
+// 是否开启音乐
+int g_music = 1;
 // 目前游戏框架中，主要代码(全局)
 CQuoridor gm;
 
@@ -201,6 +201,10 @@ int APIENTRY WinMain(HINSTANCE hInst,
         MessageBox(NULL, "刷新率不合法，将以默认刷新率40开始游戏", "Quoridor_Game",MB_OK);
         g_refresh_rate=40;
     }
+    ConfigGetKeyValue("config.ini", "Music", "Music", tmpstr);
+    g_music=atoi(tmpstr);
+    if (g_music==1){}
+    else {g_music=0;}
     //--------------------------------------------------
     char cc[]="Quoridor";
     // 窗体类

@@ -25,6 +25,8 @@ extern COpenGLbase* m_OpenGL;
 // 外部输入的窗口宽高
 extern int WinWidth;
 extern int WinHeight;
+// 是否开启音乐标记
+extern int g_music;
 
 /////////////////////////
 
@@ -122,7 +124,8 @@ int CQuoridor::haveDataFile()
         "data/images/wall1.bmp",
         "data/images/computer_logo.bmp",
         //sound
-        "data/sound/wall_set.wav"
+        "data/sound/wall_set.wav",
+        "data/sound/player_move.wav"
         };
     int i;
     
@@ -1541,6 +1544,11 @@ void CQuoridor::playerActionRule()
             //	break;
             //}
             // 这里，是重要的算法流转。控制玩家移动后
+            if (g_music==1)
+            {
+                // 放置墙的音效
+                sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
+            }
             goto ACTION_RULE_EXIT;
         }
         // 能走到这里，应该是只有已经选了墙的情况，
@@ -1656,8 +1664,11 @@ RULE_WALL_EXIT:
         preselect_pos.clear();
         return ;
     }
-    // 放置墙的音效
-    sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
+    if (g_music==1)
+    {
+        // 放置墙的音效
+        sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
+    }
     // 当前玩家的可用墙数减1
     ply_head->wall_num_left--;
 ACTION_RULE_EXIT:
