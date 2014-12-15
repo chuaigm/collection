@@ -122,7 +122,7 @@ int CQuoridor::haveDataFile()
         "data/images/wall1.bmp",
         "data/images/computer_logo.bmp",
         //sound
-        //"data/sound/explode1.wav"
+        "data/sound/wall_set.wav"
         };
     int i;
     
@@ -1656,11 +1656,11 @@ RULE_WALL_EXIT:
         preselect_pos.clear();
         return ;
     }
+    // 放置墙的音效
+    sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
     // 当前玩家的可用墙数减1
     ply_head->wall_num_left--;
 ACTION_RULE_EXIT:
-    ////sound
-    //sndPlaySound("data/sound/explode1.wav",SND_ASYNC);
     // 当玩家选择了移动人物，那么此玩家的行动就结束了，控制权应该交由下一位玩家
     ply_head=ply_head->next;
     // 清空预选位置
