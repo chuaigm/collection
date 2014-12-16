@@ -58,19 +58,19 @@ char CFG_nis = ':';                 /* name 与 index 之间的分隔符 */
 char CFG_kvs = '=';                 /* key与value之间的分隔符 */
 char CFG_nts = '#';                 /* 注释符 */
 
-int  CFG_section_line_no, CFG_key_line_no, CFG_key_lines; 
+int  CFG_section_line_no, CFG_key_line_no, CFG_key_lines;
 
 static char * strtrimr(char * buf);
 static char * strtriml(char * buf);
-static int  FileGetLine(FILE *fp, char *buffer, int maxlen); 
-static int  SplitKeyValue(char *buf, char **key, char **val); 
+static int  FileGetLine(FILE *fp, char *buffer, int maxlen);
+static int  SplitKeyValue(char *buf, char **key, char **val);
 // 声明extern，保证外部调用
-extern int  FileCopy(const char *source_file, const char *dest_file); 
+extern int  FileCopy(const char *source_file, const char *dest_file);
 extern int  SplitSectionToNameIndex(char *section, char **name, char **index);
 extern int  JoinNameIndexToSection(char **section, const char *name, const char *index);
-extern int  ConfigGetKeyValue(const char *CFG_file, const char *section, const char *key, char *buf); 
-extern int  ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf); 
-extern int  ConfigGetSections(const char *CFG_file, char *sections[]); 
+extern int  ConfigGetKeyValue(const char *CFG_file, const char *section, const char *key, char *buf);
+extern int  ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
+extern int  ConfigGetSections(const char *CFG_file, char *sections[]);
 extern int  ConfigGetKeys(const char *CFG_file, const char *section, char *keys[]);
 // 为了测试写的测试函数，建立以及读取
 extern void INIFileTestCreatMain(void);

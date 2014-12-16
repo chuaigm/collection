@@ -36,6 +36,7 @@ enum {
     MENU_SINGE,
     BUTTON_RETURN,
     BUTTON_INIT_OR_CONFIRM,
+    BUTTON_MUSIC
 };
 // 棋盘数组里代表的含义
 enum {

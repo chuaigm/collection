@@ -26,7 +26,9 @@ extern COpenGLbase* m_OpenGL;
 extern int WinWidth;
 extern int WinHeight;
 // 是否开启音乐标记
-extern int g_music;
+extern int g_sound;
+// 配置文件操作
+extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
 
 /////////////////////////
 
@@ -389,9 +391,16 @@ void CQuoridor::check()
         }
         break;
     case GAME_HELP:
-        if (x>menu.x&&x<menu.x+menu_w&&y>menu.y&&y<menu.y+menu_h)
+        if (x>menu.x&&x<menu.x+menu_w)
         {
-            iButton=BUTTON_RETURN;
+            if (y>menu.y+menu_dis&&y<menu.y+menu_h+menu_dis)
+            {
+                iButton=BUTTON_MUSIC;
+            }
+            else if (y>menu.y&&y<menu.y+menu_h)
+            {
+                iButton=BUTTON_RETURN;
+            }
         }
         break;
 
@@ -475,14 +484,29 @@ void CQuoridor::lbuttonproc(int lparam)
             // 构建环形链表
             tail->next=ply_head;
             player* tmp_head=ply_head;
+            // 人类玩家数
+            int human_n=0;
             // 循环给剩余墙数赋值
             do
-            {	// 整形数除法,21除2，取整=10
+            {   // 统计人类玩家数
+                if (tmp_head->id==0)
+                {
+                    human_n++;
+                }
+                // 整形数除法,21除2，取整=10
                 //            21除3，取整=7
                 //            21除4，取整=5
                 tmp_head->wall_num_left=wall_total_num/nn;
                 tmp_head=tmp_head->next;
             }while (ply_head!=tmp_head);
+            // 如果存在人类玩家，让人类玩家先行
+            if (human_n>0)
+            {
+                while (ply_head->id!=0)
+                {
+                    ply_head=ply_head->next;
+                }
+            }
             iGameState=GAME_SINGE;
         }
         // 鼠标选取不同玩家的三个选项时的处理，
@@ -516,6 +540,18 @@ void CQuoridor::lbuttonproc(int lparam)
         freeRuleSendBox();
         break;
     case GAME_HELP:
+        if (iButton==BUTTON_MUSIC)
+        {
+            g_sound=!g_sound;
+            if (g_sound!=1)
+            {
+                g_sound=0;
+            }
+            char tmpstr[4];
+            sprintf(tmpstr,"%d",g_sound);
+            ConfigSetKeyValue("config.ini", "Sound", "sound", tmpstr);
+            return;
+        }
         break;
 
     default:
@@ -923,7 +959,7 @@ void CQuoridor::showHelp()
     tPicRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2.0f + det, 0 + det, (float)m_OpenGL->RCheight*0.6f, (float)m_OpenGL->RCheight*0.6f);
     glPopMatrix();
 
-    tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.5);
+    tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.2f);
 
     char tmpstr[64]={"游戏说明"};
     myfont.Print2D(board_x+lace,500,tmpstr,FONT1,0.0,0.0,0.0);
@@ -931,6 +967,27 @@ void CQuoridor::showHelp()
     myfont.Print2D(board_x+lace,400,tmpstr,FONT1,0.0,0.0,1.0);
     sprintf(tmpstr,"具体内容以后在写吧");
     myfont.Print2D(board_x+lace,300,tmpstr,FONT1,1.0,1.0,0.0);
+
+    //音乐控制按钮
+    if (g_sound==1)
+    {
+        sprintf(tmpstr,"音乐: 开");
+    } else {
+        sprintf(tmpstr,"音乐: 关");
+    }
+    myfont.Print2D(menu.x+5,menu.y+menu_dis+5,tmpstr,FONT1,1,1,1);
+    
+
+    //图片
+    texture_select(g_cactus[9]);
+    if(iButton==BUTTON_MUSIC)
+    {
+        tPicButton((float)menu.x,(float)menu.y+menu_dis,(float)menu_w,(float)menu_h,0.0f);
+    }
+    else
+    {
+        tPicButton((float)menu.x,(float)menu.y+menu_dis,(float)menu_w,(float)menu_h,0.5f);
+    }
 
     //文字
     sprintf(tmpstr,"按ESC返回");
@@ -1544,7 +1601,7 @@ void CQuoridor::playerActionRule()
             //	break;
             //}
             // 这里，是重要的算法流转。控制玩家移动后
-            if (g_music==1)
+            if (g_sound==1)
             {
                 // 放置墙的音效
                 sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
@@ -1664,7 +1721,7 @@ RULE_WALL_EXIT:
         preselect_pos.clear();
         return ;
     }
-    if (g_music==1)
+    if (g_sound==1)
     {
         // 放置墙的音效
         sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
@@ -2293,7 +2350,49 @@ void CQuoridor::computer_AI()
             tmppoint.x=ply_head->x*2;
             tmppoint.y=ply_head->y*2;
             playerMovablePos(tmppoint);
-            pos2d targ=preselect_pos[random(0,preselect_pos.size())];
+            pos2d targ;
+            targ.x=-1;
+            targ.y=-1;
+            // 看看可走位置中有没有对玩家胜利有利的位置
+            for (size_t i=0; i<preselect_pos.size();i++)
+            {
+                switch (ply_head->color)
+                {
+                case GD_YELLOW:
+                    if (preselect_pos[i].x>tmppoint.x)
+                    {
+                        targ=preselect_pos[i];
+                    }
+                    break;
+                case GD_RED:
+                    if (preselect_pos[i].y<tmppoint.y)
+                    {
+                        targ=preselect_pos[i];
+                    }
+                    break;
+                case GD_GREEN:
+                    if (preselect_pos[i].x<tmppoint.x)
+                    {
+                        targ=preselect_pos[i];
+                    }
+                    break;
+                case GD_BLUE:
+                    if (preselect_pos[i].y>tmppoint.y)
+                    {
+                        targ=preselect_pos[i];
+                    }
+                    break;
+                }
+                if (targ.x>0 && targ.y>0)
+                {
+                    break;
+                }
+            }
+            if (targ.x<0 || targ.y<0)
+            {
+                // 纯选随机点
+                targ=preselect_pos[random(0,preselect_pos.size())];
+            }
             // 这种情况，进入到人物棋子处理阶段
             char tmp=0;
             // 交换
@@ -2368,5 +2467,5 @@ void CQuoridor::computer_AI()
         }
         // 下一位玩家
         ply_head=ply_head->next;
-    }
+    }   // 如果不是电脑，什么都不做
 }
