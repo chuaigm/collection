@@ -219,8 +219,9 @@ int APIENTRY WinMain(HINSTANCE hInst,
         NULL, 									// 背景画刷的句柄
         NULL,									// 指向菜单的指针
         cc,										// 指向类名称的指针
-        LoadIcon(hInst, (LPCTSTR)IDI_ICON3)		// 和窗口类关联的小图标。如果该值为NULL。
+        //LoadIcon(hInst, (LPCTSTR)IDI_ICON3)   // 和窗口类关联的小图标。如果该值为NULL。
                                                 // 则把hIcon中的图标转换成大小合适的小图标
+        NULL
     };
     // 注册这个窗口类
     RegisterClassEx( &wc );

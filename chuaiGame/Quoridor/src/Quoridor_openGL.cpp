@@ -516,8 +516,8 @@ void CQuoridor::lbuttonproc(int lparam)
             // 决定，选的到底是，玩家，电脑，还是关闭
             for (size_t i=0; i< 3; i++)
             {
-                if (m_OpenGL->Xmouse>(float)board_x+i*3*(roadw+wall_w)
-                    && m_OpenGL->Xmouse<(float)board_x+i*3*(roadw+wall_w)+menu_w
+                if (m_OpenGL->Xmouse>(float)board_x+(i*2.3f+1)*(roadw+wall_w)
+                    && m_OpenGL->Xmouse<(float)board_x+(i*2.3f+1)*(roadw+wall_w)+menu_w
                     && m_OpenGL->Ymouse>(player_info_h-menu_h)/2+player_info_h*j
                     && m_OpenGL->Ymouse<(player_info_h-menu_h)/2+menu_h+player_info_h*j
                     )
@@ -1029,7 +1029,7 @@ void CQuoridor::drawChessBorad()
     glDisable(GL_TEXTURE_2D);
     glTranslatef(0,0,layer);
     // 左边黄色边纹
-    glColor3f(1, 1, 0);
+    glColor3f(0, 1, 0);
     glBegin(GL_QUADS);
     glVertex3f( (float)board_x, 0,  0.0f);
     glVertex3f( (float)board_x, (float)m_OpenGL->RCheight,  0.0f);
@@ -1037,7 +1037,7 @@ void CQuoridor::drawChessBorad()
     glVertex3f( (float)board_x+lace, (float)lace,  0.0f);
     glEnd();
     // 上边红色边纹
-    glColor3f(1, 0, 0);
+    glColor3f(0, 0, 1);
     glBegin(GL_QUADS);
     glVertex3f( (float)board_x, (float)m_OpenGL->RCheight, 0.0f);
     glVertex3f( (float)board_x+m_OpenGL->RCheight, (float)m_OpenGL->RCheight,  0.0f);
@@ -1045,7 +1045,7 @@ void CQuoridor::drawChessBorad()
     glVertex3f( (float)board_x+lace, (float)m_OpenGL->RCheight-lace,  0.0f);
     glEnd();
     // 右边绿色边纹
-    glColor3f(0, 1, 0);
+    glColor3f(1, 1, 0);
     glBegin(GL_QUADS);
     glVertex3f((float) board_x+m_OpenGL->RCheight, (float)m_OpenGL->RCheight,  0.0f);
     glVertex3f((float) board_x+m_OpenGL->RCheight, 0,  0.0f);
@@ -1053,7 +1053,7 @@ void CQuoridor::drawChessBorad()
     glVertex3f((float) board_x+m_OpenGL->RCheight-lace, (float)m_OpenGL->RCheight-lace,  0.0f);
     glEnd();
     // 下边蓝色边纹
-    glColor3f(0, 0, 1);
+    glColor3f(1, 0, 0);
     glBegin(GL_QUADS);
     glVertex3f((float)board_x,  0,  0.0f);
     glVertex3f((float)board_x+lace, (float)lace,  0.0f);
@@ -1071,40 +1071,50 @@ void CQuoridor::drawAccessory()
     char tmpstr[64]={0};
     // 所占图层深度
     float layer=-0.5;
-    float alp=0.8f;
+    float alp=0.85f;
     // 绘制玩家信息指示标志区域
+    glPushAttrib(GL_CURRENT_BIT);
+    glPushMatrix();
+    glDisable(GL_TEXTURE_2D);
+    glBegin(GL_TRIANGLES);
+
     if (ply_head == &plyer[0])
     {
-        tRectangle(0,3*player_info_h,layer,player_info_w*7/6,player_info_h,1,1,0,alp);
+        glColor4f(1, 1, 0, alp);
+        glVertex3f( player_info_w, 4.0f*player_info_h, layer);
+        glVertex3f( (float)board_x, 3.5f*player_info_h, layer);
+        glVertex3f( player_info_w, 3.0f*player_info_h, layer);
     }
-    else
+    else if (ply_head == &plyer[1])
     {
-        tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
+        glColor4f(1, 0, 0, alp);
+        glVertex3f( player_info_w, 3.0f*player_info_h, layer);
+        glVertex3f( (float)board_x, 2.5f*player_info_h, layer);
+        glVertex3f( player_info_w, 2.0f*player_info_h, layer);
     }
-    if (ply_head == &plyer[1])
+    else if (ply_head == &plyer[2])
     {
-        tRectangle(0,2*player_info_h,layer,player_info_w*7/6,player_info_h,1,0,0,alp);
+        glColor4f(0, 1, 0, alp);
+        glVertex3f( player_info_w, 2.0f*player_info_h, layer);
+        glVertex3f( (float)board_x, 1.5f*player_info_h, layer);
+        glVertex3f( player_info_w, 1.0f*player_info_h, layer);
     }
-    else
+    else if (ply_head == &plyer[3])
     {
-        tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
+        glColor4f(0, 0, 1, alp);
+        glVertex3f( player_info_w, 1.0f*player_info_h, layer);
+        glVertex3f( (float)board_x, 0.5f*player_info_h, layer);
+        glVertex3f( player_info_w, 0.0f*player_info_h, layer);
     }
-    if (ply_head == &plyer[2])
-    {
-        tRectangle(0,1*player_info_h,layer,player_info_w*7/6,player_info_h,0,1,0,alp);
-    }
-    else
-    {
-        tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
-    }
-    if (ply_head == &plyer[3])
-    {
-        tRectangle(0,0,layer,(float)player_info_w*7/6,(float)player_info_h,0,0,1,alp);
-    }
-    else
-    {
-        tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,alp);
-    }
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+    glPopMatrix();
+    glPopAttrib();
+
+    tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
+    tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
+    tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
+    tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,alp);
     
     for (int i=0; i<4; i++)
     {
@@ -1112,7 +1122,7 @@ void CQuoridor::drawAccessory()
         {
             // 这里需要注意贴图的标号顺序
             texture_select(g_cactus[3+i]);
-            tPicRectangle(0,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
+            tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
             if (plyer[i].id==1)
             {	// 绘制电脑的图标
                 texture_select(g_cactus[8]);
@@ -1312,6 +1322,7 @@ void CQuoridor::drawPickMask()
             {
                 tRectangle(board_x+lace+preselect_pos[i].x/2*(roadw+wall_w),lace+preselect_pos[i].y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
             }
+#if 0
             // 单人模式时，提示玩家的目的地
             for (int i=0; i<9; i++)
             {
@@ -1333,6 +1344,7 @@ void CQuoridor::drawPickMask()
                     break;
                 }
             }
+#endif
         }
         else if (iGameState==GAME_SENDBOX)
         {
@@ -1416,11 +1428,57 @@ void CQuoridor::resetGameData()
 
 void CQuoridor::drawInConfig()
 {
+#if 0
+    // 原来方形的背景区，暂时不用这个样式
     // 绘制玩家信息指示标志区域
     tRectangle(0,3.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,1,1,0,0.4f);
     tRectangle(0,2.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,1,0,0,0.4f);
     tRectangle(0,1.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,0,1,0,0.4f);
     tRectangle(0,0.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,0,0,1,0.4f);
+#endif
+    float layer=-0.2f;
+    // 绘制选择时的背景区
+    //属性进栈
+    glPushAttrib(GL_CURRENT_BIT);
+    glPushMatrix();
+    glDisable(GL_TEXTURE_2D);
+
+    glColor4f(1, 1, 0, 0.6f);
+    glBegin(GL_POLYGON);
+    glVertex3f( player_info_w, 3.5f*player_info_h, layer);
+    glVertex3f( (float)board_x, 3.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 3.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 3.1f*player_info_h, layer);
+    glVertex3f( (float)board_x, 3.1f*player_info_h, layer);
+    glEnd();
+    glColor4f(1, 0, 0, 0.6f);
+    glBegin(GL_POLYGON);
+    glVertex3f( player_info_w, 2.5f*player_info_h, layer);
+    glVertex3f( (float)board_x, 2.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 2.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 2.1f*player_info_h, layer);
+    glVertex3f( (float)board_x, 2.1f*player_info_h, layer);
+    glEnd();
+    glColor4f(0, 1, 0, 0.6f);
+    glBegin(GL_POLYGON);
+    glVertex3f( player_info_w, 1.5f*player_info_h, layer);
+    glVertex3f( (float)board_x, 1.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 1.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 1.1f*player_info_h, layer);
+    glVertex3f( (float)board_x, 1.1f*player_info_h, layer);
+    glEnd();
+    glColor4f(0, 0, 1, 0.6f);
+    glBegin(GL_POLYGON);
+    glVertex3f( player_info_w, 0.5f*player_info_h, layer);
+    glVertex3f( (float)board_x, 0.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 0.9f*player_info_h, layer);
+    glVertex3f( (float)board_x+m_OpenGL->RCheight, 0.1f*player_info_h, layer);
+    glVertex3f( (float)board_x, 0.1f*player_info_h, layer);
+    glEnd();
+
+    glEnable(GL_TEXTURE_2D);
+    glPopMatrix();
+    glPopAttrib();
 
     char *cfgstr[]={" 玩  家 "," 电  脑 "," 关  闭 "};
     // 按钮贴图
@@ -1431,58 +1489,16 @@ void CQuoridor::drawInConfig()
         {
             if(i==plyer[3-j].id)
             {
-                myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,1,1,1);
-                tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.0f);
+                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,1,1,1);
+                tPicButton((float)board_x+(i*2.3f+1)*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.0f);
             }
             else
             {
-                myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,0,0,0);
-                tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.5f);
+                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,0,0,0);
+                tPicButton((float)board_x+(i*2.3f+1)*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.5f);
             }
         }
     }
-    
-/*
-    for (int i=0; i< 3; i++)
-    {
-        if(i==plyer[2].id)
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h,cfgstr[i],FONT1,1,1,1);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h,(float)menu_w,(float)menu_h,0.0f);
-        }
-        else
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h,cfgstr[i],FONT1,0,0,0);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h,(float)menu_w,(float)menu_h,0.5f);
-        }
-    }
-    for (int i=0; i< 3; i++)
-    {
-        if(i==plyer[1].id)
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*2,cfgstr[i],FONT1,1,1,1);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*2,(float)menu_w,(float)menu_h,0.0f);
-        }
-        else
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*2,cfgstr[i],FONT1,0,0,0);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*2,(float)menu_w,(float)menu_h,0.5f);
-        }
-    }
-    for (int i=0; i< 3; i++)
-    {
-        if(i==plyer[0].id)
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*3,cfgstr[i],FONT1,1,1,1);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*3,(float)menu_w,(float)menu_h,0.0f);
-        }
-        else
-        {
-            myfont.Print2D((int)(board_x+i*3*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*3,cfgstr[i],FONT1,0,0,0);
-            tPicButton((float)board_x+i*3*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*3,(float)menu_w,(float)menu_h,0.5f);
-        }
-    }
-*/
 }
 
 void CQuoridor::playerActionRule()
