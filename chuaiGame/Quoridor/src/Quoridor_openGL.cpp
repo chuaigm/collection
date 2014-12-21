@@ -1356,7 +1356,11 @@ void CQuoridor::drawPickMask()
     }
     else if (pickup.x%2==0 && pickup.y%2==0)
     {
+#ifdef __DEBUG__
+        if (iGameState==GAME_SINGE || iGameState==GAME_SENDBOX)
+#else
         if (iGameState==GAME_SINGE)
+#endif
         {
             // 这里以后换个贴图
             tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
@@ -1801,13 +1805,16 @@ ACTION_RULE_EXIT:
 // 此函数的出口是，preselect_pos玩家可走位置的向量
 void CQuoridor::playerMovablePos( pos2d selected )
 {
-    // 玩家可走的位置，规则都值得商榷，官方规则，对于边缘情况没有说明
+    // 玩家可走的位置，有个规则值得商榷，官方规则，对于边缘情况没有说明
     // 这里认为在边缘时不认为是墙，也就是不可跳
     pos2d tmppos;
     // 清空vector
     preselect_pos.swap(std::vector<pos2d>());
     // 判断玩家可走的可能位置
 
+    // OOOOO
+    // O@0OO
+    // OOOOO
     // 如果不在最左边一列，且左边没有墙，且左边一格可走
     if ( selected.x > 0 
         && gameData[selected.x-1][selected.y]!=GD_WALL 
@@ -1817,6 +1824,9 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y;
         preselect_pos.push_back(tmppos);
     }
+    // OOOOO
+    // @X0OO
+    // OOOOO
     // 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
     else if (selected.x > 2
         && gameData[selected.x-1][selected.y]!=GD_WALL 
@@ -1828,10 +1838,9 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y;
         preselect_pos.push_back(tmppos);
     }
-    //// 如果左边不可跳，且在第二列上，
-    //else if ()
-    //{
-    //}
+    // OOOOO
+    // OO0@O
+    // OOOOO
     // 如果不在最右边一列，且右边没有墙，且右边一格可走
     if ( selected.x < 16 
         && gameData[selected.x+1][selected.y]!=GD_WALL 
@@ -1841,6 +1850,9 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y;
         preselect_pos.push_back(tmppos);
     }
+    // OOOOO
+    // OO0X@
+    // OOOOO
     // 如果不是位于右边第二列或第一列，且右边有玩家，且右边玩家左边没有墙，且右边位置可跳
     else if (selected.x < 14
         && gameData[selected.x+1][selected.y]!=GD_WALL 
@@ -1852,7 +1864,12 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y;
         preselect_pos.push_back(tmppos);
     }
-    // 如果不在最下边一列，且左边没有墙，且左边一格可走
+    // OOOOO
+    // OOOOO
+    // OO0OO
+    // OO@OO
+    // OOOOO
+    // 如果不在最下边一列，且下边没有墙，且下边一格可走
     if ( selected.y > 0 
         && gameData[selected.x][selected.y-1]!=GD_WALL 
         && gameData[selected.x][selected.y-2]==GD_BLANK )
@@ -1861,7 +1878,12 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y-2;
         preselect_pos.push_back(tmppos);
     }
-    // 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
+    // OOOOO
+    // OOOOO
+    // OO0OO
+    // OOXOO
+    // OO@OO
+    // 如果不是位于下边第二列或第一列，且下边有玩家，且下边玩家下边没有墙，且下边位置可跳
     else if (selected.y > 2
         && gameData[selected.x][selected.y-1]!=GD_WALL 
         && gameData[selected.x][selected.y-2]!=GD_BLANK 
@@ -1872,7 +1894,12 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y-4;
         preselect_pos.push_back(tmppos);
     }
-    // 如果不在最右边一列，且右边没有墙，且右边一格可走
+    // OOOOO
+    // OO@OO
+    // OO0OO
+    // OOOOO
+    // OOOOO
+    // 如果不在最上边一列，且上边没有墙，且上边一格可走
     if ( selected.y < 16 
         && gameData[selected.x][selected.y+1]!=GD_WALL 
         && gameData[selected.x][selected.y+2]==GD_BLANK )
@@ -1881,7 +1908,12 @@ void CQuoridor::playerMovablePos( pos2d selected )
         tmppos.y=selected.y+2;
         preselect_pos.push_back(tmppos);
     }
-    // 如果不是位于左边第二列或第一列，且左边有玩家，且左边玩家左边没有墙，且左边位置可跳
+    // OO@OO
+    // OOXOO
+    // OO0OO
+    // OOOOO
+    // OOOOO
+    // 如果不是位于上边第二列或第一列，且上边有玩家，且上边玩家上边没有墙，且上边位置可跳
     else if (selected.y < 14
         && gameData[selected.x][selected.y+1]!=GD_WALL 
         && gameData[selected.x][selected.y+2]!=GD_BLANK 
@@ -1893,54 +1925,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
         preselect_pos.push_back(tmppos);
     }
 //-----------------
-    //// 对左上角可走的情况进行判断
-    //// 先判定位置可用
-    //if ( selected.x>=2 && selected.y<=14 && gameData[selected.x-2][selected.y+2]==GD_BLANK )
-    //{	// 对左上角的特殊情况进行单独处理
-    //	if (selected.x==2 && selected.y==14)
-    //	{	// 如果左边没有墙挡着且左边有敌对玩家，或者，上面没有墙挡着且上面有敌对玩家
-    //		if ((gameData[1][14]!=GD_WALL && gameData[0][14]!=GD_BLANK ) 
-    //		 || (gameData[2][15]!=GD_WALL && gameData[2][16]!=GD_BLANK ))
-    //		{
-    //			tmppos.x= 0;
-    //			tmppos.y=16;
-    //			preselect_pos.push_back(tmppos);
-    //		}
-    //	}
-    //	// 这个分支隐含条件，左上角可以用(还有上面条件以外的情况)
-    //	else if ((gameData[selected.x-1][selected.y]!=GD_WALL && gameData[selected.x-2][selected.y]!=GD_BLANK ) 
-    //		|| (gameData[selected.x][selected.y+1]!=GD_WALL && gameData[selected.x][selected.y+2]!=GD_BLANK ))
-    //	{
-    //		tmppos.x=selected.x-2;
-    //		tmppos.y=selected.y+2;
-    //		preselect_pos.push_back(tmppos);
-    //	}
-    //}
-    //
-    //// 对右上角可走的情况进行判断
-    //// 先判定位置可用
-    //if ( selected.x<=14 && selected.y<=14 && gameData[selected.x+2][selected.y+2]==GD_BLANK )
-    //{	// 对左上角的特殊情况进行单独处理
-    //	if (selected.x==14 && selected.y==14)
-    //	{	// 如果右边没有墙挡着且右边有敌对玩家，或者，上面没有墙挡着且上面有敌对玩家
-    //		if ((gameData[15][14]!=GD_WALL && gameData[16][14]!=GD_BLANK ) 
-    //			|| (gameData[14][15]!=GD_WALL && gameData[14][16]!=GD_BLANK ))
-    //		{
-    //			tmppos.x=16;
-    //			tmppos.y=16;
-    //			preselect_pos.push_back(tmppos);
-    //		}
-    //	}
-    //	// 这个分支隐含条件，左上角可以用(还有上面条件以外的情况)
-    //	else if ((gameData[selected.x+1][selected.y]!=GD_WALL && gameData[selected.x+2][selected.y]!=GD_BLANK ) 
-    //		|| (gameData[selected.x][selected.y+1]!=GD_WALL && gameData[selected.x][selected.y+2]!=GD_BLANK ))
-    //	{
-    //		tmppos.x=selected.x+2;
-    //		tmppos.y=selected.y+2;
-    //		preselect_pos.push_back(tmppos);
-    //	}
-    //}
-//-----------------	
+    // OO-OO
+    // O@XOO
+    // |X0OO
+    // OOOOO
     // 对左上角可走的情况进行判断(不包含边界值)
     if ( selected.x > 2 && selected.y < 14 && gameData[selected.x-2][selected.y+2]==GD_BLANK )
     {   // 如果左边有敌对玩家且左边敌人的左边是墙，或，上面有敌对玩家且上面敌人的上边是墙
@@ -1972,16 +1960,41 @@ void CQuoridor::playerMovablePos( pos2d selected )
             preselect_pos.push_back(tmppos);
         }
     }
-    //// 如果玩家位于第二列的情况
-    //else if ( selected.x == 2 && selected.y < 14 && gameData[0][selected.y+2]==GD_BLANK )
-    //{
-    //	if ( (gameData[0][selected.y]!=GD_BLANK ) || (gameData[2][selected.y+2]!=GD_BLANK && gameData[2][selected.y+3]==GD_WALL ) )
-    //	{
-    //		tmppos.x=selected.x-2;
-    //		tmppos.y=selected.y+2;
-    //		preselect_pos.push_back(tmppos);
-    //	}
-    //}
+    // O-OO
+    // @XOO
+    // X0OO
+    // OOOO
+    // 如果玩家位于第二列,左上角可跳的情况(单独讨论)
+    else if ( selected.x == 2 && selected.y < 14 
+        && gameData[0][selected.y+2]==GD_BLANK )
+    {   // 如果边界可跳，则把第一个条件打开
+        if ( (gameData[0][selected.y]!=GD_BLANK ) || 
+            (gameData[2][selected.y+2]!=GD_BLANK && gameData[2][selected.y+3]==GD_WALL ) )
+        {
+            tmppos.x=selected.x-2;
+            tmppos.y=selected.y+2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+    // O@XOO
+    // |X0OO
+    // OOOOO
+    // 如果玩家位于第二行,左上角可跳的情况(单独讨论)
+    else if ( selected.x > 2 && selected.y == 14 
+        && gameData[selected.x-2][16]==GD_BLANK )
+    {   // 如果边界可跳，则把第一个条件打开
+        if ( (gameData[selected.x][16]!=GD_BLANK ) || 
+            (gameData[selected.x-2][14]!=GD_BLANK && gameData[selected.x-3][14]==GD_WALL ) )
+        {
+            tmppos.x=selected.x-2;
+            tmppos.y=selected.y+2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+    // OO-OO
+    // OOX@O
+    // OO0X|
+    // OOOOO
     // 对右上角可走的情况进行判断(不包含边界值)
     if ( selected.x < 14 && selected.y < 14 && gameData[selected.x+2][selected.y+2]==GD_BLANK )
     {
@@ -2012,16 +2025,39 @@ void CQuoridor::playerMovablePos( pos2d selected )
             preselect_pos.push_back(tmppos);
         }
     }
-    //// 如果玩家位于右数第二列????
-    //else if ( selected.x == 14 && selected.y < 14 && gameData[16][selected.y+2]==GD_BLANK )
-    //{
-    //	if ( (gameData[16][selected.y]!=GD_BLANK ) || (gameData[16][selected.y+2]!=GD_BLANK && gameData[16][selected.y+3]==GD_WALL ) )
-    //	{
-    //		tmppos.x=selected.x+2;
-    //		tmppos.y=selected.y+2;
-    //		preselect_pos.push_back(tmppos);
-    //	}
-    //}
+    // OO-O
+    // OOX@
+    // OO0X
+    // OOOO
+    // 如果玩家位于右数第二列,右上角可跳的情况(单独讨论)
+    else if ( selected.x == 14 && selected.y < 14 && gameData[16][selected.y+2]==GD_BLANK )
+    {
+    	if ( (gameData[16][selected.y]!=GD_BLANK ) || 
+            (gameData[14][selected.y+2]!=GD_BLANK && gameData[14][selected.y+3]==GD_WALL ) )
+    	{
+    		tmppos.x=selected.x+2;
+    		tmppos.y=selected.y+2;
+    		preselect_pos.push_back(tmppos);
+    	}
+    }
+    // OOX@O
+    // OO0X|
+    // OOOOO
+    // 如果玩家位于第二行,右上角可跳的情况(单独讨论)
+    else if ( selected.x < 14 && selected.y == 14 && gameData[selected.x+2][16]==GD_BLANK )
+    {
+        if ( (gameData[selected.x][16]!=GD_BLANK ) || 
+            (gameData[selected.x+2][14]!=GD_BLANK && gameData[selected.x+3][14]==GD_WALL ) )
+        {
+            tmppos.x=selected.x+2;
+            tmppos.y=selected.y+2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+    // OOOOO
+    // |X0OO
+    // O@XOO
+    // OO-OO
     // 对左下角可走的情况进行判断(不包含边界值)
     if ( selected.x > 2 && selected.y >2 && gameData[selected.x-2][selected.y-2]==GD_BLANK )
     {
@@ -2046,6 +2082,37 @@ void CQuoridor::playerMovablePos( pos2d selected )
             && gameData[selected.x][selected.y-2]!=GD_BLANK 
             && gameData[selected.x][selected.y-4]!=GD_BLANK 
             && gameData[selected.x-1][selected.y-2]!=GD_WALL ) )
+        {
+            tmppos.x=selected.x-2;
+            tmppos.y=selected.y-2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+
+    // OOOO
+    // X0OO
+    // @XOO
+    // O-OO
+    // 如果玩家位于第二列,右上角可跳的情况(单独讨论)
+    else if ( selected.x == 2 && selected.y > 2 && gameData[0][selected.y-2]==GD_BLANK )
+    {   // 如果边界可跳，则把第一个条件打开
+        if ( (gameData[0][selected.y]!=GD_BLANK ) || 
+            (gameData[2][selected.y-2]!=GD_BLANK && gameData[2][selected.y-3]==GD_WALL ) )
+        {
+            tmppos.x=selected.x-2;
+            tmppos.y=selected.y-2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+    // OOOOO
+    // |X0OO
+    // O@XOO
+    // 如果玩家位于第二行,左上角可跳的情况(单独讨论)
+    else if ( selected.x > 2 && selected.y == 2 
+        && gameData[selected.x-2][0]==GD_BLANK )
+    {   // 如果边界可跳，则把第一个条件打开
+        if ( (gameData[selected.x][0]!=GD_BLANK ) || 
+            (gameData[selected.x-2][2]!=GD_BLANK && gameData[selected.x-3][2]==GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y-2;
@@ -2082,6 +2149,35 @@ void CQuoridor::playerMovablePos( pos2d selected )
             preselect_pos.push_back(tmppos);
         }
     }
+    // OOOO
+    // OO0X
+    // OOX@
+    // OO-O
+    // 如果玩家位于右数第二列,右下角可跳的情况(单独讨论)
+    else if ( selected.x == 14 && selected.y >2 && gameData[16][selected.y-2]==GD_BLANK )
+    {
+        if ( (gameData[16][selected.y]!=GD_BLANK ) || 
+            (gameData[14][selected.y-2]!=GD_BLANK && gameData[14][selected.y-3]==GD_WALL ) )
+        {
+            tmppos.x=selected.x+2;
+            tmppos.y=selected.y-2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
+    // OOOOO
+    // OO0X|
+    // OOX@O
+    // 如果玩家位于下数第二行,右下角可跳的情况(单独讨论)
+    else if ( selected.x < 14 && selected.y == 2 && gameData[selected.x+2][0]==GD_BLANK )
+    {
+        if ( (gameData[selected.x][0]!=GD_BLANK ) || 
+            (gameData[selected.x+2][2]!=GD_BLANK && gameData[selected.x+3][2]==GD_WALL ) )
+        {
+            tmppos.x=selected.x+2;
+            tmppos.y=selected.y-2;
+            preselect_pos.push_back(tmppos);
+        }
+    }
 }
 
 void CQuoridor::freeRuleSendBox()
@@ -2107,6 +2203,9 @@ void CQuoridor::freeRuleSendBox()
         }
         pickup.x=arr.x;
         pickup.y=arr.y;
+#ifdef __DEBUG__
+        playerMovablePos(pickup);
+#endif
     }
     else
     {	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
@@ -2263,6 +2362,10 @@ SEND_BOX_EXIT:
 
 bool CQuoridor::judgeWallLegal()
 {
+    /*
+     当前这种方法判断墙是否可放，在一些情况下是有问题的。
+     比如，某玩家的终点位置，被另外的玩家占着的情况。以后再考虑别的判定方法
+    */
     // 定义一个临时的存放玩家可走位置的队列
     std::deque<pos2d> que;
     // 9x9的临时标记，记录玩家可走的位置,0为空，1为遍历过，可走，2为已经处理过

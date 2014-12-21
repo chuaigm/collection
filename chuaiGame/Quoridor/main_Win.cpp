@@ -206,6 +206,10 @@ int APIENTRY WinMain(HINSTANCE hInst,
     if (g_sound!=1){
         g_sound=0;
     }
+    //ConfigGetKeyValue("config.ini", "Debug", "debug", tmpstr);
+    //int idebug=atoi(tmpstr);
+    //if (idebug==1){
+    //}
     //--------------------------------------------------
     char cc[]="Quoridor";
     // ¥∞ÃÂ¿‡

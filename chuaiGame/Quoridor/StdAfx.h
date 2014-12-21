@@ -50,7 +50,10 @@
 
 #define GAME_TEX_NUM 32
 
-#define PI		(3.14159265359)
+#define PI  (3.14159265359)
+
+// 开启调试代码
+#define __DEBUG__
 
 //字体
 enum {
