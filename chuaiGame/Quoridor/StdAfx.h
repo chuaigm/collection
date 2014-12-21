@@ -53,12 +53,18 @@
 #define PI		(3.14159265359)
 
 //×ÖÌå
-#define FONT0 0
-#define FONT1 1
-#define FONT2 2
-#define FONT3 3
-#define FONT4 4
-#define FONT5 5
+enum {
+    FONT0,
+    FONT1,
+    FONT2,
+    FONT3,
+    FONT4,
+    FONT5,
+    FONT6,
+    FONT7,
+    FONT8,
+    FONT9,
+};
 
 // TODO: reference additional headers your program requires here
 

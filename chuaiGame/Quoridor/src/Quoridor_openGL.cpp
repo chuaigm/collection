@@ -125,6 +125,7 @@ int CQuoridor::haveDataFile()
         "data/images/xiaohei1.bmp",
         "data/images/wall1.bmp",
         "data/images/computer_logo.bmp",
+        "data/images/example_show_help.bmp",
         //sound
         "data/sound/wall_set.wav",
         "data/sound/player_move.wav"
@@ -176,6 +177,8 @@ void CQuoridor::init()
     LoadT8("data/images/computer_logo.bmp", g_cactus[8]);		// 电脑图标
     //button
     LoadT8("data/images/button.bmp", g_cactus[9]);				// 按钮
+
+    LoadT8("data/images/example_show_help.bmp", g_cactus[10]);  // 帮助中使用的展示图
 
     ///////////////////////////////////////////
     //启动贴图
@@ -878,7 +881,7 @@ void CQuoridor::showmenu()
     for(int i=0;i<MENU_NUM;i++)
     {
         //文字
-        myfont.Print2D(menu.x+10,menu.y+5+i*menu_dis,menustr[i],FONT1,1,1,1);
+        myfont.Print2D(menu.x+10,menu.y+5+i*menu_dis,menustr[i],FONT4,1,1,1);
 
         //图片
         texture_select(g_cactus[9]);
@@ -942,31 +945,72 @@ void CQuoridor::show_Font_test()
     sprintf(tmpstr, "arr.y=%d",arr.y);
     myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
 
-    //myfont.Print2D(100,2,"1,0",FONT1,1.0f,0.0f,0.0f);
+    //myfont.Print2D(100,2,"1,0",FONT4,1.0f,0.0f,0.0f);
     //myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
-    //myfont.Print2D(300,2,"3,0",FONT3,1.0f,0.0f,1.0f);
+    //myfont.Print2D(300,2,"3,0",FONT4,1.0f,0.0f,1.0f);
     //myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
     //myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
 }
 
 void CQuoridor::showHelp()
 {
-    //画背景图片
-    glPushMatrix();
-    glTranslatef(0.0,0.0,-0.5f);
+    // 帮助画面中的装饰图片
+    float cover_logo_len=(m_OpenGL->RCwidth - m_OpenGL->RCheight)/2.0f-2*lace;
+    float player_logo_len=((m_OpenGL->RCwidth - m_OpenGL->RCheight)/2.0f-3*lace)/2.0f;
+
+    // 封面图
     texture_select(g_cactus[0]);
-    float det=m_OpenGL->RCheight / 6.0f;
-    tPicRectangle((m_OpenGL->RCwidth-m_OpenGL->RCheight)/2.0f + det, 0 + det, (float)m_OpenGL->RCheight*0.6f, (float)m_OpenGL->RCheight*0.6f);
-    glPopMatrix();
+    tPicRectangle((float)lace, m_OpenGL->RCheight-lace-cover_logo_len, cover_logo_len, cover_logo_len);
+    // 玩家logo
+    texture_select(g_cactus[3]);
+    tPicRectangle((float)lace, (float)lace, player_logo_len, player_logo_len);
+    texture_select(g_cactus[4]);
+    tPicRectangle((float)lace*2+player_logo_len, (float)lace, player_logo_len, player_logo_len);
+    texture_select(g_cactus[5]);
+    tPicRectangle((float)lace, (float)lace*2+player_logo_len, player_logo_len, player_logo_len);
+    texture_select(g_cactus[6]);
+    tPicRectangle((float)lace*2+player_logo_len, (float)lace*2+player_logo_len, player_logo_len, player_logo_len);
+    // 实物展示图
+    texture_select(g_cactus[10]);
+    tPicRectangle((m_OpenGL->RCwidth+m_OpenGL->RCheight)/2.0f, 0.45f*m_OpenGL->RCheight, (m_OpenGL->RCwidth-m_OpenGL->RCheight)/2.0f, (m_OpenGL->RCwidth-m_OpenGL->RCheight)*0.375f);
 
-    tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.2f);
+    // 半透明背景
+    tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.3f);
 
-    char tmpstr[64]={"游戏说明"};
-    myfont.Print2D(board_x+lace,500,tmpstr,FONT1,0.0,0.0,0.0);
-    sprintf(tmpstr,"具体内容以后在写吧具体内容以后在写吧");
-    myfont.Print2D(board_x+lace,400,tmpstr,FONT1,0.0,0.0,1.0);
-    sprintf(tmpstr,"具体内容以后在写吧");
-    myfont.Print2D(board_x+lace,300,tmpstr,FONT1,1.0,1.0,0.0);
+    char tmpstr[128]="游戏简介";
+    myfont.Print2D(m_OpenGL->RCwidth/2-60,m_OpenGL->RCheight-50,tmpstr,FONT5,1.0,1.0,0.0);
+    sprintf(tmpstr,"游戏名称：《Quoridor》《墙棋》《步步为营》");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-80,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"         Quoridor是由游戏设计师 Mirko Marchesi，于1997年发明");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-110,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"         的2~4人对战棋类游戏");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-140,tmpstr,FONT3,0.8f,1.0,0.0);
+
+    sprintf(tmpstr,"游戏规则");
+    myfont.Print2D(m_OpenGL->RCwidth/2-60,m_OpenGL->RCheight-180,tmpstr,FONT5,1.0,1.0,0.0);
+    sprintf(tmpstr,"游戏目标：谁先走到棋盘对面的一端谁就获得胜利");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-210,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"基本规则：玩家按顺序轮流行动，轮到自己时，只能从下面");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-240,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"         两种行动中选择一个执行：");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-270,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"       1.前后左右四个方向中选择一个，移动玩家所控制的棋子一步");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-300,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"       2.在可以放置墙的位置放置一堵墙");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-330,tmpstr,FONT3,0.8f,1.0,0.0);
+    sprintf(tmpstr,"特殊规则：1. 如果要移动的位置存在其他玩家，则可以跳到其他玩家身后的位置");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-360,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"          2. 如果想跳到其他玩家身后时，有墙或者另外的玩家存在，");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-380,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"             则可以跳到两边任意可跳的位置上(边界情况官方也未指明)");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-400,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"          3. 在放置墙时，如果放置了一面墙，将导致场上有任何一个玩家不能");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-420,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"             到达彼岸，则该墙无法被放置");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-440,tmpstr,FONT2,1.0,0.8f,0.0);
+
+    sprintf(tmpstr,"版本信息：[%s][%s][_MSC_VER=%d][0.7a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
+    myfont.Print2D(board_x+lace,lace,tmpstr,FONT0,1.0,1.0,0.0);
 
     //音乐控制按钮
     if (g_sound==1)
@@ -975,8 +1019,7 @@ void CQuoridor::showHelp()
     } else {
         sprintf(tmpstr,"音乐: 关");
     }
-    myfont.Print2D(menu.x+5,menu.y+menu_dis+5,tmpstr,FONT1,1,1,1);
-    
+    myfont.Print2D(menu.x+5,menu.y+menu_dis+5,tmpstr,FONT4,1,1,1);
 
     //图片
     texture_select(g_cactus[9]);
@@ -991,7 +1034,7 @@ void CQuoridor::showHelp()
 
     //文字
     sprintf(tmpstr,"按ESC返回");
-    myfont.Print2D(menu.x+5,menu.y+5,tmpstr,FONT1,1,1,1);
+    myfont.Print2D(menu.x+5,menu.y+5,tmpstr,FONT4,1,1,1);
 
     //图片
     texture_select(g_cactus[9]);
@@ -1129,10 +1172,10 @@ void CQuoridor::drawAccessory()
                 tPicRectangle((roadw+wall_w),(3-i+1/2.0f)*player_info_h,roadw*0.6f,roadw*0.6f,layer+0.1f);
             }
             sprintf(tmpstr,"墙剩余: %d",plyer[i].wall_num_left);
-            myfont.Print2D(10,(int)((3-i+1/4.0f)*player_info_h),tmpstr,FONT1,1,1,1);
+            myfont.Print2D(10,(int)((3-i+1/4.0f)*player_info_h),tmpstr,FONT3,1,1,1);
         }
     }
-    
+
 /*
 // 注释掉旧方法
     if (plyer[1].id!=2)
@@ -1140,28 +1183,28 @@ void CQuoridor::drawAccessory()
         texture_select(g_cactus[4]);
         tPicRectangle(0,(2+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
         sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((2+1/4.0f)*player_info_h),tmpstr,FONT1,1,1,1);
+        myfont.Print2D(10,(int)((2+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
     }
     if (plyer[2].id!=2)
     {
         texture_select(g_cactus[5]);
         tPicRectangle(0,(1+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
         sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((1+1/4.0f)*player_info_h),tmpstr,FONT1,1,1,1);
+        myfont.Print2D(10,(int)((1+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
     }
     if (plyer[3].id!=2)
     {
         texture_select(g_cactus[6]);
         tPicRectangle(0,(0+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
         sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((0+1/4.0f)*player_info_h),tmpstr,FONT1,1,1,1);
+        myfont.Print2D(10,(int)((0+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
     }
 */
 
     // 按钮贴图
     texture_select(g_cactus[9]);
     sprintf(tmpstr,"返回菜单");
-    myfont.Print2D(menu.x+10,m_OpenGL->RCheight-menu.y-menu_h+5,tmpstr,FONT1,1,1,1);
+    myfont.Print2D(menu.x+10,m_OpenGL->RCheight-menu.y-menu_h+5,tmpstr,FONT4,1,1,1);
     if(BUTTON_RETURN==iButton)
     {
         tPicButton((float)menu.x,(float)(m_OpenGL->RCheight-menu.y-menu_h),(float)menu_w,(float)menu_h,0.0f);
@@ -1184,7 +1227,7 @@ void CQuoridor::drawAccessory()
     default:
         break;
     }
-    myfont.Print2D(menu.x+10,menu.y+5,tmpstr,FONT1,1,1,1);
+    myfont.Print2D(menu.x+10,menu.y+5,tmpstr,FONT4,1,1,1);
     // 按钮图片
     if(BUTTON_INIT_OR_CONFIRM==iButton)
     {
@@ -1489,12 +1532,12 @@ void CQuoridor::drawInConfig()
         {
             if(i==plyer[3-j].id)
             {
-                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,1,1,1);
+                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT4,1,1,1);
                 tPicButton((float)board_x+(i*2.3f+1)*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.0f);
             }
             else
             {
-                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT1,0,0,0);
+                myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT4,0,0,0);
                 tPicButton((float)board_x+(i*2.3f+1)*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.5f);
             }
         }
@@ -2315,27 +2358,27 @@ void CQuoridor::drawVictory()
     {
     case GD_YELLOW:
         sprintf(tmpstr,"黄 色 玩 家");
-        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,1,1,0);
+        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT8,1,1,0);
         break;
     case GD_RED:
         sprintf(tmpstr,"红 色 玩 家");
-        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,1,0,0);
+        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT8,1,0,0);
         break;
     case GD_GREEN:
         sprintf(tmpstr,"绿 色 玩 家");
-        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,0,1,0);
+        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT8,0,1,0);
         break;
     case GD_BLUE:
         sprintf(tmpstr,"蓝 色 玩 家");
-        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT2,0,0,1);
+        myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+5/7.0)),tmpstr,FONT8,0,0,1);
         break;
     default:
         break;
     }
     sprintf(tmpstr,"  胜  利 ");
-    myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+3/7.0)),tmpstr,FONT2,1,1,1);
+    myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+3/7.0)),tmpstr,FONT8,1,1,1);
     sprintf(tmpstr," 好 厉 害！");
-    myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+1/8.0)),tmpstr,FONT2,1,1,1);
+    myfont.Print2D(m_OpenGL->RCwidth/2,(int)(tri_h*(1+1/8.0)),tmpstr,FONT8,1,1,1);
     glPopMatrix();
 
     // 这里可以写一个烟花函数 
