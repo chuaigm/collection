@@ -196,7 +196,6 @@ public:
     // 菜单按钮的宽度和高度
     int menu_w;
     int menu_h;
-
     // 主菜单上下间距
     int menu_dis;
 

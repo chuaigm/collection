@@ -44,10 +44,6 @@ CQuoridor::CQuoridor()
     // 菜单按钮的宽度和高度
     menu_w=10;
     menu_h=10;
-    // 帮助界面返回菜单按钮宽度
-    //helpRetButtonW=10;
-    // 帮助界面返回菜单按钮横坐标
-    //rButtonx=10;
     // 菜单上下间距
     menu_dis=10;
     // 游戏棋盘与窗口边界间距
