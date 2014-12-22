@@ -68,7 +68,7 @@ struct point2d{
 };
 class player {
 public:
-    player():id(0),x(0),y(0),wall_num_left(0),next(NULL){};
+    player():id(0),color(0),x(0),y(0),wall_num_left(0),next(NULL){};
     ~player(){};
     // 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭
     // (不用枚举是因为赋值时是严格的0,1,2，担心枚举乱入其他值)
@@ -181,7 +181,7 @@ public:
     unsigned int g_cactus[GAME_TEX_NUM];
 
     //pre ani
-    int param1;
+    //int param1;
     
     //鼠标位置
     //int xmouse;
@@ -196,10 +196,7 @@ public:
     // 菜单按钮的宽度和高度
     int menu_w;
     int menu_h;
-    // 帮助界面返回菜单按钮宽度
-    //int helpRetButtonW;
-    // 帮助界面返回菜单按钮横坐标
-    //int rButtonx;
+
     // 主菜单上下间距
     int menu_dis;
 
@@ -250,10 +247,6 @@ public:
     // 游戏随时间计数的变量
     unsigned int tcounter;
 
-
-    //test
-    // 9x9的临时标记，记录玩家可走的位置,0为空，1为遍历过，可走，2为已经处理过
-    //char tmpflag[9][9];
 };
 
 #endif

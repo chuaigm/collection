@@ -73,8 +73,8 @@ extern int  ConfigSetKeyValue(const char *CFG_file, const char *section, const c
 extern int  ConfigGetSections(const char *CFG_file, char *sections[]);
 extern int  ConfigGetKeys(const char *CFG_file, const char *section, char *keys[]);
 // 为了测试写的测试函数，建立以及读取
-extern void INIFileTestCreatMain(void);
-extern void INIFileTestReadMain(void);
+extern void test_iniFileCreate(void);
+extern void test_iniFileRead(void);
 
 /**********************************************************************
 * 函数名称： strtrimr
@@ -718,7 +718,7 @@ cfg_keys_end:
 }
 
 /**********************************************************************
-* 函数名称： INIFileTestCreatMain
+* 函数名称： test_iniFileCreate
 * 功能描述： 测试函数入口
 * 修改日期        版本号     修改人       修改内容
 * -----------------------------------------------
@@ -797,7 +797,7 @@ void test_iniFileCreate(void)
 }
 
 /**********************************************************************
-* 函数名称： INIFileTestReadMain
+* 函数名称： test_iniFileRead
 * 功能描述： 测试函数入口
 * 修改日期        版本号     修改人       修改内容
 * -----------------------------------------------

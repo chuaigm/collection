@@ -86,7 +86,8 @@ CQuoridor::CQuoridor()
     plyer[3].color=GD_BLUE;
     plyer[3].x=4;
     plyer[3].y=0;
-
+    // 贴图数组初始化
+    memset(g_cactus,0,sizeof(g_cactus));
     // 棋盘数据初始化
     memset(gameData,0,sizeof(gameData));
     // 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
@@ -103,6 +104,7 @@ CQuoridor::CQuoridor()
     win_flag=GD_BLANK;
     // 显示调试信息
     g_debug_flag=false;
+    tcounter=0;
 }
 
 CQuoridor::~CQuoridor()
@@ -304,22 +306,22 @@ void CQuoridor::check()
 
     switch(iGameState)
     {
-    case GAME_PRE:
-        if(c1.iNumClip%2==0)
-        {
-            if(param1<30)
-            {			
-                param1++;		
-            }
-        }
-        //计时
-        if(c1.clipcount())
-        {
-            iGameState=GAME_MENU;
-            //设置投影 
-            initView();
-        }
-        break;
+    //case GAME_PRE:
+    //    if(c1.iNumClip%2==0)
+    //    {
+    //        if(param1<30)
+    //        {			
+    //            param1++;		
+    //        }
+    //    }
+    //    //计时
+    //    if(c1.clipcount())
+    //    {
+    //        iGameState=GAME_MENU;
+    //        //设置投影 
+    //        initView();
+    //    }
+    //    break;
 
     case GAME_MENU:
         if(x<menu.x	|| x>menu.x+menu_w || y<menu.y)
@@ -650,7 +652,7 @@ void CQuoridor::keyupproc(int keyparam)
         //		iEnemyNum=0;
         //	}		
         //	break;
-    case VK_F1:
+    case VK_F9:
         g_debug_flag=!g_debug_flag;
         break;
     case VK_ESCAPE:
@@ -1009,7 +1011,7 @@ void CQuoridor::showHelp()
     sprintf(tmpstr,"             到达彼岸，则该墙无法被放置");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-440,tmpstr,FONT2,1.0,0.8f,0.0);
 
-    sprintf(tmpstr,"版本信息：[%s][%s][_MSC_VER=%d][0.7a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
+    sprintf(tmpstr,"版本信息：[From 2014-11-29]-[%s][%s][_MSC_VER=%d][Ver= 0.7a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
     myfont.Print2D(board_x+lace,lace,tmpstr,FONT0,1.0,1.0,0.0);
 
     //音乐控制按钮
@@ -1171,7 +1173,7 @@ void CQuoridor::drawAccessory()
                 texture_select(g_cactus[8]);
                 tPicRectangle((roadw+wall_w),(3-i+1/2.0f)*player_info_h,roadw*0.6f,roadw*0.6f,layer+0.1f);
             }
-            sprintf(tmpstr,"墙剩余: %d",plyer[i].wall_num_left);
+            sprintf(tmpstr,"墙剩余: %u",plyer[i].wall_num_left);
             myfont.Print2D(10,(int)((3-i+1/4.0f)*player_info_h),tmpstr,FONT3,1,1,1);
         }
     }

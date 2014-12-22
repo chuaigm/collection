@@ -359,8 +359,16 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="3Dmodel_lib"
+			Name="TCPSocket"
 			>
+			<File
+				RelativePath=".\src\TCPSocket.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\TCPSocket.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Quoridor"
