@@ -18,6 +18,7 @@ enum {
     GAME_SINGE,
     GAME_IN_CONFIG,
     GAME_MULTIP,
+    GAME_NET_CONFIG,
     GAME_SENDBOX,
     GAME_HELP,
     GAME_WIN
@@ -36,7 +37,9 @@ enum {
     MENU_SINGE,
     BUTTON_RETURN,
     BUTTON_INIT_OR_CONFIRM,
-    BUTTON_MUSIC
+    BUTTON_MUSIC,
+    BUTTON_SERVER,
+    BUTTON_CLIENT
 };
 // 棋盘数组里代表的含义
 enum {
@@ -143,6 +146,8 @@ public:
     void drawPlayerWall();
     // 绘制选择游戏配置
     void drawInConfig();
+    // 绘制联机游戏时的选择联机方式的画面
+    void drawNetworkOp();
     // 绘制选定遮罩层
     void drawPickMask();
     // 确认窗口

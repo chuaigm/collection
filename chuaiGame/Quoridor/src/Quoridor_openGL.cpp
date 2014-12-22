@@ -28,6 +28,7 @@ extern int WinHeight;
 // 是否开启音乐标记
 extern int g_sound;
 // 配置文件操作
+extern int ConfigGetKeyValue(const char *CFG_file, const char *section, const char *key, char *buf);
 extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
 
 /////////////////////////
@@ -268,7 +269,12 @@ void CQuoridor::showMain()
         drawChessBorad();
         drawPlayerWall();
         drawVictory();
+        break;
+    case GAME_NET_CONFIG:
+        drawNetworkOp();
+        break;
     case GAME_MULTIP:
+        break;
     case GAME_SENDBOX:
         drawAccessory();
         drawChessBorad();
@@ -391,6 +397,12 @@ void CQuoridor::check()
             }
         }
         break;
+    case GAME_NET_CONFIG:
+        if (x>menu.x&&x<menu.x+menu_w&&y>menu.y&&y<menu.y+menu_h)
+        {
+            iButton=BUTTON_RETURN;
+        }
+        break;
     case GAME_HELP:
         if (x>menu.x&&x<menu.x+menu_w)
         {
@@ -429,7 +441,8 @@ void CQuoridor::lbuttonproc(int lparam)
             resetGameData();
             break;
         case MENU_MULTIP:
-            //iGameState=GAME_MULTIP;
+            iGameState=GAME_NET_CONFIG;
+            resetGameData();
             break;
         case MENU_SENDBOX:
             iGameState=GAME_SENDBOX;
@@ -533,6 +546,14 @@ void CQuoridor::lbuttonproc(int lparam)
         if (ply_head->id==0)
         {
             playerActionRule();
+        }
+        break;
+    case GAME_NET_CONFIG:
+        if (iButton==BUTTON_SERVER)
+        {
+        }
+        if (iButton==BUTTON_CLIENT)
+        {
         }
         break;
     case GAME_MULTIP:
@@ -2628,4 +2649,48 @@ void CQuoridor::computer_AI()
         // 下一位玩家
         ply_head=ply_head->next;
     }   // 如果不是电脑，什么都不做
+}
+
+void CQuoridor::drawNetworkOp()
+{
+    char tmpstr[128]="";
+
+    tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.4f);
+    tRectangle(m_OpenGL->RCwidth/2.0f,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0,0.8f,0,0.4f);
+
+    //文字
+    sprintf(tmpstr,"建立主机");
+    myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
+    //图片
+    texture_select(g_cactus[9]);
+    if(iButton==BUTTON_SERVER)
+    {
+        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.0f);
+    } else {
+        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.5f);
+    }
+
+    //文字
+    sprintf(tmpstr,"连接主机");
+    myfont.Print2D(m_OpenGL->RCwidth*3/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
+    //图片
+    texture_select(g_cactus[9]);
+    if(iButton==BUTTON_SERVER)
+    {
+        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.0f);
+    } else {
+        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.5f);
+    }
+
+    //文字
+    sprintf(tmpstr,"按ESC返回");
+    myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
+    //图片
+    texture_select(g_cactus[9]);
+    if(iButton==BUTTON_RETURN)
+    {
+        tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.0f);
+    } else {
+        tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.5f);
+    }
 }
