@@ -20,7 +20,7 @@
 #define SD_SEND 0x01
 #define SD_BOTH 0x02
 
-#define MAX_CONNECTION 1000
+#define MAX_CONNECTION 32
 
 enum TCP_SOCKET_TYPE
 {
@@ -73,7 +73,11 @@ public:
     int SendClient(char* data, int length); //发送指定字节的数据
     BOOL m_bConnected[MAX_CONNECTION]; //服务器判断每个能够使用的连接的状态
     BOOL m_bconnect;               //客户端判断连接的状态
-    void Close(); //关闭	
+    void Close(); //关闭
+
+    // 记录本机的IP
+    char* GetLocalIP();
+    char local_ip[16];
 
 protected:
 

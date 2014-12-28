@@ -102,6 +102,13 @@ CQuoridor::CQuoridor()
     // 显示调试信息
     g_debug_flag=false;
     tcounter=0;
+
+    // 网络相关
+    n_port=0;
+    memset(n_IP,0,sizeof(n_IP));
+    memset(n_loaclIP,0,sizeof(n_loaclIP));
+    memset(n_Name,0,sizeof(n_Name));
+    n_netWorkStatus=0;
 }
 
 CQuoridor::~CQuoridor()
@@ -273,7 +280,7 @@ void CQuoridor::showMain()
     case GAME_NET_CONFIG:
         drawNetworkOp();
         break;
-    case GAME_MULTIP:
+    case GAME_NETWORK:
         break;
     case GAME_SENDBOX:
         drawAccessory();
@@ -345,7 +352,7 @@ void CQuoridor::check()
             computer_AI();
         }
     case GAME_IN_CONFIG:
-    case GAME_MULTIP:
+    case GAME_NETWORK:
     case GAME_SENDBOX:
         // 实时检查鼠标位置
         // 检查时，如果鼠标位于棋盘边界外
@@ -402,6 +409,42 @@ void CQuoridor::check()
         {
             iButton=BUTTON_RETURN;
         }
+        switch (n_netWorkStatus)
+        {
+        case 0:
+            if (x>m_OpenGL->RCwidth/4-menu_w/2&&x<m_OpenGL->RCwidth/4-menu_w/2+menu_w
+                &&y>m_OpenGL->RCheight*2/3&&y<m_OpenGL->RCheight*2/3+menu_h)
+            {
+                iButton=BUTTON_SERVER;
+            }
+            if (x>m_OpenGL->RCwidth*3/4-menu_w/2&&x<m_OpenGL->RCwidth*3/4-menu_w/2+menu_w
+                &&y>m_OpenGL->RCheight*2/3&&y<m_OpenGL->RCheight*2/3+menu_h)
+            {
+                iButton=BUTTON_CLIENT;
+            }
+            break;
+        case 1:
+            if (x>(m_OpenGL->RCwidth-menu_w)/2&&x<(m_OpenGL->RCwidth-menu_w)/2+menu_w
+                &&y>menu.y&&y<menu.y+menu_h)
+            {
+                iButton=BUTTON_SERVER_START;
+            }
+            if (x>m_OpenGL->RCwidth/4-menu_w/2&&x<m_OpenGL->RCwidth/4-menu_w/2+menu_w
+                &&y>m_OpenGL->RCheight*1/6&&y<m_OpenGL->RCheight*1/6+menu_h)
+            {
+                iButton=BUTTON_SERVER_TEST;
+            }
+            break;
+        case 2:
+            if (x>m_OpenGL->RCwidth*3/4-menu_w/2&&x<m_OpenGL->RCwidth*3/4-menu_w/2+menu_w
+                &&y>m_OpenGL->RCheight/6&&y<m_OpenGL->RCheight/6+menu_h)
+            {
+                iButton=BUTTON_CLIENT_TEST;
+            }
+            break;
+        default:
+            break;
+        }
         break;
     case GAME_HELP:
         if (x>menu.x&&x<menu.x+menu_w)
@@ -424,6 +467,7 @@ void CQuoridor::check()
 // 左键松开
 void CQuoridor::lbuttonproc(int lparam)
 {
+    char tmpstr[32];
     if (iButton==BUTTON_RETURN)
     {
         iGameState=GAME_MENU;
@@ -440,7 +484,14 @@ void CQuoridor::lbuttonproc(int lparam)
             iGameState=GAME_IN_CONFIG;
             resetGameData();
             break;
-        case MENU_MULTIP:
+        case MENU_NETWORK:
+            // 点击进入联网模式时，获取本机IP与端口一次
+            n_socket.GetLocalIP();
+            strncpy(n_loaclIP, n_socket.local_ip, 16);
+            ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_Name);
+            ConfigGetKeyValue("config.ini", "Net_work", "IP", n_IP);
+            ConfigGetKeyValue("config.ini", "Net_work", "port", tmpstr);
+            n_port=atoi(tmpstr);
             iGameState=GAME_NET_CONFIG;
             resetGameData();
             break;
@@ -549,14 +600,23 @@ void CQuoridor::lbuttonproc(int lparam)
         }
         break;
     case GAME_NET_CONFIG:
-        if (iButton==BUTTON_SERVER)
+        switch (iButton)
         {
-        }
-        if (iButton==BUTTON_CLIENT)
-        {
+        case BUTTON_SERVER:
+            n_netWorkStatus=1;
+            break;
+        case BUTTON_CLIENT:
+            n_netWorkStatus=2;
+            break;
+        case BUTTON_SERVER_TEST:
+            break;
+        case BUTTON_CLIENT_TEST:
+            break;
+        case BUTTON_SERVER_START:
+            break;
         }
         break;
-    case GAME_MULTIP:
+    case GAME_NETWORK:
         break;
     case GAME_SENDBOX:
         freeRuleSendBox();
@@ -587,7 +647,7 @@ void CQuoridor::rbuttonproc( int lparam )
     {
     case GAME_SINGE:
         break;
-    case GAME_MULTIP:
+    case GAME_NETWORK:
         break;
     case GAME_SENDBOX:
         switch (gameData[arr.x][arr.y])
@@ -951,18 +1011,18 @@ void CQuoridor::show_Font_test()
         for (int j=0; j<17;j++)
         {
             sprintf(tmpstr, "%d,",gameData[j][i]);
-            myfont.Print2D(10*(j+1),70+10*i,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+            myfont.Print2D(10*(j+1),70+10*i,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
         }
     }
 
     sprintf(tmpstr, "pick_x=%d",pickup.x);
-    myfont.Print2D(50,40,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+    myfont.Print2D(50,40,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "pick_y=%d",pickup.y);
-    myfont.Print2D(50,30,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+    myfont.Print2D(50,30,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.x=%d",arr.x);
-    myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+    myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.y=%d",arr.y);
-    myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+    myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 
     //myfont.Print2D(100,2,"1,0",FONT4,1.0f,0.0f,0.0f);
     //myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
@@ -1027,6 +1087,9 @@ void CQuoridor::showHelp()
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-420,tmpstr,FONT2,1.0,0.8f,0.0);
     sprintf(tmpstr,"             到达彼岸，则该墙无法被放置");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-440,tmpstr,FONT2,1.0,0.8f,0.0);
+
+    sprintf(tmpstr,"             (F4 最小化窗口，F9 显示调试信息)");
+    myfont.Print2D(board_x+lace,lace+50,tmpstr,FONT2,1.0,0.8f,0.0);
 
     sprintf(tmpstr,"版本信息：[From 2014-11-29]-[%s][%s][_MSC_VER=%d][Ver= 0.7a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
     myfont.Print2D(board_x+lace,lace,tmpstr,FONT0,1.0,1.0,0.0);
@@ -2223,7 +2286,10 @@ void CQuoridor::freeRuleSendBox()
         pickup.x=arr.x;
         pickup.y=arr.y;
 #ifdef __DEBUG__
-        playerMovablePos(pickup);
+        if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=GD_BLANK)
+        {
+            playerMovablePos(pickup);
+        }
 #endif
     }
     else
@@ -2369,6 +2435,12 @@ void CQuoridor::freeRuleSendBox()
             // 其他情况，一律视为重新选取
             pickup.x=arr.x;
             pickup.y=arr.y;
+#ifdef __DEBUG__
+            if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=GD_BLANK)
+            {
+                playerMovablePos(pickup);
+            }
+#endif
         }
     }
     return ;
@@ -2654,43 +2726,66 @@ void CQuoridor::computer_AI()
 void CQuoridor::drawNetworkOp()
 {
     char tmpstr[128]="";
-
+    // 左边服务器一侧的底图
     tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.4f);
+    // 右边客户端一侧的底图
     tRectangle(m_OpenGL->RCwidth/2.0f,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0,0.8f,0,0.4f);
 
-    //文字
-    sprintf(tmpstr,"建立主机");
-    myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
-    //图片
-    texture_select(g_cactus[9]);
-    if(iButton==BUTTON_SERVER)
-    {
-        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.0f);
-    } else {
-        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.5f);
-    }
+    //------------------------------------
+    // 显示本机IP以及服务器信息
+    sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
+    myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
+    sprintf(tmpstr,"监听端口: %d", n_port);
+    myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
 
-    //文字
-    sprintf(tmpstr,"连接主机");
-    myfont.Print2D(m_OpenGL->RCwidth*3/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
-    //图片
-    texture_select(g_cactus[9]);
-    if(iButton==BUTTON_SERVER)
-    {
-        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.0f);
-    } else {
-        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),(float)menu_w,(float)menu_h,0.5f);
-    }
+    // 显示连接服务器IP以及端口信息
+    sprintf(tmpstr,"服务器IP: %s", n_IP);
+    myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
+    sprintf(tmpstr,"服务端口: %d", n_port);
+    myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
 
-    //文字
+    switch (n_netWorkStatus)
+    {
+    case 0:
+        sprintf(tmpstr,"建立主机");
+        myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
+        texture_select(g_cactus[9]);
+        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),
+            (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER)?0.0f:0.5f);
+        sprintf(tmpstr,"连接主机");
+        myfont.Print2D(m_OpenGL->RCwidth*3/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,1,1,1);
+        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),
+            (float)menu_w,(float)menu_h,(iButton==BUTTON_CLIENT)?0.0f:0.5f);
+        break;
+    case 1:
+        sprintf(tmpstr,"建立主机");
+        myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,0.1f,0.1f,0.1f);
+        texture_select(g_cactus[9]);
+        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),
+            (float)menu_w,(float)menu_h,0.5f);
+        sprintf(tmpstr,"主机测试");
+        myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
+        tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*1/6),
+            (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_TEST)?0:0.5f);
+        sprintf(tmpstr,"开始游戏");
+        myfont.Print2D((m_OpenGL->RCwidth-menu_w)/2+10,menu.y+5,tmpstr,FONT4,1,1,1);
+        tPicButton((float)(m_OpenGL->RCwidth-menu_w)/2,(float)menu.y,
+            (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_START)?0:0.5f);
+        break;
+    case 2:
+        sprintf(tmpstr,"连接主机");
+        myfont.Print2D(m_OpenGL->RCwidth*3/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,0.1f,0.1f,0.1f);
+        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),
+            (float)menu_w,(float)menu_h,0.5f);
+        sprintf(tmpstr,"客户测试");
+        myfont.Print2D(m_OpenGL->RCwidth*3/4-menu_w/2+10,m_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
+        tPicButton((float)(m_OpenGL->RCwidth*3/4-menu_w/2),(float)(m_OpenGL->RCheight*1/6),(float)menu_w,(float)menu_h,(iButton==BUTTON_CLIENT_TEST)?0:0.5f);
+        break;
+    default:
+        break;
+    }
+    // 返回按钮
     sprintf(tmpstr,"按ESC返回");
     myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
-    //图片
-    texture_select(g_cactus[9]);
-    if(iButton==BUTTON_RETURN)
-    {
-        tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.0f);
-    } else {
-        tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,0.5f);
-    }
+    tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,(iButton==BUTTON_RETURN)?0:0.5f);
 }

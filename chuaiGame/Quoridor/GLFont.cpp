@@ -106,7 +106,8 @@ void CGLFont::Print2D(int x,int y,const char* str,int ifont,float r,float g,floa
 {
     //glDisable(GL_DEPTH_TEST);
     glPushMatrix();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glPushAttrib(GL_CURRENT_BIT);
 
     glDisable(GL_TEXTURE_2D);
 

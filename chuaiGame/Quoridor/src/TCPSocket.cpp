@@ -896,3 +896,15 @@ DWORD WINAPI CTCPSocket::TimeOutControl(LPVOID lpParameter)
     m_pTimeOut->bExit=TRUE;
     return 0;
 }
+
+char* CTCPSocket::GetLocalIP()
+{
+    // 获取本机IP
+    char buf[256]="";
+    struct hostent *ph = 0;
+    gethostname(buf, 256);
+    ph = gethostbyname(buf);
+    const char *IP =inet_ntoa(*((struct in_addr *)ph->h_addr_list[0]));//此处获得本机IP
+    strncpy(local_ip, IP, 16);
+    return local_ip;
+}

@@ -11,13 +11,14 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include "TCPSocket.h"
 // Game state
 enum {
     GAME_PRE,
     GAME_MENU,
     GAME_SINGE,
     GAME_IN_CONFIG,
-    GAME_MULTIP,
+    GAME_NETWORK,
     GAME_NET_CONFIG,
     GAME_SENDBOX,
     GAME_HELP,
@@ -33,13 +34,16 @@ enum {
     MENU_QUIT,
     MENU_HELP,
     MENU_SENDBOX,
-    MENU_MULTIP,
+    MENU_NETWORK,
     MENU_SINGE,
     BUTTON_RETURN,
     BUTTON_INIT_OR_CONFIRM,
     BUTTON_MUSIC,
     BUTTON_SERVER,
-    BUTTON_CLIENT
+    BUTTON_CLIENT,
+    BUTTON_SERVER_START,
+    BUTTON_SERVER_TEST,
+    BUTTON_CLIENT_TEST
 };
 // 棋盘数组里代表的含义
 enum {
@@ -251,6 +255,14 @@ public:
     // 游戏随时间计数的变量
     unsigned int tcounter;
 
+    //------------------------------------
+    // 网络相关
+    CTCPSocket n_socket;        // 网络socket
+    unsigned long n_port;       // 通讯端口
+    char n_IP[16];              // 配置文件中的IP
+    char n_loaclIP[16];         // 本机IP
+    char n_Name[16];            // 配置文件中写明的用户名
+    int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
 };
 
 #endif
