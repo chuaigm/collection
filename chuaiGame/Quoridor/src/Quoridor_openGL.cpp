@@ -104,6 +104,7 @@ CQuoridor::CQuoridor()
     tcounter=0;
 
     // 网络相关
+    n_TCPnet=NULL;
     n_port=0;
     memset(n_IP,0,sizeof(n_IP));
     memset(n_loaclIP,0,sizeof(n_loaclIP));
@@ -486,12 +487,26 @@ void CQuoridor::lbuttonproc(int lparam)
             break;
         case MENU_NETWORK:
             // 点击进入联网模式时，获取本机IP与端口一次
-            n_socket.GetLocalIP();
-            strncpy(n_loaclIP, n_socket.local_ip, 16);
+            {   // 这里也可以定义一个临时tcp类，调用函数去做。不过目前这样做效率更好
+            WORD wVersionRequested;
+            WSADATA wsaData;
+            wVersionRequested=MAKEWORD(2,2);
+            WSAStartup(wVersionRequested,&wsaData);
+
+            char buf[256]="";
+            struct hostent *ph = 0;
+            gethostname(buf, 256);
+            ph = gethostbyname(buf);
+            const char *IP =inet_ntoa(*((struct in_addr *)ph->h_addr_list[0]));//此处获得本机IP
+            strncpy(n_loaclIP, IP, 16);
+            WSACleanup();
+            }
+
             ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_Name);
             ConfigGetKeyValue("config.ini", "Net_work", "IP", n_IP);
             ConfigGetKeyValue("config.ini", "Net_work", "port", tmpstr);
             n_port=atoi(tmpstr);
+
             iGameState=GAME_NET_CONFIG;
             resetGameData();
             break;
@@ -603,6 +618,23 @@ void CQuoridor::lbuttonproc(int lparam)
         switch (iButton)
         {
         case BUTTON_SERVER:
+            n_TCPnet = new CTCPSocket(TCP_SOCKET_SERVER);
+            // 创建服务
+            if(!n_TCPnet->CreateServer(n_port))
+            {
+                delete n_TCPnet;
+                int err=n_TCPnet->GetError();
+                sprintf(tmpstr,"错误号: %d",err);
+                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+            }
+            // 开始服务器
+            if(!n_TCPnet->StartServer())
+            {
+                delete n_TCPnet;
+                int err=n_TCPnet->GetError();
+                sprintf(tmpstr,"错误号: %d",err);
+                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+            }
             n_netWorkStatus=1;
             break;
         case BUTTON_CLIENT:
@@ -2726,24 +2758,31 @@ void CQuoridor::computer_AI()
 void CQuoridor::drawNetworkOp()
 {
     char tmpstr[128]="";
-    // 左边服务器一侧的底图
-    tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.4f);
-    // 右边客户端一侧的底图
-    tRectangle(m_OpenGL->RCwidth/2.0f,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0,0.8f,0,0.4f);
-
+    if (m_OpenGL->Xmouse<m_OpenGL->RCwidth/2 || n_netWorkStatus==1)
+    {
+        // 左边服务器一侧的底图
+        tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.6f);
+        // 右边客户端一侧的底图
+        tRectangle(m_OpenGL->RCwidth/2.0f,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0,0.8f,0,0.4f);
+        // 显示本机IP以及服务器信息
+        sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
+        myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
+        sprintf(tmpstr,"监听端口: %u", n_port);
+        myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
+    }
+    else if(m_OpenGL->Xmouse>m_OpenGL->RCwidth/2 || n_netWorkStatus==2)
+    {
+        // 左边服务器一侧的底图
+        tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.4f);
+        // 右边客户端一侧的底图
+        tRectangle(m_OpenGL->RCwidth/2.0f,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0,0.8f,0,0.6f);
+        // 显示连接服务器IP以及端口信息
+        sprintf(tmpstr,"服务器IP: %s", n_IP);
+        myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
+        sprintf(tmpstr,"服务端口: %u", n_port);
+        myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
+    }
     //------------------------------------
-    // 显示本机IP以及服务器信息
-    sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
-    myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-    sprintf(tmpstr,"监听端口: %d", n_port);
-    myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
-
-    // 显示连接服务器IP以及端口信息
-    sprintf(tmpstr,"服务器IP: %s", n_IP);
-    myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-    sprintf(tmpstr,"服务端口: %d", n_port);
-    myfont.Print2D((int)(m_OpenGL->RCwidth*0.62),(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
-
     switch (n_netWorkStatus)
     {
     case 0:
@@ -2759,7 +2798,7 @@ void CQuoridor::drawNetworkOp()
         break;
     case 1:
         sprintf(tmpstr,"建立主机");
-        myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,0.1f,0.1f,0.1f);
+        myfont.Print2D(m_OpenGL->RCwidth/4-menu_w/2+10,m_OpenGL->RCheight*2/3+5,tmpstr,FONT4,0.0f,1.0f,0.0f);
         texture_select(g_cactus[9]);
         tPicButton((float)(m_OpenGL->RCwidth/4-menu_w/2),(float)(m_OpenGL->RCheight*2/3),
             (float)menu_w,(float)menu_h,0.5f);

@@ -44,6 +44,8 @@ CTCPSocket::CTCPSocket(int nType)
     m_lpClientDataArriveProc=NULL;
     m_lpClientStatusProc=NULL;
     m_bconnect=FALSE;
+
+    memset(local_ip,0,sizeof(local_ip));
 }
 
 CTCPSocket::~CTCPSocket()
@@ -638,7 +640,7 @@ DWORD WINAPI CTCPSocket::ServerThread(LPVOID lpParameter)
             inf=new char[22];
             sprintf(inf,"S%sC%3d",m_pTCP->m_cIp[i],i);
             m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-            delete inf;
+            delete [] inf;
         }
 
         m_pTCP->m_sServer[i]=sClient;
@@ -685,7 +687,7 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                     inf=new char[22];
                     sprintf(inf,"S%sD%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
 
                 break;
@@ -704,7 +706,7 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                     sprintf(inf,"S%s%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     memcpy(inf+21,buf,nRet);
                     m_pTCP->m_lpServerDataArriveProc(inf,nRet+21,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
 
                 continue;
@@ -722,7 +724,7 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                     inf=new char[22];
                     sprintf(inf,"S%sD%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
 
                 closesocket(m_pTCP->m_sServer[MyNumber]);
@@ -767,11 +769,11 @@ DWORD WINAPI CTCPSocket::ClientThread(LPVOID lpParameter)
                 if(m_pTCP->m_lpClientStatusProc!=NULL)
                 {
                     char* inf;
-                    inf=new char[22];					
+                    inf=new char[22];
                     inf[0]='C';
                     inf[1]='D';
                     m_pTCP->m_lpClientStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
 
                 break;
@@ -790,7 +792,7 @@ DWORD WINAPI CTCPSocket::ClientThread(LPVOID lpParameter)
                     inf[0]='C';
                     memcpy(inf+1,buf,nRet);
                     m_pTCP->m_lpClientDataArriveProc(inf,nRet+1,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
 
                 continue;
@@ -805,11 +807,11 @@ DWORD WINAPI CTCPSocket::ClientThread(LPVOID lpParameter)
                 if(m_pTCP->m_lpClientStatusProc!=NULL)
                 {
                     char* inf;
-                    inf=new char[22];					
+                    inf=new char[22];
                     inf[0]='C';
-                    inf[1]='D';				
+                    inf[1]='D';
                     m_pTCP->m_lpClientStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete inf;
+                    delete [] inf;
                 }
                 closesocket(m_pTCP->m_sSocket);
                 m_pTCP->m_bAuto=FALSE;

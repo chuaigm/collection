@@ -57,7 +57,8 @@ public:
     SOCKET GetSocket(); //取得套接字
     int GetType(); //取得类型
     BOOL IsConnected(SOCKET s); //判断一个socket是否连接
-
+    //---------------------------
+    // 服务器相关函数
     BOOL CreateServer(int nPort,int backlog=5); //建立服务器
     BOOL StartServer(LPStatusProc proc1=NULL,LPDataArriveProc proc2=NULL,DWORD userdata=NULL); //开始服务
     BOOL StopServer(); //停止服务
@@ -65,7 +66,8 @@ public:
     int ReceiveServer(int nNo,char* data, int length,int timeout); //接收指定字节的数据
     int SendServer(int nNo,char* data, int length); //发送指定字节的数据
     void Disconnect(int nNo);
-
+    //---------------------------
+    // 客户端相关函数
     BOOL Connect(LPCSTR pstrHost, int nPort); //连接一个IP
     BOOL StartReceiving(LPStatusProc proc1=NULL,LPDataArriveProc proc2=NULL,DWORD userdata=NULL); //开始自动接收
     BOOL StopReceiving(); //停止自动接收	
@@ -75,7 +77,7 @@ public:
     BOOL m_bconnect;               //客户端判断连接的状态
     void Close(); //关闭
 
-    // 记录本机的IP
+    // 获取本机的IP
     char* GetLocalIP();
     char local_ip[16];
 

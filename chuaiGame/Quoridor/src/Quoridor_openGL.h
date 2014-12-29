@@ -257,8 +257,8 @@ public:
 
     //------------------------------------
     // 网络相关
-    CTCPSocket n_socket;        // 网络socket
-    unsigned long n_port;       // 通讯端口
+    CTCPSocket *n_TCPnet;       // tcp网络连接
+    unsigned int n_port;        // 通讯端口
     char n_IP[16];              // 配置文件中的IP
     char n_loaclIP[16];         // 本机IP
     char n_Name[16];            // 配置文件中写明的用户名
