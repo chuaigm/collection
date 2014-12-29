@@ -2503,7 +2503,7 @@ bool CQuoridor::judgeWallLegal()
         jump_flag=false;
         // 只要不是关闭的玩家
         if (plyer[i].id!=2)
-        {	// 先将当前玩家的位置传入，注意，玩家坐标是0~8的范围，转换为0~16的范围
+        {   // 先将当前玩家的位置传入，注意，玩家坐标是0~8的范围，转换为0~16的范围
             // 因为，选点算法返回的是0~16的范围
             pos2d tmpp;
             tmpp.x=plyer[i].x*2;
@@ -2758,7 +2758,7 @@ void CQuoridor::computer_AI()
 void CQuoridor::drawNetworkOp()
 {
     char tmpstr[128]="";
-    if (m_OpenGL->Xmouse<m_OpenGL->RCwidth/2 || n_netWorkStatus==1)
+    if ((2!=n_netWorkStatus && m_OpenGL->Xmouse<m_OpenGL->RCwidth/2) || 1==n_netWorkStatus)
     {
         // 左边服务器一侧的底图
         tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.6f);
@@ -2770,7 +2770,7 @@ void CQuoridor::drawNetworkOp()
         sprintf(tmpstr,"监听端口: %u", n_port);
         myfont.Print2D(m_OpenGL->RCwidth/8,(int)(m_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
     }
-    else if(m_OpenGL->Xmouse>m_OpenGL->RCwidth/2 || n_netWorkStatus==2)
+    else
     {
         // 左边服务器一侧的底图
         tRectangle(0,0,-0.5f,m_OpenGL->RCwidth/2.0f,(float)m_OpenGL->RCheight,0.8f,0,0,0.4f);
