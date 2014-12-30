@@ -265,6 +265,7 @@ void CQuoridor::showMain()
         drawChessBorad();
         drawInConfig();
         break;
+    case GAME_NETWORK:
     case GAME_SINGE:
         drawAccessory();
         drawChessBorad();
@@ -281,8 +282,8 @@ void CQuoridor::showMain()
     case GAME_NET_CONFIG:
         drawNetworkOp();
         break;
-    case GAME_NETWORK:
-        break;
+    //case GAME_NETWORK:
+    //    break;
     case GAME_SENDBOX:
         drawAccessory();
         drawChessBorad();
@@ -629,7 +630,7 @@ void CQuoridor::lbuttonproc(int lparam)
                 MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
             }
             // 开始服务器
-            if(!n_TCPnet->StartServer())
+            if(!n_TCPnet->StartServer(NULL,OnReceiveNetData,NULL))
             {
                 delete n_TCPnet;
                 int err=n_TCPnet->GetError();
@@ -639,6 +640,10 @@ void CQuoridor::lbuttonproc(int lparam)
             n_netWorkStatus=1;
             break;
         case BUTTON_CLIENT:
+            // 这里创建网络对象
+            n_TCPnet = new CTCPSocket(TCP_SOCKET_CLIENT);
+            n_TCPnet->Connect(n_IP,n_port);
+            n_TCPnet->StartReceiving(NULL,OnReceiveNetData,NULL);
             n_netWorkStatus=2;
             break;
         case BUTTON_SERVER_TEST:
@@ -646,6 +651,11 @@ void CQuoridor::lbuttonproc(int lparam)
         case BUTTON_CLIENT_TEST:
             break;
         case BUTTON_SERVER_START:
+            for (int i=0; i<n_TCPnet->m_nConnections;i++)
+            {
+                n_TCPnet->SendServer(i,"START",6);
+            }
+            iGameState=GAME_NETWORK;
             break;
         }
         break;
@@ -2834,6 +2844,12 @@ void CQuoridor::drawNetworkOp()
         myfont.Print2D((m_OpenGL->RCwidth-menu_w)/2+10,menu.y+5,tmpstr,FONT4,1,1,1);
         tPicButton((float)(m_OpenGL->RCwidth-menu_w)/2,(float)menu.y,
             (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_START)?0:0.5f);
+        // 显示当前链接的IP列表
+        for (int i=0; i<4; i++)
+        {
+            sprintf(tmpstr,"[%1d] %s",i,strlen(n_TCPnet->m_cIp[i])==0?"------[空]------":n_TCPnet->m_cIp[i]);
+            myfont.Print2D(m_OpenGL->RCwidth/8,m_OpenGL->RCheight*3/8-28*i,tmpstr,FONT4,1,1,1);
+        }
         break;
     case 2:
         sprintf(tmpstr,"连接主机");
@@ -2851,4 +2867,15 @@ void CQuoridor::drawNetworkOp()
     sprintf(tmpstr,"按ESC返回");
     myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
     tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,(iButton==BUTTON_RETURN)?0:0.5f);
+}
+
+void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
+{
+    if (pThis->iGameState==GAME_NET_CONFIG && pThis->n_netWorkStatus==2)
+    {
+        if (strcmp(data,"CSTART")==0)
+        {
+            pThis->iGameState=GAME_NETWORK;
+        }
+    }
 }

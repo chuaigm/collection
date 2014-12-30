@@ -172,6 +172,9 @@ public:
     // 电脑控制行动函数
     void computer_AI();
 
+    // 接收网络消息
+    static void OnReceiveNetData(char* data, int length, DWORD userdata);
+
     // 随机数产生函数
     int random(double start, double end)
     {
@@ -179,6 +182,8 @@ public:
     };
 
     ////////////////////////////////////////////////////////////
+    // 定义一个自身的静态指针
+    static CQuoridor* pThis;
     //data
     int iGameState;     // 当前游戏状态
     int iMenu;          // 当前选择的菜单项
