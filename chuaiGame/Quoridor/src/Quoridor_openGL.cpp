@@ -618,6 +618,7 @@ void CQuoridor::lbuttonproc(int lparam)
         switch (iButton)
         {
         case BUTTON_SERVER:
+            // 这里创建网络对象
             n_TCPnet = new CTCPSocket(TCP_SOCKET_SERVER);
             // 创建服务
             if(!n_TCPnet->CreateServer(n_port))
@@ -1919,13 +1920,20 @@ ACTION_RULE_EXIT:
 // 此函数的出口是，preselect_pos玩家可走位置的向量
 void CQuoridor::playerMovablePos( pos2d selected )
 {
-    // 玩家可走的位置，有个规则值得商榷，官方规则，对于边缘情况没有说明
-    // 这里认为在边缘时不认为是墙，也就是不可跳
+    // 玩家可走的位置，有个规则值得商榷，官方规则，对于棋盘边缘是否可跳的情况没有说明
+    // 下面的代码中，有一个地方的注释写明，两种判断的区别
     pos2d tmppos;
     // 清空vector
     preselect_pos.swap(std::vector<pos2d>());
-    // 判断玩家可走的可能位置
+    // 优先判断上下左右四个方向是否可走，包括可跳的情况
+    // 如果直接的四个方向可走，那么斜向四角可以直接不判断
+    // 为true时，需要进行判断，四个方向时，找到了就置为false
+    //bool left = true;
+    //bool right = true;
+    //bool up = true;
+    //bool bottom = true;
 
+    // 分情况判断玩家可走的可能位置
     // OOOOO
     // O@0OO
     // OOOOO
@@ -2081,9 +2089,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二列,左上角可跳的情况(单独讨论)
     else if ( selected.x == 2 && selected.y < 14 
         && gameData[0][selected.y+2]==GD_BLANK )
-    {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[0][selected.y]!=GD_BLANK ) || 
-            (gameData[2][selected.y+2]!=GD_BLANK && gameData[2][selected.y+3]==GD_WALL ) )
+    {   // 如果边界可跳，则把第一个条件打开 (option)
+        if ( (gameData[1][selected.y]==GD_BLANK && gameData[0][selected.y]!=GD_BLANK ) || 
+            (gameData[2][selected.y+1]==GD_BLANK 
+            && gameData[2][selected.y+2]!=GD_BLANK 
+            && gameData[2][selected.y+3]==GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y+2;
@@ -2096,9 +2106,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二行,左上角可跳的情况(单独讨论)
     else if ( selected.x > 2 && selected.y == 14 
         && gameData[selected.x-2][16]==GD_BLANK )
-    {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[selected.x][16]!=GD_BLANK ) || 
-            (gameData[selected.x-2][14]!=GD_BLANK && gameData[selected.x-3][14]==GD_WALL ) )
+    {   // 如果边界可跳，则把第一个条件打开 (option)
+        if ( (gameData[selected.x][15]==GD_BLANK && gameData[selected.x][16]!=GD_BLANK ) || 
+            (gameData[selected.x-1][14]==GD_BLANK 
+            && gameData[selected.x-2][14]!=GD_BLANK 
+            && gameData[selected.x-3][14]==GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y+2;
@@ -2146,8 +2158,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右上角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y < 14 && gameData[16][selected.y+2]==GD_BLANK )
     {
-    	if ( (gameData[16][selected.y]!=GD_BLANK ) || 
-            (gameData[14][selected.y+2]!=GD_BLANK && gameData[14][selected.y+3]==GD_WALL ) )
+    	if ( (gameData[15][selected.y]==GD_BLANK && gameData[16][selected.y]!=GD_BLANK ) || 
+            (gameData[14][selected.y+1]==GD_BLANK 
+            && gameData[14][selected.y+2]!=GD_BLANK 
+            && gameData[14][selected.y+3]==GD_WALL ) )
     	{
     		tmppos.x=selected.x+2;
     		tmppos.y=selected.y+2;
@@ -2160,8 +2174,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二行,右上角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 14 && gameData[selected.x+2][16]==GD_BLANK )
     {
-        if ( (gameData[selected.x][16]!=GD_BLANK ) || 
-            (gameData[selected.x+2][14]!=GD_BLANK && gameData[selected.x+3][14]==GD_WALL ) )
+        if ( (gameData[selected.x][15]==GD_BLANK && gameData[selected.x][16]!=GD_BLANK ) || 
+            (gameData[selected.x+1][14]==GD_BLANK 
+            && gameData[selected.x+2][14]!=GD_BLANK 
+            && gameData[selected.x+3][14]==GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y+2;
@@ -2210,8 +2226,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二列,右上角可跳的情况(单独讨论)
     else if ( selected.x == 2 && selected.y > 2 && gameData[0][selected.y-2]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[0][selected.y]!=GD_BLANK ) || 
-            (gameData[2][selected.y-2]!=GD_BLANK && gameData[2][selected.y-3]==GD_WALL ) )
+        if ( (gameData[1][selected.y]==GD_BLANK && gameData[0][selected.y]!=GD_BLANK ) || 
+            (gameData[2][selected.y-1]==GD_BLANK 
+            && gameData[2][selected.y-2]!=GD_BLANK 
+            && gameData[2][selected.y-3]==GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y-2;
@@ -2225,8 +2243,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x > 2 && selected.y == 2 
         && gameData[selected.x-2][0]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[selected.x][0]!=GD_BLANK ) || 
-            (gameData[selected.x-2][2]!=GD_BLANK && gameData[selected.x-3][2]==GD_WALL ) )
+        if ( (gameData[selected.x][1]==GD_BLANK && gameData[selected.x][0]!=GD_BLANK ) || 
+            (gameData[selected.x-1][2]==GD_BLANK 
+            && gameData[selected.x-2][2]!=GD_BLANK 
+            && gameData[selected.x-3][2]==GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y-2;
@@ -2270,8 +2290,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右下角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y >2 && gameData[16][selected.y-2]==GD_BLANK )
     {
-        if ( (gameData[16][selected.y]!=GD_BLANK ) || 
-            (gameData[14][selected.y-2]!=GD_BLANK && gameData[14][selected.y-3]==GD_WALL ) )
+        if ( (gameData[15][selected.y]==GD_BLANK && gameData[16][selected.y]!=GD_BLANK ) || 
+            (gameData[14][selected.y-1]==GD_BLANK 
+            && gameData[14][selected.y-2]!=GD_BLANK 
+            && gameData[14][selected.y-3]==GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y-2;
@@ -2284,8 +2306,10 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于下数第二行,右下角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 2 && gameData[selected.x+2][0]==GD_BLANK )
     {
-        if ( (gameData[selected.x][0]!=GD_BLANK ) || 
-            (gameData[selected.x+2][2]!=GD_BLANK && gameData[selected.x+3][2]==GD_WALL ) )
+        if ( (gameData[selected.x][1]==GD_BLANK && gameData[selected.x][0]!=GD_BLANK ) || 
+            (gameData[selected.x+1][2]!=GD_BLANK 
+            && gameData[selected.x+2][2]!=GD_BLANK 
+            && gameData[selected.x+3][2]==GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y-2;

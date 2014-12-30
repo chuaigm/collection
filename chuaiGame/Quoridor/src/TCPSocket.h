@@ -70,7 +70,7 @@ public:
     // 客户端相关函数
     BOOL Connect(LPCSTR pstrHost, int nPort); //连接一个IP
     BOOL StartReceiving(LPStatusProc proc1=NULL,LPDataArriveProc proc2=NULL,DWORD userdata=NULL); //开始自动接收
-    BOOL StopReceiving(); //停止自动接收	
+    BOOL StopReceiving(); //停止自动接收
     int ReceiveClient(char* data, int length,int timeout); //接收指定字节的数据
     int SendClient(char* data, int length); //发送指定字节的数据
     BOOL m_bConnected[MAX_CONNECTION]; //服务器判断每个能够使用的连接的状态
@@ -81,7 +81,7 @@ public:
     char* GetLocalIP();
     char local_ip[16];
 
-protected:
+//protected:
 
     //变量
     int m_nType; //类型
@@ -110,9 +110,7 @@ protected:
     BOOL NewConnect(int nNo);
     static DWORD WINAPI ServerThread(LPVOID lpParmameter); //服务器监听线程
     static DWORD WINAPI DataThread(LPVOID lpParameter); //数据收发线程
-
     static DWORD WINAPI ClientThread(LPVOID lpParameter); //客户端接收线程
-
     static DWORD WINAPI TimeOutControl(LPVOID lpParameter); //超时控制线程
 
 };
