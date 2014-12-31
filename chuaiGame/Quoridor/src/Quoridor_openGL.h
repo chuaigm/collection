@@ -12,7 +12,7 @@
 #include <deque>
 #include <algorithm>
 #include "TCPSocket.h"
-// Game state
+// 游戏的状态
 enum {
     GAME_PRE,
     GAME_MENU,
@@ -27,11 +27,11 @@ enum {
 // 菜单数量
 #define MENU_NUM 5
 #define INVALID_VAL -1
-// Game Menu state
+// 游戏菜单与按钮的状态
 // 这里的顺序请注意与绘制菜单时的对应关系
 // 所以新加入的枚举值，加在后面，不要影响前面给主菜单的赋值部分
 enum {
-    MENU_QUIT,
+    MENU_QUIT=0,
     MENU_HELP,
     MENU_SENDBOX,
     MENU_NETWORK,
@@ -54,12 +54,13 @@ enum {
     GD_BLUE,
     GD_WALL
 };
-//// 定义玩家状态
-//enum {
-//	HUMAN,
-//	COMPUTER,
-//	CLOSE
-//};
+// 定义玩家状态
+enum {
+	ID_HUMAN=0,
+	ID_COMPUTER,
+	ID_CLOSED,
+    ID_NET_PLAYER
+};
 
 struct pos2d{
     int x;
@@ -77,8 +78,8 @@ class player {
 public:
     player():id(0),color(0),x(0),y(0),wall_num_left(0),next(NULL){};
     ~player(){};
-    // 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭
-    // (不用枚举是因为赋值时是严格的0,1,2，担心枚举乱入其他值)
+    // 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭，3:网络玩家
+    // (由于在单人模式时，此值是由for循环判断鼠标位置实现的，所以，对应关系必须严格)
     int id;
     // 此玩家的颜色，复用GD_枚举数值
     int color;
@@ -172,7 +173,7 @@ public:
     // 电脑控制行动函数
     void computer_AI();
 
-    // 接收网络消息
+    // 接收网络消息的回调函数
     static void OnReceiveNetData(char* data, int length, DWORD userdata);
 
     // 随机数产生函数
@@ -263,11 +264,12 @@ public:
     //------------------------------------
     // 网络相关
     CTCPSocket *n_TCPnet;       // tcp网络连接
-    unsigned int n_port;        // 通讯端口
+    DWORD n_port;               // 通讯端口
     char n_IP[16];              // 配置文件中的IP
     char n_loaclIP[16];         // 本机IP
     char n_Name[16];            // 配置文件中写明的用户名
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
+    char n_NameAll[4][16];      // 目前所有连接的玩家名
 };
 
 #endif

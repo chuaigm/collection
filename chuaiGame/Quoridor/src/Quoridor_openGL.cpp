@@ -64,22 +64,22 @@ CQuoridor::CQuoridor()
     arr.y=-1;
     // 玩家信息数据
     // 黄
-    plyer[0].id=2;
+    plyer[0].id=ID_CLOSED;
     plyer[0].color=GD_YELLOW;
     plyer[0].x=0;
     plyer[0].y=4;
     // 红
-    plyer[1].id=1;
+    plyer[1].id=ID_COMPUTER;
     plyer[1].color=GD_RED;
     plyer[1].x=4;
     plyer[1].y=8;
     // 绿
-    plyer[2].id=2;
+    plyer[2].id=ID_CLOSED;
     plyer[2].color=GD_GREEN;
     plyer[2].x=8;
     plyer[2].y=4;
     // 蓝
-    plyer[3].id=0;
+    plyer[3].id=ID_HUMAN;
     plyer[3].color=GD_BLUE;
     plyer[3].x=4;
     plyer[3].y=0;
@@ -110,6 +110,7 @@ CQuoridor::CQuoridor()
     memset(n_loaclIP,0,sizeof(n_loaclIP));
     memset(n_Name,0,sizeof(n_Name));
     n_netWorkStatus=0;
+    memset(n_NameAll,0,sizeof(n_NameAll));
 }
 
 CQuoridor::~CQuoridor()
@@ -349,7 +350,7 @@ void CQuoridor::check()
         }
         break;
     case GAME_SINGE:
-        if (ply_head->id==1)
+        if (ply_head->id==ID_COMPUTER)
         {
             computer_AI();
         }
@@ -538,7 +539,7 @@ void CQuoridor::lbuttonproc(int lparam)
             // 这里也可以考虑清一下每个玩家的next指针
             for (int i=0; i<4; i++)
             {	// 如果当前的玩家状态是参与游戏的(可能是人控制，也可能是电脑)
-                if (plyer[i].id!=2)
+                if (plyer[i].id!=ID_CLOSED)
                 {
                     if (ply_head==NULL)
                     {
@@ -570,7 +571,7 @@ void CQuoridor::lbuttonproc(int lparam)
             // 循环给剩余墙数赋值
             do
             {   // 统计人类玩家数
-                if (tmp_head->id==0)
+                if (tmp_head->id==ID_HUMAN)
                 {
                     human_n++;
                 }
@@ -610,7 +611,7 @@ void CQuoridor::lbuttonproc(int lparam)
         break;
     case GAME_SINGE:
         // 如果是玩家可控的角色
-        if (ply_head->id==0)
+        if (ply_head->id==ID_HUMAN)
         {
             playerActionRule();
         }
@@ -624,34 +625,55 @@ void CQuoridor::lbuttonproc(int lparam)
             // 创建服务
             if(!n_TCPnet->CreateServer(n_port))
             {
-                delete n_TCPnet;
                 int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"错误号: %d",err);
+                sprintf(tmpstr,"无法创建服务器，错误号: %d",err);
                 MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+                delete n_TCPnet;
             }
             // 开始服务器
-            if(!n_TCPnet->StartServer(NULL,OnReceiveNetData,NULL))
+            else if(!n_TCPnet->StartServer(NULL,OnReceiveNetData,NULL))
             {
-                delete n_TCPnet;
                 int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"错误号: %d",err);
+                sprintf(tmpstr,"无法开启服务器，错误号: %d",err);
                 MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+                delete n_TCPnet;
             }
-            n_netWorkStatus=1;
+            else 
+            {
+                // 服务成功开启
+                strncpy(n_NameAll[0],n_Name,8);
+                n_netWorkStatus=1;
+            }
             break;
         case BUTTON_CLIENT:
             // 这里创建网络对象
             n_TCPnet = new CTCPSocket(TCP_SOCKET_CLIENT);
-            n_TCPnet->Connect(n_IP,n_port);
-            n_TCPnet->StartReceiving(NULL,OnReceiveNetData,NULL);
-            n_netWorkStatus=2;
+            if(!n_TCPnet->Connect(n_IP,n_port))
+            {
+                int err=n_TCPnet->GetError();
+                sprintf(tmpstr,"无法连接到服务器，错误号: %d",err);
+                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+                delete n_TCPnet;
+            }
+            else if(!n_TCPnet->StartReceiving(NULL,OnReceiveNetData,NULL))
+            {
+                int err=n_TCPnet->GetError();
+                sprintf(tmpstr,"无法开启客户端数据接收服务，错误号: %d",err);
+                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+                delete n_TCPnet;
+            }
+            else
+            {
+                n_TCPnet->SendClient(n_Name,strlen(n_Name));
+                n_netWorkStatus=2;
+            }
             break;
         case BUTTON_SERVER_TEST:
             break;
         case BUTTON_CLIENT_TEST:
             break;
         case BUTTON_SERVER_START:
-            for (int i=0; i<n_TCPnet->m_nConnections;i++)
+            for (int i=0; i<n_TCPnet->GetConnectionNumber();i++)
             {
                 n_TCPnet->SendServer(i,"START",6);
             }
@@ -1286,12 +1308,12 @@ void CQuoridor::drawAccessory()
     
     for (int i=0; i<4; i++)
     {
-        if (plyer[i].id!=2)
+        if (plyer[i].id!=ID_CLOSED)
         {
             // 这里需要注意贴图的标号顺序
             texture_select(g_cactus[3+i]);
             tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
-            if (plyer[i].id==1)
+            if (plyer[i].id==ID_COMPUTER)
             {	// 绘制电脑的图标
                 texture_select(g_cactus[8]);
                 tPicRectangle((roadw+wall_w),(3-i+1/2.0f)*player_info_h,roadw*0.6f,roadw*0.6f,layer+0.1f);
@@ -1369,7 +1391,7 @@ void CQuoridor::drawPlayerWall()
     // 对应颜色的玩家，黄，红，绿，蓝
     for (int i=0; i<4; i++)
     {
-        if (plyer[i].id!=2)
+        if (plyer[i].id!=ID_CLOSED)
         {
             texture_select(g_cactus[3+i]);
             if (plyer[i].x>-1 && plyer[i].y>-1)
@@ -1572,17 +1594,17 @@ void CQuoridor::resetGameData()
     plyer[3].next=NULL;
     if (iGameState==GAME_SENDBOX)
     {
-        plyer[0].id=0;
-        plyer[1].id=0;
-        plyer[2].id=0;
-        plyer[3].id=0;
+        plyer[0].id=ID_HUMAN;
+        plyer[1].id=ID_HUMAN;
+        plyer[2].id=ID_HUMAN;
+        plyer[3].id=ID_HUMAN;
     }
     else if (iGameState==GAME_IN_CONFIG)
     {
-        plyer[0].id=2;
-        plyer[1].id=1;
-        plyer[2].id=2;
-        plyer[3].id=0;
+        plyer[0].id=ID_CLOSED;
+        plyer[1].id=ID_COMPUTER;
+        plyer[2].id=ID_CLOSED;
+        plyer[3].id=ID_HUMAN;
     }
     // 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
     gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
@@ -1651,7 +1673,7 @@ void CQuoridor::drawInConfig()
     glEnable(GL_TEXTURE_2D);
     glPopMatrix();
     glPopAttrib();
-
+    // 此处注意与枚举值的对应关系顺序
     char *cfgstr[]={" 玩  家 "," 电  脑 "," 关  闭 "};
     // 按钮贴图
     texture_select(g_cactus[9]);
@@ -2536,7 +2558,7 @@ bool CQuoridor::judgeWallLegal()
         // 证明可以找到出口的跳转标志置为false
         jump_flag=false;
         // 只要不是关闭的玩家
-        if (plyer[i].id!=2)
+        if (plyer[i].id!=ID_CLOSED)
         {   // 先将当前玩家的位置传入，注意，玩家坐标是0~8的范围，转换为0~16的范围
             // 因为，选点算法返回的是0~16的范围
             pos2d tmpp;
@@ -2646,7 +2668,7 @@ void CQuoridor::drawVictory()
 
 void CQuoridor::computer_AI()
 {	// 只有当前玩家是电脑才做处理
-    if (ply_head->id==1)
+    if (ply_head->id==ID_COMPUTER)
     {
         //Sleep(800);
         //if (random(0,2.0)==0)
@@ -2845,10 +2867,14 @@ void CQuoridor::drawNetworkOp()
         tPicButton((float)(m_OpenGL->RCwidth-menu_w)/2,(float)menu.y,
             (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_START)?0:0.5f);
         // 显示当前链接的IP列表
-        for (int i=0; i<4; i++)
+        // 先固定显示主机IP
+        sprintf(tmpstr,"[1] %8s (%16s)",n_NameAll[0], n_loaclIP);
+        myfont.Print2D(m_OpenGL->RCwidth/12,m_OpenGL->RCheight*3/8,tmpstr,FONT4,1,1,1);
+        // 再显示已连接的客户端IP列表
+        for (int i=0; i<3; i++)
         {
-            sprintf(tmpstr,"[%1d] %s",i,strlen(n_TCPnet->m_cIp[i])==0?"------[空]------":n_TCPnet->m_cIp[i]);
-            myfont.Print2D(m_OpenGL->RCwidth/8,m_OpenGL->RCheight*3/8-28*i,tmpstr,FONT4,1,1,1);
+            sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],strlen(n_TCPnet->GetClientIP(i))==0?"------[空]------":n_TCPnet->GetClientIP(i));
+            myfont.Print2D(m_OpenGL->RCwidth/12,m_OpenGL->RCheight*3/8-28*(i+1),tmpstr,FONT4,1,1,1);
         }
         break;
     case 2:
@@ -2871,11 +2897,34 @@ void CQuoridor::drawNetworkOp()
 
 void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
-    if (pThis->iGameState==GAME_NET_CONFIG && pThis->n_netWorkStatus==2)
+    if (pThis->iGameState==GAME_NET_CONFIG)
     {
-        if (strcmp(data,"CSTART")==0)
-        {
-            pThis->iGameState=GAME_NETWORK;
+        if (pThis->n_netWorkStatus==1)
+        {   // 服务器接收数据格式：
+            // 00000000001111111111222222
+            // 01234567890123456789012345
+            // S127.  0.  0.  1_  2_unamed
+            // S[     IP       ][cn][ data ]
+            char recMsg[128]={0};
+            memcpy(recMsg,data+17,3);
+            size_t clientID=atoi(recMsg);
+            if (clientID<=3)
+            {
+                memcpy(recMsg,data+21,length-21);
+                strncpy(pThis->n_NameAll[clientID+1],recMsg,8);
+                pThis->n_NameAll[clientID+1][8]='\0';
+            }
+        }
+        else if (pThis->n_netWorkStatus==2)
+        {   // 客户端接收数据格式：
+            // 00000000001111111111222222
+            // 01234567890123456789012345
+            // CXXXXXXXXX
+            // C[ data ]
+            if (strcmp(data,"CSTART")==0)
+            {
+                pThis->iGameState=GAME_NETWORK;
+            }
         }
     }
 }

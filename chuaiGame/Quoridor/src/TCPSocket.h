@@ -19,8 +19,8 @@
 #define SD_RECEIVE 0x00
 #define SD_SEND 0x01
 #define SD_BOTH 0x02
-
-#define MAX_CONNECTION 32
+// 这里修改最大连接数
+#define MAX_CONNECTION 3
 
 enum TCP_SOCKET_TYPE
 {
@@ -51,12 +51,17 @@ public:
 
     //变量
     int error; //错误类型
+    // 记录本机的IP
+    char local_ip[16];
 
     //函数
-    int GetError(); //取得错误
-    SOCKET GetSocket(); //取得套接字
-    int GetType(); //取得类型
-    BOOL IsConnected(SOCKET s); //判断一个socket是否连接
+    // 获取本机的IP
+    char* GetLocalIP();
+    const int GetError(){return error;};            // 取得错误
+    SOCKET GetSocket(){return m_sSocket;};    // 取得套接字
+    int GetType(){return m_nType;};           // 取得类型
+    BOOL IsConnected(SOCKET s);               // 判断一个socket是否连接
+
     //---------------------------
     // 服务器相关函数
     BOOL CreateServer(int nPort,int backlog=5); //建立服务器
@@ -66,6 +71,8 @@ public:
     int ReceiveServer(int nNo,char* data, int length,int timeout); //接收指定字节的数据
     int SendServer(int nNo,char* data, int length); //发送指定字节的数据
     void Disconnect(int nNo);
+    int GetConnectionNumber(){return m_nConnections;};    // 获取连接数
+    const char* GetClientIP(size_t i){return m_cIp[i];};   // 获取客户端IP列表
     //---------------------------
     // 客户端相关函数
     BOOL Connect(LPCSTR pstrHost, int nPort); //连接一个IP
@@ -77,11 +84,7 @@ public:
     BOOL m_bconnect;               //客户端判断连接的状态
     void Close(); //关闭
 
-    // 获取本机的IP
-    char* GetLocalIP();
-    char local_ip[16];
-
-//protected:
+protected:
 
     //变量
     int m_nType; //类型

@@ -46,6 +46,7 @@ CTCPSocket::CTCPSocket(int nType)
     m_bconnect=FALSE;
 
     memset(local_ip,0,sizeof(local_ip));
+    GetLocalIP();
 }
 
 CTCPSocket::~CTCPSocket()
@@ -53,20 +54,20 @@ CTCPSocket::~CTCPSocket()
     Close();
 }
 
-int CTCPSocket::GetError()
-{
-    return error;
-}
-
-SOCKET CTCPSocket::GetSocket()
-{
-    return m_sSocket;
-}
-
-int CTCPSocket::GetType()
-{
-    return m_nType;
-}
+//int CTCPSocket::GetError()
+//{
+//    return error;
+//}
+//
+//SOCKET CTCPSocket::GetSocket()
+//{
+//    return m_sSocket;
+//}
+//
+//int CTCPSocket::GetType()
+//{
+//    return m_nType;
+//}
 
 BOOL CTCPSocket::IsConnected(SOCKET s)
 {
