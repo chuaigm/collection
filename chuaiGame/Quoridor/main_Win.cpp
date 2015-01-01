@@ -21,9 +21,9 @@ COpenGLbase * m_OpenGL;
 // OpenGL字体对象(全局)
 CGLFont myfont;
 // 设备描述句柄
-HDC		hDC;
+HDC     hDC;
 // 窗口对象
-HWND	hWnd=NULL;
+HWND    hWnd=NULL;
 //窗口宽高
 int WinWidth = WIN_WIDTH;
 int WinHeight= WIN_HEIGHT;

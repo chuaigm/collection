@@ -308,7 +308,7 @@ void CQuoridor::check()
     int x,y;
     int it;
     float remain;
-    //检测菜单选择
+    // 检测鼠标当前移动的位置
     x=m_OpenGL->Xmouse;
     y=m_OpenGL->Ymouse;
     iMenu=-1;//初始化 没有选择
@@ -350,12 +350,16 @@ void CQuoridor::check()
         }
         break;
     case GAME_SINGE:
+    case GAME_NETWORK:
         if (ply_head->id==ID_COMPUTER)
         {
             computer_AI();
+            break;
         }
-    case GAME_IN_CONFIG:
-    case GAME_NETWORK:
+        else if (ply_head->id==ID_NET_PLAYER)
+        {
+            break;
+        }
     case GAME_SENDBOX:
         // 实时检查鼠标位置
         // 检查时，如果鼠标位于棋盘边界外
@@ -381,8 +385,10 @@ void CQuoridor::check()
                 arr.y = it*2;
             }
         }
+        // 这里不进行break，继承返回菜单按钮
+    case GAME_IN_CONFIG:
         // 这里检测返回菜单按钮和重置棋盘按钮
-        else if (x>menu.x&&x<menu.x+menu_w)
+        if (x>menu.x&&x<menu.x+menu_w)
         {
             if (y>menu.y&&y<menu.y+menu_h)
             {
@@ -534,7 +540,7 @@ void CQuoridor::lbuttonproc(int lparam)
         {
             // 这里，相当于单人游戏的初始化部分
             int nn=0;
-            ply_head=NULL;
+            ply_head=NULL;      //这句应该可以不要
             player* tail=NULL;
             // 这里也可以考虑清一下每个玩家的next指针
             for (int i=0; i<4; i++)
@@ -560,11 +566,13 @@ void CQuoridor::lbuttonproc(int lparam)
             // 当可用玩家数量，少于2时，无法进行游戏
             if (nn<2)
             {	// TODO 以后添加弹窗提示, 玩家人数不能少于2人
-                ply_head=NULL;
+                // 因为上面删了游戏数据，这里再补回来
+                resetGameData();
                 break;
             }
             // 构建环形链表
             tail->next=ply_head;
+            // 为了统计人类玩家数，为了给玩家剩余墙数赋值
             player* tmp_head=ply_head;
             // 人类玩家数
             int human_n=0;
@@ -616,6 +624,13 @@ void CQuoridor::lbuttonproc(int lparam)
             playerActionRule();
         }
         break;
+    case GAME_NETWORK:
+        // 如果是玩家可控的角色
+        if (ply_head->id==ID_HUMAN)
+        {
+            playerActionRule_network();
+        }
+        break;
     case GAME_NET_CONFIG:
         switch (iButton)
         {
@@ -644,6 +659,10 @@ void CQuoridor::lbuttonproc(int lparam)
                 strncpy(n_NameAll[0],n_Name,8);
                 n_netWorkStatus=1;
             }
+            // 如果是服务器，首先把玩家链表中加入自己
+            // 服务器默认蓝色玩家
+            plyer[3].id=ID_HUMAN;
+            ply_head=&plyer[3];
             break;
         case BUTTON_CLIENT:
             // 这里创建网络对象
@@ -664,7 +683,7 @@ void CQuoridor::lbuttonproc(int lparam)
             }
             else
             {
-                n_TCPnet->SendClient(n_Name,strlen(n_Name));
+                n_TCPnet->SendClient(n_Name,strlen(n_Name)+1);
                 n_netWorkStatus=2;
             }
             break;
@@ -673,15 +692,54 @@ void CQuoridor::lbuttonproc(int lparam)
         case BUTTON_CLIENT_TEST:
             break;
         case BUTTON_SERVER_START:
-            for (int i=0; i<n_TCPnet->GetConnectionNumber();i++)
-            {
-                n_TCPnet->SendServer(i,"START",6);
+            // 如果没有其他玩家连入
+            if (n_TCPnet->GetConnectionNumber()<1)
+            {   // 这里以后可以给出提示
+                break;
             }
+            player* tail=ply_head;
+            int ConNum=n_TCPnet->GetConnectionNumber();
+            for (int i=0; i<ConNum;i++)
+            {
+                switch (i)
+                {
+                case 0:// 设置为红色玩家
+                    plyer[1].id=ID_NET_PLAYER;
+                    tail->next=&plyer[1];
+                    tail=&plyer[1];
+                    break;
+                case 1:// 设置为绿色玩家
+                    plyer[2].id=ID_NET_PLAYER;
+                    tail->next=&plyer[2];
+                    tail=&plyer[2];
+                    break;
+                case 2:// 设置为黄色玩家
+                    plyer[0].id=ID_NET_PLAYER;
+                    tail->next=&plyer[0];
+                    tail=&plyer[0];
+                    break;
+                default:
+                    break;
+                }
+                sprintf(tmpstr,"READY%1dN%1d",i,ConNum);
+                n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);     // 这里注意size上要考虑\0问题
+                //n_TCPnet->SendServer(i,"START",5+1);      // 连续调用貌似有问题
+            }
+            tail->next=ply_head;        // 形成环状
+            // 为了统计人类玩家数，为了给玩家剩余墙数赋值
+            player* tmp_head=ply_head;
+            // 循环给剩余墙数赋值
+            do
+            {   // 统计人类玩家数
+                // 整形数除法,21除2，取整=10
+                //            21除3，取整=7
+                //            21除4，取整=5
+                tmp_head->wall_num_left=wall_total_num/(ConNum+1);
+                tmp_head=tmp_head->next;
+            }while (ply_head!=tmp_head);
             iGameState=GAME_NETWORK;
             break;
         }
-        break;
-    case GAME_NETWORK:
         break;
     case GAME_SENDBOX:
         freeRuleSendBox();
@@ -1323,31 +1381,6 @@ void CQuoridor::drawAccessory()
         }
     }
 
-/*
-// 注释掉旧方法
-    if (plyer[1].id!=2)
-    {
-        texture_select(g_cactus[4]);
-        tPicRectangle(0,(2+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
-        sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((2+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
-    }
-    if (plyer[2].id!=2)
-    {
-        texture_select(g_cactus[5]);
-        tPicRectangle(0,(1+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
-        sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((1+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
-    }
-    if (plyer[3].id!=2)
-    {
-        texture_select(g_cactus[6]);
-        tPicRectangle(0,(0+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
-        sprintf(tmpstr,"墙剩余: %d",plyer[0].wall_num_left);
-        myfont.Print2D(10,(int)((0+1/4.0f)*player_info_h),tmpstr,FONT4,1,1,1);
-    }
-*/
-
     // 按钮贴图
     texture_select(g_cactus[9]);
     sprintf(tmpstr,"返回菜单");
@@ -1365,6 +1398,7 @@ void CQuoridor::drawAccessory()
     {
     case GAME_IN_CONFIG:
     case GAME_SINGE:
+    case GAME_NETWORK:
     case GAME_WIN:
         sprintf(tmpstr,"确    认");
         break;
@@ -1397,38 +1431,9 @@ void CQuoridor::drawPlayerWall()
             if (plyer[i].x>-1 && plyer[i].y>-1)
             {
                 tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[i].x,lace+(roadw+wall_w)*plyer[i].y,roadw,roadw);
-                /*switch (i)
-                {
-                case 0:
-                    glColor4f(1.0f,1.0f,0.0f,0.8f);
-                case 1:
-                    glColor4f(1.0f,0.0f,0.0f,0.8f);
-                case 2:
-                    glColor4f(0.0f,1.0f,0.0f,0.8f);
-                case 3:
-                    glColor4f(0.0f,0.0f,1.0f,0.8f);
-                }*/
             }
         }
     }
-    
-/*
-    texture_select(g_cactus[4]);
-    if (plyer[1].x>-1 && plyer[1].y>-1)
-    {
-        tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[1].x,lace+(roadw+wall_w)*plyer[1].y,roadw,roadw);
-    }
-    texture_select(g_cactus[5]);
-    if (plyer[2].x>-1 && plyer[2].y>-1)
-    {
-        tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[2].x,lace+(roadw+wall_w)*plyer[2].y,roadw,roadw);
-    }
-    texture_select(g_cactus[6]);
-    if (plyer[3].x>-1 && plyer[3].y>-1)
-    {
-        tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[3].x,lace+(roadw+wall_w)*plyer[3].y,roadw,roadw);
-    }
-*/
     // 绘制墙
     for (size_t i=0; i<wall_vec.size();i+=2)
     {
@@ -1504,9 +1509,9 @@ void CQuoridor::drawPickMask()
     else if (pickup.x%2==0 && pickup.y%2==0)
     {
 #ifdef __DEBUG__
-        if (iGameState==GAME_SINGE || iGameState==GAME_SENDBOX)
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK || iGameState==GAME_SENDBOX)
 #else
-        if (iGameState==GAME_SINGE)
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
 #endif
         {
             // 这里以后换个贴图
@@ -1592,19 +1597,28 @@ void CQuoridor::resetGameData()
     plyer[3].y=0;
     plyer[3].wall_num_left=0;
     plyer[3].next=NULL;
-    if (iGameState==GAME_SENDBOX)
+    switch (iGameState)
     {
-        plyer[0].id=ID_HUMAN;
-        plyer[1].id=ID_HUMAN;
-        plyer[2].id=ID_HUMAN;
-        plyer[3].id=ID_HUMAN;
-    }
-    else if (iGameState==GAME_IN_CONFIG)
-    {
+    case GAME_IN_CONFIG:
         plyer[0].id=ID_CLOSED;
         plyer[1].id=ID_COMPUTER;
         plyer[2].id=ID_CLOSED;
         plyer[3].id=ID_HUMAN;
+        break;
+    case GAME_SENDBOX:
+        plyer[0].id=ID_HUMAN;
+        plyer[1].id=ID_HUMAN;
+        plyer[2].id=ID_HUMAN;
+        plyer[3].id=ID_HUMAN;
+        break;
+    case GAME_NET_CONFIG:
+        plyer[0].id=ID_CLOSED;
+        plyer[1].id=ID_CLOSED;
+        plyer[2].id=ID_CLOSED;
+        plyer[3].id=ID_CLOSED;
+        break;
+    default:
+        break;
     }
     // 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
     gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
@@ -1618,6 +1632,12 @@ void CQuoridor::resetGameData()
     ply_head=NULL;
     // 玩家胜利标志
     win_flag=GD_BLANK;
+    // 如果网络对象被创建，那么删除
+    if (n_TCPnet!=NULL)
+    {
+        n_netWorkStatus=0;
+        delete n_TCPnet;
+    }
 }
 
 void CQuoridor::drawInConfig()
@@ -2897,8 +2917,8 @@ void CQuoridor::drawNetworkOp()
 
 void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
-    if (pThis->iGameState==GAME_NET_CONFIG)
-    {
+    //if (pThis->iGameState==GAME_NET_CONFIG)
+    //{
         if (pThis->n_netWorkStatus==1)
         {   // 服务器接收数据格式：
             // 00000000001111111111222222
@@ -2921,10 +2941,362 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
             // 01234567890123456789012345
             // CXXXXXXXXX
             // C[ data ]
-            if (strcmp(data,"CSTART")==0)
+            //if (strcmp(data,"CSTART")==0)
+            //{
+            //    pThis->iGameState=GAME_NETWORK;
+            //}
+            if (strncmp(data,"CP",2)==0)
+            {   // CP1M46
+                char tmpC=*(data+2);
+                int color=atoi(&tmpC);      // 解析出玩家的颜色
+                tmpC=*(data+3);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
+                if ('W'==tmpC)
+                {
+                }
+                else if ('M'==tmpC)
+                {
+                    tmpC=*(data+4);
+                    int plX=atoi(&tmpC);
+                    tmpC=*(data+5);
+                    int plY=atoi(&tmpC);
+                    // 这基于颜色与玩家位置的对应关系
+                    pThis->gameData[pThis->plyer[color-1].x*2][pThis->plyer[color-1].y*2]=GD_BLANK;
+                    pThis->gameData[plX*2][plY*2]=GD_YELLOW;
+                    pThis->plyer[color-1].x=plX;
+                    pThis->plyer[color-1].y=plY;
+                    //switch (color)
+                    //{
+                    //case GD_YELLOW:
+                    //    gameData[plyer[0].x*2][plyer[0].y*2]=GD_BLANK;
+                    //    gameData[plX*2][plY*2]=GD_YELLOW;
+                    //    plyer[0].x=plX;
+                    //    plyer[0].y=plY;
+                    //    break;
+                    //case GD_RED:
+                    //    gameData[plyer[1].x*2][plyer[1].y*2]=GD_BLANK;
+                    //    gameData[plX*2][plY*2]=GD_YELLOW;
+                    //    plyer[1].x=plX;
+                    //    plyer[1].y=plY;
+                    //    break;
+                    //case GD_GREEN:
+                    //    break;
+                    //case GD_BLUE:
+                    //    break;
+                    //default:
+                    //    break;
+                    //}
+                }
+
+                pThis->ply_head=pThis->ply_head->next;
+            }
+            else if (strncmp(data,"CREADY",6)==0)
             {
+                // 三个玩家格式，例如，CREADY1N3
+                // N前面的数0,1,2表示在服务器中的客户端列表，主机不在编号内
+                char tmpC=*(data+6);
+                int clientID=atoi(&tmpC);     // 在服务器的客户端列表中的编号
+                tmpC=*(data+8);
+                int playerNum=atoi(&tmpC);    // 客户端连接数量，即参与游戏的玩家总数减一
+                pThis->plyer[3].id=ID_NET_PLAYER;
+                pThis->ply_head=&pThis->plyer[3];
+
+                player* tail=pThis->ply_head;
+                for (int i=0; i<playerNum;i++)
+                {
+                    switch (i)
+                    {
+                    case 0:// 设置为红色玩家
+                        if (0==clientID)
+                        {
+                            pThis->plyer[1].id=ID_HUMAN;
+                        } else {
+                            pThis->plyer[1].id=ID_NET_PLAYER;
+                        }
+                        tail->next=&pThis->plyer[1];
+                        tail=&pThis->plyer[1];
+                        break;
+                    case 1:// 设置为绿色玩家
+                        if (0==clientID)
+                        {
+                            pThis->plyer[2].id=ID_HUMAN;
+                        } else {
+                            pThis->plyer[2].id=ID_NET_PLAYER;
+                        }
+                        tail->next=&pThis->plyer[2];
+                        tail=&pThis->plyer[2];
+                        break;
+                    case 2:// 设置为黄色玩家
+                        if (0==clientID)
+                        {
+                            pThis->plyer[0].id=ID_HUMAN;
+                        } else {
+                            pThis->plyer[0].id=ID_NET_PLAYER;
+                        }
+                        tail->next=&pThis->plyer[0];
+                        tail=&pThis->plyer[0];
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                tail->next=pThis->ply_head;        // 形成环状
+                // 为了统计人类玩家数，为了给玩家剩余墙数赋值
+                player* tmp_head=pThis->ply_head;
+                // 循环给剩余墙数赋值
+                do
+                {   // 统计人类玩家数
+                    // 整形数除法,21除2，取整=10
+                    //            21除3，取整=7
+                    //            21除4，取整=5
+                    tmp_head->wall_num_left=wall_total_num/(playerNum+1);
+                    tmp_head=tmp_head->next;
+                }while (pThis->ply_head!=tmp_head);
+
                 pThis->iGameState=GAME_NETWORK;
             }
         }
+    //}     // for GAME_NET_CONFIG
+}
+
+void CQuoridor::playerActionRule_network()
+{
+    // 已经存在的墙的位置，是不能被选取的
+    if (gameData[arr.x][arr.y]==GD_WALL)
+    {
+        return ;
     }
+    // 如果之前没有选取任何位置
+    if ( pickup.x <0 && pickup.y <0 )
+    {
+        // 空白的玩家位，或者不能控制的玩家位
+        if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=ply_head->color)
+        {
+            return;
+        }
+        pickup.x=arr.x;
+        pickup.y=arr.y;
+        // 如果选完是当前玩家位置
+        if (gameData[pickup.x][pickup.y]==ply_head->color)
+        {
+            playerMovablePos(pickup);
+        }
+        // 这里是if else 后面有return，这里相当于return
+    }
+    // 之前有选取的位置
+    else
+    {	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
+        if (arr == pickup)
+        {
+            pickup.x = -1;
+            pickup.y = -1;
+            // 清除玩家可走待选位置(虽然不清也是可以的)
+            preselect_pos.clear();
+            return ;	// 连续点击两次相同坐标视为重选
+        }
+        // 并且鼠标再次点击时，选取的位置是在玩家棋子可以移动的位置
+        // 要走的位置在可走位置的向量中
+        //else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
+        else if (find(preselect_pos.begin(),preselect_pos.end(),arr)!=preselect_pos.end())
+        {
+            // 这种情况，进入到人物棋子处理阶段
+            char tmp=0;
+            // 交换
+            tmp=gameData[arr.x][arr.y];
+            gameData[arr.x][arr.y]=gameData[pickup.x][pickup.y];
+            gameData[pickup.x][pickup.y]=tmp;
+            // 在目标位置上，更新玩家变量
+            switch (gameData[arr.x][arr.y])
+            {
+            case GD_BLANK:
+                break;
+            case GD_YELLOW:
+                plyer[0].x=arr.x/2;
+                plyer[0].y=arr.y/2;
+                if (plyer[0].x==8)
+                {
+                    win_flag=GD_YELLOW;
+                    iGameState=GAME_WIN;
+                }
+                break;
+            case GD_RED:
+                plyer[1].x=arr.x/2;
+                plyer[1].y=arr.y/2;
+                if (plyer[1].y==0)
+                {
+                    win_flag=GD_RED;
+                    iGameState=GAME_WIN;
+                }
+                break;
+            case GD_GREEN:
+                plyer[2].x=arr.x/2;
+                plyer[2].y=arr.y/2;
+                if (plyer[2].x==0)
+                {
+                    win_flag=GD_GREEN;
+                    iGameState=GAME_WIN;
+                }
+                break;
+            case GD_BLUE:
+                plyer[3].x=arr.x/2;
+                plyer[3].y=arr.y/2;
+                if (plyer[3].y==8)
+                {
+                    win_flag=GD_BLUE;
+                    iGameState=GAME_WIN;
+                }
+                break;
+            default:
+                break;
+            }
+            // 这里，是重要的算法流转。控制玩家移动后
+            if (g_sound==1)
+            {
+                // 放置墙的音效
+                sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
+            }
+            // 控制玩家移动后，向网络发送玩家移动的包
+            if (n_netWorkStatus==1)
+            {
+                for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
+                {
+                    char tmpstr[16];
+                    sprintf(tmpstr,"P%1dM%1d%1d",ply_head->color,arr.x/2,arr.y/2);
+                    n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);
+                }
+
+            }
+            else if (n_netWorkStatus==2)
+            {
+            }
+            goto ACTION_RULE_EXIT;
+        }
+        // 能走到这里，应该是只有已经选了墙的情况，
+        // 这里单独过滤，如果又点击了当前玩家，则按选中玩家处理
+        else if (gameData[arr.x][arr.y]==ply_head->color)
+        {
+            pickup.x=arr.x;
+            pickup.y=arr.y;
+            playerMovablePos(pickup);
+        }
+        // 在选墙的过程中，跳过所有非墙的位置
+        else if ((arr.x+arr.y)%2!=1)
+        {
+            return ;
+        }
+        // 如果上次选取的位置也是墙，这次选取的也是墙，并且这次选取的位置是空
+        // 连续选取相同位置已经在最开始过滤
+        // 这里是产生实际墙位置的唯一入口，所以在这里判定玩家墙剩余数是否可用
+        else if ((pickup.x+pickup.y)%2==1 
+            && (arr.x+arr.y)%2==1 
+            && GD_BLANK == gameData[arr.x][arr.y]
+        && ply_head->wall_num_left>0)
+        {
+            // 如果是横墙,并且这次选的和上次选的在同一行上
+            if (pickup.x%2==0&&arr.y==pickup.y)
+            {	// 如果这次选的在上一次选的左边一块位置
+                // 并且两块连接的中间位置是可用的
+                if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
+                {
+                    // 压入墙绘制队列,一定先压入左边的块
+                    wall_vec.push_back(arr);
+                    wall_vec.push_back(pickup);
+                    // 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
+                    gameData[arr.x][arr.y]=GD_WALL;
+                    gameData[arr.x+1][arr.y]=GD_WALL;
+                    gameData[pickup.x][pickup.y]=GD_WALL;
+                    goto RULE_WALL_EXIT;
+                }
+                // 如果在这次选的在上一次右边一块位置
+                // 并且两块连接的中间位置是可用的
+                else if(arr.x==pickup.x+2&&gameData[arr.x-1][arr.y]==GD_BLANK)
+                {
+                    // 压入墙绘制队列,一定先压入左边的块
+                    wall_vec.push_back(pickup);
+                    wall_vec.push_back(arr);
+                    // 更新游戏算法数据
+                    gameData[arr.x][arr.y]=GD_WALL;
+                    gameData[arr.x-1][arr.y]=GD_WALL;
+                    gameData[pickup.x][pickup.y]=GD_WALL;
+                    goto RULE_WALL_EXIT;
+                }
+            }
+            // 如果是竖墙，并且这次选的和上次选的在同一列上
+            else if(pickup.y%2==0&&arr.x==pickup.x)
+            {	// 如果这次选择的在上一次选择的下面一块
+                // 并且两块连接的中间位置是可用的
+                if (arr.y==pickup.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
+                {
+                    // 压入墙绘制队列，一定先压入下面的一块
+                    wall_vec.push_back(arr);
+                    wall_vec.push_back(pickup);
+                    // 更新游戏算法数据
+                    gameData[arr.x][arr.y]=GD_WALL;
+                    gameData[arr.x][arr.y+1]=GD_WALL;
+                    gameData[pickup.x][pickup.y]=GD_WALL;
+                    goto RULE_WALL_EXIT;
+                }
+                // 如果这次选择的在上一次选择的上面一块
+                // 并且两块连接的中间位置是可用的
+                else if (arr.y==pickup.y+2&&gameData[arr.x][arr.y-1]==GD_BLANK)
+                {
+                    // 压入墙绘制队列，一定先压入下面的一块
+                    wall_vec.push_back(pickup);
+                    wall_vec.push_back(arr);
+                    // 更新游戏算法数据
+                    gameData[arr.x][arr.y]=GD_WALL;
+                    gameData[arr.x][arr.y-1]=GD_WALL;
+                    gameData[pickup.x][pickup.y]=GD_WALL;
+                    goto RULE_WALL_EXIT;
+                }
+            }
+            // 上面使用goto语句，如果能够成功放置墙，那么已经跳出去了，
+            // 这里，如果不满足一个可放墙的条件，视为重新选取
+            pickup.x=arr.x;
+            pickup.y=arr.y;
+        }
+        // 其他情况，一律视为重新选取墙
+        else if ( gameData[arr.x][arr.y]!=GD_WALL )
+        {
+            pickup.x=arr.x;
+            pickup.y=arr.y;
+            // 清除玩家可走待选位置
+            preselect_pos.clear();
+        }
+    }
+    return ;
+RULE_WALL_EXIT:
+    // 这里判断，加入的墙是否合法的判定，如果新放的一堵墙，使得任何一个玩家无解，那么此墙非法
+    // 如果不合法，那么需要还原原来的游戏数据
+    if (!judgeWallLegal())
+    {
+        // 还原游戏算法数据
+        gameData[arr.x][arr.y]=GD_BLANK;
+        gameData[(arr.x+pickup.x)/2][(arr.y+pickup.y)/2]=GD_BLANK;
+        gameData[pickup.x][pickup.y]=GD_BLANK;
+        // 弹出刚压入的墙坐标(两个点)
+        wall_vec.pop_back();
+        wall_vec.pop_back();
+        // 清空预选位置
+        pickup.x=-1;
+        pickup.y=-1;
+        // 清除玩家可走待选位置
+        preselect_pos.clear();
+        return ;
+    }
+    if (g_sound==1)
+    {
+        // 放置墙的音效
+        sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
+    }
+    // 当前玩家的可用墙数减1
+    ply_head->wall_num_left--;
+ACTION_RULE_EXIT:
+    // 当玩家选择了移动人物，那么此玩家的行动就结束了，控制权应该交由下一位玩家
+    ply_head=ply_head->next;
+    // 清空预选位置
+    pickup.x=-1;
+    pickup.y=-1;
+    // 清除玩家可走待选位置
+    preselect_pos.clear();
+    return ;
 }

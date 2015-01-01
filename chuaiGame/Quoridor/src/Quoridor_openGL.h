@@ -54,7 +54,7 @@ enum {
     GD_BLUE,
     GD_WALL
 };
-// 定义玩家状态
+// 定义玩家状态,注意，前三个顺序不能变动，为了单人游戏时，按钮的顺序
 enum {
 	ID_HUMAN=0,
 	ID_COMPUTER,
@@ -163,6 +163,7 @@ public:
     void resetGameData();
     // 鼠标左键单击时，需要的游戏规则,正常游戏的规则(放在左键单击时的响应中)
     void playerActionRule();
+    void playerActionRule_network();
     // 鼠标左键点击时，沙盒模式使用的，自由移动的规则
     void freeRuleSendBox();
     // 正常游戏时，点击玩家位置后，生成可移动的位置
