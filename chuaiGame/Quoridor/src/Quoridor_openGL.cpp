@@ -715,8 +715,9 @@ void CQuoridor::lbuttonproc(int lparam)
                     break;
                 case 2:// 设置为黄色玩家
                     plyer[0].id=ID_NET_PLAYER;
-                    tail->next=&plyer[0];
-                    tail=&plyer[0];
+                    // 当存在黄色玩家时，比较特别
+                    ply_head->next=&plyer[0];
+                    plyer[0].next=&plyer[1];
                     break;
                 default:
                     break;
@@ -2926,11 +2927,100 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
         char recMsg[128]={0};
         memcpy(recMsg,data+17,3);
         size_t clientID=atoi(recMsg);
-        if (clientID<=3)
+        memcpy(recMsg,data+21,length-21);
+        if (pThis->iGameState==GAME_NETWORK)
         {
-            memcpy(recMsg,data+21,length-21);
-            strncpy(pThis->n_NameAll[clientID+1],recMsg,8);
-            pThis->n_NameAll[clientID+1][8]='\0';
+            if (*recMsg=='P')
+            {   // CP1M46
+                char tmpC=*(recMsg+1);
+                int color=atoi(&tmpC);      // 解析出玩家的颜色
+                tmpC=*(recMsg+2);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
+                if ('W'==tmpC)
+                {
+                    char snum[3]={0};
+                    pos2d wall1,wall2,mid;
+                    memcpy(snum,recMsg+3,2);
+                    wall1.x=atoi(snum);
+                    memcpy(snum,recMsg+5,2);
+                    wall1.y=atoi(snum);
+                    memcpy(snum,recMsg+7,2);
+                    mid.x=atoi(snum);
+                    memcpy(snum,recMsg+9,2);
+                    mid.y=atoi(snum);
+                    memcpy(snum,recMsg+11,2);
+                    wall2.x=atoi(snum);
+                    memcpy(snum,recMsg+13,2);
+                    wall2.y=atoi(snum);
+                    // 压入墙绘制队列，一定先压入下面的一块
+                    pThis->wall_vec.push_back(wall1);
+                    pThis->wall_vec.push_back(wall2);
+                    // 更新游戏算法数据
+                    pThis->gameData[wall1.x][wall1.y]=GD_WALL;
+                    pThis->gameData[mid.x][mid.y]=GD_WALL;
+                    pThis->gameData[wall2.x][wall2.y]=GD_WALL;
+                    if (g_sound==1)
+                    {
+                        // 放置墙的音效
+                        sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
+                    }
+                }
+                else if ('M'==tmpC)
+                {
+                    tmpC=*(recMsg+3);
+                    int plX=atoi(&tmpC);
+                    tmpC=*(recMsg+4);
+                    int plY=atoi(&tmpC);
+                    // 这基于颜色与玩家位置的对应关系
+                    pThis->gameData[pThis->plyer[color-1].x*2][pThis->plyer[color-1].y*2]=GD_BLANK;
+                    pThis->gameData[plX*2][plY*2]=color;
+                    pThis->plyer[color-1].x=plX;
+                    pThis->plyer[color-1].y=plY;
+                    if (g_sound==1)
+                    {
+                        // 玩家棋子移动音效
+                        sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
+                    }
+                    if (*(recMsg+5)=='F')
+                    {
+                        switch (color)
+                        {
+                        case GD_YELLOW:
+                                pThis->win_flag=GD_YELLOW;
+                            break;
+                        case GD_RED:
+                                pThis->win_flag=GD_RED;
+                            break;
+                        case GD_GREEN:
+                                pThis->win_flag=GD_GREEN;
+                            break;
+                        case GD_BLUE:
+                                pThis->win_flag=GD_BLUE;
+                            break;
+                        default:
+                            break;
+                        }
+                        pThis->iGameState=GAME_WIN;
+                    }
+                }
+                // 服务器向所有客户端转发收到的内容，跳过消息来源
+                for (int i=0;i<pThis->n_TCPnet->GetConnectionNumber();i++)
+                {
+                    if (i==clientID)
+                    {
+                        continue;
+                    }
+                    pThis->n_TCPnet->SendServer(i,recMsg,strlen(recMsg)+1);
+                }
+                pThis->ply_head=pThis->ply_head->next;
+            }
+        }
+        else if (pThis->iGameState==GAME_NET_CONFIG)
+        {
+            if (clientID<=3)
+            {   // 服务器接收客户端发来的玩家名
+                strncpy(pThis->n_NameAll[clientID+1],recMsg,8);
+                pThis->n_NameAll[clientID+1][8]='\0';
+            }
         }
     }
     else if (pThis->n_netWorkStatus==2)
@@ -2950,18 +3040,32 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
             tmpC=*(data+3);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
             if ('W'==tmpC)
             {
-                //tmpC=*(data+4);
-                //int wall1X=atoi((short*)(&tmpC));
-                //tmpC=*(data+6);
-                //int wall1Y=atoi((short*)(&tmpC));
-                //tmpC=*(data+8);
-                //int wall2X=atoi(&((short*)tmpC));
-                //tmpC=*(data+10);
-                //int wall2Y=atoi(&((short*)tmpC));
-                //tmpC=*(data+12);
-                //int wall3X=atoi(&((short*)tmpC));
-                //tmpC=*(data+14);
-                //int wall3Y=atoi(&((short*)tmpC));
+                char snum[3]={0};
+                pos2d wall1,wall2,mid;
+                memcpy(snum,data+4,2);
+                wall1.x=atoi(snum);
+                memcpy(snum,data+6,2);
+                wall1.y=atoi(snum);
+                memcpy(snum,data+8,2);
+                mid.x=atoi(snum);
+                memcpy(snum,data+10,2);
+                mid.y=atoi(snum);
+                memcpy(snum,data+12,2);
+                wall2.x=atoi(snum);
+                memcpy(snum,data+14,2);
+                wall2.y=atoi(snum);
+                // 压入墙绘制队列，一定先压入下面的一块
+                pThis->wall_vec.push_back(wall1);
+                pThis->wall_vec.push_back(wall2);
+                // 更新游戏算法数据
+                pThis->gameData[wall1.x][wall1.y]=GD_WALL;
+                pThis->gameData[mid.x][mid.y]=GD_WALL;
+                pThis->gameData[wall2.x][wall2.y]=GD_WALL;
+                if (g_sound==1)
+                {
+                    // 放置墙的音效
+                    sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
+                }
             }
             else if ('M'==tmpC)
             {
@@ -2979,12 +3083,32 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     // 玩家棋子移动音效
                     sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
                 }
+                if (*(data+6)=='F')
+                {
+                    switch (color)
+                    {
+                    case GD_YELLOW:
+                        pThis->win_flag=GD_YELLOW;
+                        break;
+                    case GD_RED:
+                        pThis->win_flag=GD_RED;
+                        break;
+                    case GD_GREEN:
+                        pThis->win_flag=GD_GREEN;
+                        break;
+                    case GD_BLUE:
+                        pThis->win_flag=GD_BLUE;
+                        break;
+                    default:
+                        break;
+                    }
+                    pThis->iGameState=GAME_WIN;
+                }
             }
             pThis->ply_head=pThis->ply_head->next;
         }
-        else if (strncmp(data,"CREADY",6)==0)
-        {
-            // 三个玩家格式，例如，CREADY1N3
+        else if (strncmp(data,"CREADY",6)==0)   // 前六个字节
+        {   // 三个玩家格式，例如，CREADY1N3
             // N前面的数0,1,2表示在服务器中的客户端列表，主机不在编号内
             char tmpC=*(data+6);
             int clientID=atoi(&tmpC);     // 在服务器的客户端列表中的编号
@@ -3009,7 +3133,7 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     tail=&pThis->plyer[1];
                     break;
                 case 1:// 设置为绿色玩家
-                    if (0==clientID)
+                    if (1==clientID)
                     {
                         pThis->plyer[2].id=ID_HUMAN;
                     } else {
@@ -3019,14 +3143,15 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     tail=&pThis->plyer[2];
                     break;
                 case 2:// 设置为黄色玩家
-                    if (0==clientID)
+                    if (2==clientID)
                     {
                         pThis->plyer[0].id=ID_HUMAN;
                     } else {
                         pThis->plyer[0].id=ID_NET_PLAYER;
                     }
-                    tail->next=&pThis->plyer[0];
-                    tail=&pThis->plyer[0];
+                    // 当存在黄色玩家时，比较特别
+                    pThis->ply_head->next=&pThis->plyer[0];
+                    pThis->plyer[0].next=&pThis->plyer[1];
                     break;
                 default:
                     break;
@@ -3077,7 +3202,7 @@ void CQuoridor::playerActionRule_network()
     }
     // 之前有选取的位置
     else
-    {	// 存在已选取的位置,连续点两次相同位置，在最开始过滤
+    {   // 存在已选取的位置,连续点两次相同位置，在最开始过滤
         if (arr == pickup)
         {
             pickup.x = -1;
@@ -3149,8 +3274,15 @@ void CQuoridor::playerActionRule_network()
             }
             // 控制玩家移动后，向网络发送玩家移动的包
             // 向所有客户机发出P1M45,P后数字为玩家颜色代码，
-            // M代表玩家移动，后数字代表移动后的左边
-            sprintf(tmpstr,"P%1dM%1d%1d",ply_head->color,arr.x/2,arr.y/2);
+            // M代表玩家移动，后数字代表移动后的坐标，最后一位F代表游戏结束，当前玩家胜利
+            if (iGameState==GAME_WIN)
+            {
+                sprintf(tmpstr,"P%1dM%1d%1dF",ply_head->color,arr.x/2,arr.y/2);
+            }
+            else
+            {
+                sprintf(tmpstr,"P%1dM%1d%1d_",ply_head->color,arr.x/2,arr.y/2);
+            }
             if (n_netWorkStatus==1)     // 如果是服务器端
             {
                 for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
@@ -3198,6 +3330,9 @@ void CQuoridor::playerActionRule_network()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x+1][arr.y]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
                     goto RULE_WALL_EXIT;
                 }
                 // 如果在这次选的在上一次右边一块位置
@@ -3211,6 +3346,9 @@ void CQuoridor::playerActionRule_network()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x-1][arr.y]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
                     goto RULE_WALL_EXIT;
                 }
             }
@@ -3227,6 +3365,9 @@ void CQuoridor::playerActionRule_network()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x][arr.y+1]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
                     goto RULE_WALL_EXIT;
                 }
                 // 如果这次选择的在上一次选择的上面一块
@@ -3240,6 +3381,9 @@ void CQuoridor::playerActionRule_network()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x][arr.y-1]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
                     goto RULE_WALL_EXIT;
                 }
             }
@@ -3283,10 +3427,6 @@ RULE_WALL_EXIT:
         sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
     }
     // 放置了墙后，向网络发送放置墙位置的包
-    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
-    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置
-    // 联网游戏，不涉及悔棋或者删除墙时，这里暂时可以这么写，否则需要调整顺序(TODO)
-    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
     if (n_netWorkStatus==1)     // 如果是服务器端
     {
         for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
