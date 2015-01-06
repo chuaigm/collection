@@ -374,6 +374,14 @@
 			Name="Quoridor"
 			>
 			<File
+				RelativePath=".\src\Quoridor_ComputerAI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Quoridor_ComputerAI.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Quoridor_openGL.cpp"
 				>
 			</File>

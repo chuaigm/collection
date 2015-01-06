@@ -172,7 +172,7 @@ public:
     bool judgeWallLegal();
 
     // 电脑控制行动函数
-    void computer_AI();
+    //void computer_AI();
 
     // 接收网络消息的回调函数
     static void OnReceiveNetData(char* data, int length, DWORD userdata);

@@ -12,6 +12,7 @@
 #include "glfont.h"
 #include "OpenGLbase.h"
 #include "Quoridor_openGL.h"
+#include "Quoridor_ComputerAI.h"
 #include <stdlib.h>
 
 //font
@@ -88,10 +89,10 @@ CQuoridor::CQuoridor()
     // 棋盘数据初始化
     memset(gameData,0,sizeof(gameData));
     // 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
-    gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
-    gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
-    gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
-    gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
+    //gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
+    //gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
+    //gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
+    //gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
@@ -353,7 +354,8 @@ void CQuoridor::check()
     case GAME_NETWORK:
         if (ply_head->id==ID_COMPUTER)
         {
-            computer_AI();
+            Quoridor_ComputerAI ai;
+            ai.SimpleComputer();
             break;
         }
         else if (ply_head->id==ID_NET_PLAYER)
@@ -555,13 +557,30 @@ void CQuoridor::lbuttonproc(int lparam)
                     tail->next=&plyer[i];
                     tail=&plyer[i];
                     nn++;
+                    switch (plyer[i].color)
+                    {
+                    case GD_YELLOW:
+                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_YELLOW;
+                        break;
+                    case GD_RED:
+                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_RED;
+                        break;
+                    case GD_GREEN:
+                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_GREEN;
+                        break;
+                    case GD_BLUE:
+                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLUE;
+                        break;
+                    default:
+                        break;
+                    }
                 }
                 // 如果当前玩家的状态是关闭的，不参与游戏的
-                else
-                {	// 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
-                    // 如果不参与游戏，需要再清空这个游戏数据
-                    gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLANK;
-                }
+                //else
+                //{	// 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
+                //    // 如果不参与游戏，需要再清空这个游戏数据
+                //    gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLANK;
+                //}
             }
             // 当可用玩家数量，少于2时，无法进行游戏
             if (nn<2)
@@ -699,6 +718,7 @@ void CQuoridor::lbuttonproc(int lparam)
             }
             player* tail=ply_head;
             int ConNum=n_TCPnet->GetConnectionNumber();
+            // 由于网络游戏时，
             for (int i=0; i<ConNum;i++)
             {
                 switch (i)
@@ -1611,6 +1631,10 @@ void CQuoridor::resetGameData()
         plyer[1].id=ID_HUMAN;
         plyer[2].id=ID_HUMAN;
         plyer[3].id=ID_HUMAN;
+        gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
+        gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
+        gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
+        gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
         break;
     case GAME_NET_CONFIG:
         plyer[0].id=ID_CLOSED;
@@ -1621,11 +1645,11 @@ void CQuoridor::resetGameData()
     default:
         break;
     }
-    // 这里的顺序需要注意，这里暂时按照先x后y的顺序去做，有问题再说
-    gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
-    gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
-    gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
-    gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
+    // 老代码玩家初始位置一次全都初始化，这里暂时注释掉
+    //gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
+    //gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
+    //gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
+    //gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
@@ -2686,151 +2710,151 @@ void CQuoridor::drawVictory()
 
     // 这里可以写一个烟花函数 
 }
-
-void CQuoridor::computer_AI()
-{	// 只有当前玩家是电脑才做处理
-    if (ply_head->id==ID_COMPUTER)
-    {
-        //Sleep(800);
-        //if (random(0,2.0)==0)
-        if (random(0,1.0)==0)
-        {
-            /*
-            switch (ply_head->color)
-            {
-            case GD_YELLOW:
-                break;
-            case GD_RED:
-                break;
-            case GD_GREEN:
-                break;
-            case GD_BLUE:
-                break;
-            }
-            */
-            pos2d tmppoint;
-            tmppoint.x=ply_head->x*2;
-            tmppoint.y=ply_head->y*2;
-            playerMovablePos(tmppoint);
-            pos2d targ;
-            targ.x=-1;
-            targ.y=-1;
-            // 看看可走位置中有没有对玩家胜利有利的位置
-            for (size_t i=0; i<preselect_pos.size();i++)
-            {
-                switch (ply_head->color)
-                {
-                case GD_YELLOW:
-                    if (preselect_pos[i].x>tmppoint.x)
-                    {
-                        targ=preselect_pos[i];
-                    }
-                    break;
-                case GD_RED:
-                    if (preselect_pos[i].y<tmppoint.y)
-                    {
-                        targ=preselect_pos[i];
-                    }
-                    break;
-                case GD_GREEN:
-                    if (preselect_pos[i].x<tmppoint.x)
-                    {
-                        targ=preselect_pos[i];
-                    }
-                    break;
-                case GD_BLUE:
-                    if (preselect_pos[i].y>tmppoint.y)
-                    {
-                        targ=preselect_pos[i];
-                    }
-                    break;
-                }
-                if (targ.x>0 && targ.y>0)
-                {
-                    break;
-                }
-            }
-            if (targ.x<0 || targ.y<0)
-            {
-                // 纯选随机点
-                targ=preselect_pos[random(0,preselect_pos.size())];
-            }
-            // 这种情况，进入到人物棋子处理阶段
-            char tmp=0;
-            // 交换
-            tmp=gameData[targ.x][targ.y];
-            gameData[targ.x][targ.y]=gameData[ply_head->x*2][ply_head->y*2];
-            gameData[ply_head->x*2][ply_head->y*2]=tmp;
-
-            ply_head->x=targ.x/2;
-            ply_head->y=targ.y/2;
-
-            preselect_pos.clear();
-            // 在目标位置上，更新玩家变量
-            switch (ply_head->color)
-            {
-            case GD_YELLOW:
-                if (ply_head->x==8)
-                {
-                    win_flag=GD_YELLOW;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_RED:
-                if (ply_head->y==0)
-                {
-                    win_flag=GD_RED;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_GREEN:
-                if (ply_head->x==0)
-                {
-                    win_flag=GD_GREEN;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_BLUE:
-                if (ply_head->y==8)
-                {
-                    win_flag=GD_BLUE;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        else
-        {	// 在敌人玩家前面放墙
-            switch (ply_head->next->color)
-            {
-            case GD_YELLOW:
-                break;
-            case GD_RED:
-                break;
-            case GD_GREEN:
-                break;
-            case GD_BLUE:
-                if (ply_head->next->x>0&&ply_head->next->x<8)
-                {
-                    //int x=ply_head->next->x;
-                    //int y=ply_head->next->y;
-                    //pos2d tpwall1,tmpwall2;
-                    //tpwall1.x=x;
-                    //tpwall1.y=y+1;
-                    //tpwall2.x=x+1;
-                    //tpwall2.y=y;
-                    //wall_vec.push_back()
-                    //gameData[][]=GD_WALL;
-                }
-                break;
-            }
-        }
-        // 下一位玩家
-        ply_head=ply_head->next;
-    }   // 如果不是电脑，什么都不做
-}
+//
+//void CQuoridor::computer_AI()
+//{   // 只有当前玩家是电脑才做处理
+//    if (ply_head->id==ID_COMPUTER)
+//    {
+//        //Sleep(800);
+//        //if (random(0,2.0)==0)
+//        if (random(0,1.0)==0)
+//        {
+//            /*
+//            switch (ply_head->color)
+//            {
+//            case GD_YELLOW:
+//                break;
+//            case GD_RED:
+//                break;
+//            case GD_GREEN:
+//                break;
+//            case GD_BLUE:
+//                break;
+//            }
+//            */
+//            pos2d tmppoint;
+//            tmppoint.x=ply_head->x*2;
+//            tmppoint.y=ply_head->y*2;
+//            playerMovablePos(tmppoint);
+//            pos2d targ;
+//            targ.x=-1;
+//            targ.y=-1;
+//            // 看看可走位置中有没有对玩家胜利有利的位置
+//            for (size_t i=0; i<preselect_pos.size();i++)
+//            {
+//                switch (ply_head->color)
+//                {
+//                case GD_YELLOW:
+//                    if (preselect_pos[i].x>tmppoint.x)
+//                    {
+//                        targ=preselect_pos[i];
+//                    }
+//                    break;
+//                case GD_RED:
+//                    if (preselect_pos[i].y<tmppoint.y)
+//                    {
+//                        targ=preselect_pos[i];
+//                    }
+//                    break;
+//                case GD_GREEN:
+//                    if (preselect_pos[i].x<tmppoint.x)
+//                    {
+//                        targ=preselect_pos[i];
+//                    }
+//                    break;
+//                case GD_BLUE:
+//                    if (preselect_pos[i].y>tmppoint.y)
+//                    {
+//                        targ=preselect_pos[i];
+//                    }
+//                    break;
+//                }
+//                if (targ.x>0 && targ.y>0)
+//                {
+//                    break;
+//                }
+//            }
+//            if (targ.x<0 || targ.y<0)
+//            {
+//                // 纯选随机点
+//                targ=preselect_pos[random(0,preselect_pos.size())];
+//            }
+//            // 这种情况，进入到人物棋子处理阶段
+//            char tmp=0;
+//            // 交换
+//            tmp=gameData[targ.x][targ.y];
+//            gameData[targ.x][targ.y]=gameData[ply_head->x*2][ply_head->y*2];
+//            gameData[ply_head->x*2][ply_head->y*2]=tmp;
+//
+//            ply_head->x=targ.x/2;
+//            ply_head->y=targ.y/2;
+//
+//            preselect_pos.clear();
+//            // 在目标位置上，更新玩家变量
+//            switch (ply_head->color)
+//            {
+//            case GD_YELLOW:
+//                if (ply_head->x==8)
+//                {
+//                    win_flag=GD_YELLOW;
+//                    iGameState=GAME_WIN;
+//                }
+//                break;
+//            case GD_RED:
+//                if (ply_head->y==0)
+//                {
+//                    win_flag=GD_RED;
+//                    iGameState=GAME_WIN;
+//                }
+//                break;
+//            case GD_GREEN:
+//                if (ply_head->x==0)
+//                {
+//                    win_flag=GD_GREEN;
+//                    iGameState=GAME_WIN;
+//                }
+//                break;
+//            case GD_BLUE:
+//                if (ply_head->y==8)
+//                {
+//                    win_flag=GD_BLUE;
+//                    iGameState=GAME_WIN;
+//                }
+//                break;
+//            default:
+//                break;
+//            }
+//        }
+//        else
+//        {	// 在敌人玩家前面放墙
+//            switch (ply_head->next->color)
+//            {
+//            case GD_YELLOW:
+//                break;
+//            case GD_RED:
+//                break;
+//            case GD_GREEN:
+//                break;
+//            case GD_BLUE:
+//                if (ply_head->next->x>0&&ply_head->next->x<8)
+//                {
+//                    //int x=ply_head->next->x;
+//                    //int y=ply_head->next->y;
+//                    //pos2d tpwall1,tmpwall2;
+//                    //tpwall1.x=x;
+//                    //tpwall1.y=y+1;
+//                    //tpwall2.x=x+1;
+//                    //tpwall2.y=y;
+//                    //wall_vec.push_back()
+//                    //gameData[][]=GD_WALL;
+//                }
+//                break;
+//            }
+//        }
+//        // 下一位玩家
+//        ply_head=ply_head->next;
+//    }   // 如果不是电脑，什么都不做
+//}
 
 void CQuoridor::drawNetworkOp()
 {
