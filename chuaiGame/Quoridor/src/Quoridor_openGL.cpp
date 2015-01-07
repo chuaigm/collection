@@ -1358,7 +1358,7 @@ void CQuoridor::drawAccessory()
     glPushMatrix();
     glDisable(GL_TEXTURE_2D);
     glBegin(GL_TRIANGLES);
-
+    // 下面这段代码是绘制轮到的玩家的指示三角形的，这段代码可以精简的重写，用循环
     if (ply_head == &plyer[0])
     {
         glColor4f(1, 1, 0, alp);
@@ -1391,7 +1391,7 @@ void CQuoridor::drawAccessory()
     glEnable(GL_TEXTURE_2D);
     glPopMatrix();
     glPopAttrib();
-
+    // 绘制四块固定颜色固定位置的指示背景
     tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
     tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
     tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
@@ -1403,14 +1403,24 @@ void CQuoridor::drawAccessory()
         {
             // 这里需要注意贴图的标号顺序
             texture_select(g_cactus[3+i]);
-            tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,roadw,roadw,layer+0.1f);
+            tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,player_info_w*0.5f,player_info_w*0.5f,layer+0.1f);
             if (plyer[i].id==ID_COMPUTER)
             {	// 绘制电脑的图标
                 texture_select(g_cactus[8]);
-                tPicRectangle((roadw+wall_w),(3-i+1/2.0f)*player_info_h,roadw*0.6f,roadw*0.6f,layer+0.1f);
+                tPicRectangle((float)lace*2.5f+player_info_w*0.5f,(3-i+1/2.0f)*player_info_h,player_info_w*0.28f,player_info_w*0.28f,layer+0.1f);
             }
-            sprintf(tmpstr,"墙剩余: %u",plyer[i].wall_num_left);
-            myfont.Print2D(10,(int)((3-i+1/4.0f)*player_info_h),tmpstr,FONT3,1,1,1);
+            sprintf(tmpstr,"墙剩余:%u",plyer[i].wall_num_left);
+            myfont.Print2D(12,(int)((3-i+1/5.0f)*player_info_h),tmpstr,FONT3,1,1,1);
+            if (iGameState==GAME_NETWORK)
+            {
+                if (i==3)
+                {
+                    sprintf(tmpstr,"%8s",n_NameAll[0]);
+                    myfont.Print2D(12,(int)((3-i+1/3.0f)*player_info_h),tmpstr,FONT2,1,1,1);
+                }
+                /*sprintf(tmpstr,"%8s","XXXXXXXX");
+                myfont.Print2D(12,(int)((3-i+1/3.0f)*player_info_h),tmpstr,FONT2,1,1,1);*/
+            }
         }
     }
 
