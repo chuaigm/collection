@@ -584,7 +584,7 @@ void CQuoridor::lbuttonproc(int lparam)
             }
             // 当可用玩家数量，少于2时，无法进行游戏
             if (nn<2)
-            {	// TODO 以后添加弹窗提示, 玩家人数不能少于2人
+            {   // TODO 以后添加弹窗提示, 玩家人数不能少于2人
                 // 因为上面删了游戏数据，这里再补回来
                 resetGameData();
                 break;
@@ -717,24 +717,30 @@ void CQuoridor::lbuttonproc(int lparam)
                 break;
             }
             player* tail=ply_head;
+            // 点开始游戏，才给服务器玩家赋上棋盘数据值
+            gameData[plyer[3].x*2][plyer[3].y*2]=GD_BLUE;
             int ConNum=n_TCPnet->GetConnectionNumber();
-            // 由于网络游戏时，
+            // 由于网络游戏时，三个玩家的分配顺序，服务器必是蓝色
+            // 第二个加入游戏的玩家为红色，如果再有玩家加入是绿色，最后是黄色
             for (int i=0; i<ConNum;i++)
             {
                 switch (i)
                 {
                 case 0:// 设置为红色玩家
                     plyer[1].id=ID_NET_PLAYER;
+                    gameData[plyer[1].x*2][plyer[1].y*2]=GD_RED;
                     tail->next=&plyer[1];
                     tail=&plyer[1];
                     break;
                 case 1:// 设置为绿色玩家
                     plyer[2].id=ID_NET_PLAYER;
+                    gameData[plyer[2].x*2][plyer[2].y*2]=GD_GREEN;
                     tail->next=&plyer[2];
                     tail=&plyer[2];
                     break;
                 case 2:// 设置为黄色玩家
                     plyer[0].id=ID_NET_PLAYER;
+                    gameData[plyer[0].x*2][plyer[0].y*2]=GD_YELLOW;
                     // 当存在黄色玩家时，比较特别
                     ply_head->next=&plyer[0];
                     plyer[0].next=&plyer[1];
@@ -961,14 +967,14 @@ void CQuoridor::tPicRectangle(float x,float y,float w,float h,float deep)
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f);
         glVertex3f(0.0f, 0.0f, 0.0f);
-        
-        glTexCoord2f(1.0f, 0.0f);		
-        glVertex3f(w, 0.0f,  0.0f);		
+
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3f(w, 0.0f,  0.0f);
 
         //up
         glTexCoord2f(1.0f, 1.0f);
         glVertex3f(w, h,  0.0f);
-                
+
         glTexCoord2f(0.0f, 1.0f);
         glVertex3f(0.0f, h,  0.0f);
     glEnd();	
@@ -986,8 +992,8 @@ void CQuoridor::tPicButton(float x,float y,float w,float h,float ytex)
         glTexCoord2f(0.0f, ytex);
         glVertex3f(0.0, 0.0, 0.0f);
         
-        glTexCoord2f(1.0f, ytex);		
-        glVertex3f(w, 0.0,  0.0f);		
+        glTexCoord2f(1.0f, ytex);
+        glVertex3f(w, 0.0,  0.0f);
 
         //up
         glTexCoord2f(1.0f, ytex+0.5f);
@@ -1200,7 +1206,7 @@ void CQuoridor::showHelp()
     // 半透明背景
     tRectangle((float)board_x,0,-0.3f,(float)m_OpenGL->RCheight,(float)m_OpenGL->RCheight,1,1,1,0.3f);
 
-    char tmpstr[128]="游戏简介";
+    char tmpstr[256]="游戏简介";
     myfont.Print2D(m_OpenGL->RCwidth/2-60,m_OpenGL->RCheight-50,tmpstr,FONT5,1.0,1.0,0.0);
     sprintf(tmpstr,"游戏名称：《Quoridor》《墙棋》《步步为营》");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-80,tmpstr,FONT3,0.8f,1.0,0.0);
@@ -1225,17 +1231,23 @@ void CQuoridor::showHelp()
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-360,tmpstr,FONT2,1.0,0.8f,0.0);
     sprintf(tmpstr,"          2. 如果想跳到其他玩家身后时，有墙或者另外的玩家存在，");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-380,tmpstr,FONT2,1.0,0.8f,0.0);
-    sprintf(tmpstr,"             则可以跳到两边任意可跳的位置上(边界情况官方也未指明)");
+    sprintf(tmpstr,"             则可以跳到其他玩家两边任意可走的位置上(棋盘边界官方也未说明)");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-400,tmpstr,FONT2,1.0,0.8f,0.0);
-    sprintf(tmpstr,"          3. 在放置墙时，如果放置了一面墙，将导致场上有任何一个玩家不能");
+    sprintf(tmpstr,"          3. 在放置墙时，如果即将放置的一面墙，将导致场上有任何一个玩家");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-420,tmpstr,FONT2,1.0,0.8f,0.0);
-    sprintf(tmpstr,"             到达彼岸，则该墙无法被放置");
+    sprintf(tmpstr,"             不能到达彼岸，则该墙无法被放置");
     myfont.Print2D(board_x+lace,m_OpenGL->RCheight-440,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"          4. 2人游戏时，每人有10个墙可以使用，3人游戏7个，4人游戏5个");
+    myfont.Print2D(board_x+lace,m_OpenGL->RCheight-460,tmpstr,FONT2,1.0,0.8f,0.0);
 
     sprintf(tmpstr,"             (F4 最小化窗口，F9 显示调试信息)");
     myfont.Print2D(board_x+lace,lace+50,tmpstr,FONT2,1.0,0.8f,0.0);
 
-    sprintf(tmpstr,"版本信息：[From 2014-11-29]-[%s][%s][_MSC_VER=%d][Ver= 0.7a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
+    sprintf(tmpstr,"OpenGL信息：[厂商:%s] [渲染器:%s]",glGetString(GL_VENDOR),glGetString(GL_RENDERER));
+    myfont.Print2D(board_x+lace,lace+32,tmpstr,FONT0,1.0,1.0,0.0);
+    sprintf(tmpstr,"            [GL版本:%s][GLU版本:%s]",glGetString(GL_VERSION),gluGetString(GLU_VERSION));
+    myfont.Print2D(board_x+lace,lace+20,tmpstr,FONT0,1.0,1.0,0.0);
+    sprintf(tmpstr,"版本信息：[From 2014-11-29]-[%s][%s][_MSC_VER=%d][Ver= 0.8a]          作者：ChuaiGuoMing",__DATE__,__TIME__,_MSC_VER);
     myfont.Print2D(board_x+lace,lace,tmpstr,FONT0,1.0,1.0,0.0);
 
     //音乐控制按钮
@@ -2167,10 +2179,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x == 2 && selected.y < 14 
         && gameData[0][selected.y+2]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开 (option)
-        if ( (gameData[1][selected.y]==GD_BLANK && gameData[0][selected.y]!=GD_BLANK ) || 
-            (gameData[2][selected.y+1]==GD_BLANK 
+        if ( (gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y+1]!=GD_WALL) || 
+            (gameData[2][selected.y+1]!=GD_WALL 
             && gameData[2][selected.y+2]!=GD_BLANK 
-            && gameData[2][selected.y+3]==GD_WALL ) )
+            && gameData[2][selected.y+3]==GD_WALL 
+            && gameData[1][selected.y+2]!=GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y+2;
@@ -2184,10 +2197,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x > 2 && selected.y == 14 
         && gameData[selected.x-2][16]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开 (option)
-        if ( (gameData[selected.x][15]==GD_BLANK && gameData[selected.x][16]!=GD_BLANK ) || 
-            (gameData[selected.x-1][14]==GD_BLANK 
+        if ( (gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x-1][16]!=GD_WALL) || 
+            (gameData[selected.x-1][14]!=GD_WALL 
             && gameData[selected.x-2][14]!=GD_BLANK 
-            && gameData[selected.x-3][14]==GD_WALL ) )
+            && gameData[selected.x-3][14]==GD_WALL 
+            && gameData[selected.x-2][15]!=GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y+2;
@@ -2235,15 +2249,16 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右上角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y < 14 && gameData[16][selected.y+2]==GD_BLANK )
     {
-    	if ( (gameData[15][selected.y]==GD_BLANK && gameData[16][selected.y]!=GD_BLANK ) || 
-            (gameData[14][selected.y+1]==GD_BLANK 
+        if ( (gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y+1]!=GD_WALL) || 
+            (gameData[14][selected.y+1]!=GD_WALL 
             && gameData[14][selected.y+2]!=GD_BLANK 
-            && gameData[14][selected.y+3]==GD_WALL ) )
-    	{
-    		tmppos.x=selected.x+2;
-    		tmppos.y=selected.y+2;
-    		preselect_pos.push_back(tmppos);
-    	}
+            && gameData[14][selected.y+3]==GD_WALL 
+            && gameData[15][selected.y+2]!=GD_WALL ) )
+        {
+            tmppos.x=selected.x+2;
+            tmppos.y=selected.y+2;
+            preselect_pos.push_back(tmppos);
+        }
     }
     // OOX@O
     // OO0X|
@@ -2251,10 +2266,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二行,右上角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 14 && gameData[selected.x+2][16]==GD_BLANK )
     {
-        if ( (gameData[selected.x][15]==GD_BLANK && gameData[selected.x][16]!=GD_BLANK ) || 
-            (gameData[selected.x+1][14]==GD_BLANK 
+        if ( (gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x+1][16]!=GD_WALL ) || 
+            (gameData[selected.x+1][14]!=GD_WALL 
             && gameData[selected.x+2][14]!=GD_BLANK 
-            && gameData[selected.x+3][14]==GD_WALL ) )
+            && gameData[selected.x+3][14]==GD_WALL 
+            && gameData[selected.x+2][15]!=GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y+2;
@@ -2295,18 +2311,18 @@ void CQuoridor::playerMovablePos( pos2d selected )
             preselect_pos.push_back(tmppos);
         }
     }
-
     // OOOO
     // X0OO
     // @XOO
     // O-OO
-    // 如果玩家位于第二列,右上角可跳的情况(单独讨论)
+    // 如果玩家位于第二列,左下角可跳的情况(单独讨论)
     else if ( selected.x == 2 && selected.y > 2 && gameData[0][selected.y-2]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[1][selected.y]==GD_BLANK && gameData[0][selected.y]!=GD_BLANK ) || 
-            (gameData[2][selected.y-1]==GD_BLANK 
+        if ( (gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y-1]!=GD_WALL ) || 
+            (gameData[2][selected.y-1]!=GD_WALL 
             && gameData[2][selected.y-2]!=GD_BLANK 
-            && gameData[2][selected.y-3]==GD_WALL ) )
+            && gameData[2][selected.y-3]==GD_WALL 
+            && gameData[1][selected.y-2]!=GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y-2;
@@ -2316,20 +2332,25 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // OOOOO
     // |X0OO
     // O@XOO
-    // 如果玩家位于第二行,左上角可跳的情况(单独讨论)
+    // 如果玩家位于第二行,左下角可跳的情况(单独讨论)
     else if ( selected.x > 2 && selected.y == 2 
         && gameData[selected.x-2][0]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[selected.x][1]==GD_BLANK && gameData[selected.x][0]!=GD_BLANK ) || 
-            (gameData[selected.x-1][2]==GD_BLANK 
+        if ( (gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x-1][0]!=GD_WALL ) || 
+            (gameData[selected.x-1][2]!=GD_WALL 
             && gameData[selected.x-2][2]!=GD_BLANK 
-            && gameData[selected.x-3][2]==GD_WALL ) )
+            && gameData[selected.x-3][2]==GD_WALL 
+            && gameData[selected.x-2][1]!=GD_WALL ) )
         {
             tmppos.x=selected.x-2;
             tmppos.y=selected.y-2;
             preselect_pos.push_back(tmppos);
         }
     }
+    // OOOOO
+    // OO0X|
+    // OOX@O
+    // OO-OO
     // 对右下角可走的情况进行判断(不包含边界值)
     if ( selected.x < 14 && selected.y > 2 && gameData[selected.x+2][selected.y-2]==GD_BLANK )
     {
@@ -2367,10 +2388,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右下角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y >2 && gameData[16][selected.y-2]==GD_BLANK )
     {
-        if ( (gameData[15][selected.y]==GD_BLANK && gameData[16][selected.y]!=GD_BLANK ) || 
-            (gameData[14][selected.y-1]==GD_BLANK 
+        if ( (gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y-1]!=GD_WALL ) || 
+            (gameData[14][selected.y-1]!=GD_WALL 
             && gameData[14][selected.y-2]!=GD_BLANK 
-            && gameData[14][selected.y-3]==GD_WALL ) )
+            && gameData[14][selected.y-3]==GD_WALL 
+            && gameData[15][selected.y-2]!=GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y-2;
@@ -2383,10 +2405,11 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于下数第二行,右下角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 2 && gameData[selected.x+2][0]==GD_BLANK )
     {
-        if ( (gameData[selected.x][1]==GD_BLANK && gameData[selected.x][0]!=GD_BLANK ) || 
-            (gameData[selected.x+1][2]!=GD_BLANK 
+        if ( (gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x+1][0]!=GD_WALL ) || 
+            (gameData[selected.x+1][2]!=GD_WALL 
             && gameData[selected.x+2][2]!=GD_BLANK 
-            && gameData[selected.x+3][2]==GD_WALL ) )
+            && gameData[selected.x+3][2]==GD_WALL 
+            && gameData[selected.x+2][1]!=GD_WALL ) )
         {
             tmppos.x=selected.x+2;
             tmppos.y=selected.y-2;
@@ -2958,8 +2981,8 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
             {   // CP1M46
                 char tmpC=*(recMsg+1);
                 int color=atoi(&tmpC);      // 解析出玩家的颜色
-                tmpC=*(recMsg+2);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
-                if ('W'==tmpC)
+                tmpC=*(recMsg+2);           // 解析出玩家的行动，是移动角色(M)还是放墙(W)
+                if ('W'==tmpC)          // 服务器收到其他玩家放置墙的消息
                 {
                     char snum[3]={0};
                     pos2d wall1,wall2,mid;
@@ -2982,6 +3005,8 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     pThis->gameData[wall1.x][wall1.y]=GD_WALL;
                     pThis->gameData[mid.x][mid.y]=GD_WALL;
                     pThis->gameData[wall2.x][wall2.y]=GD_WALL;
+                    // color-1 实际上可以表示，玩家数组对应的下标
+                    pThis->plyer[color-1].wall_num_left--;
                     if (g_sound==1)
                     {
                         // 放置墙的音效
@@ -3062,7 +3087,7 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
             char tmpC=*(data+2);
             int color=atoi(&tmpC);      // 解析出玩家的颜色
             tmpC=*(data+3);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
-            if ('W'==tmpC)
+            if ('W'==tmpC)          // 客户端收到服务器发来的某玩家放墙的消息
             {
                 char snum[3]={0};
                 pos2d wall1,wall2,mid;
@@ -3085,6 +3110,8 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                 pThis->gameData[wall1.x][wall1.y]=GD_WALL;
                 pThis->gameData[mid.x][mid.y]=GD_WALL;
                 pThis->gameData[wall2.x][wall2.y]=GD_WALL;
+                // color-1 实际上可以表示，玩家数组对应的下标
+                pThis->plyer[color-1].wall_num_left--;
                 if (g_sound==1)
                 {
                     // 放置墙的音效
@@ -3153,6 +3180,7 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     } else {
                         pThis->plyer[1].id=ID_NET_PLAYER;
                     }
+                    pThis->gameData[pThis->plyer[1].x*2][pThis->plyer[1].y*2]=GD_RED;
                     tail->next=&pThis->plyer[1];
                     tail=&pThis->plyer[1];
                     break;
@@ -3163,6 +3191,7 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     } else {
                         pThis->plyer[2].id=ID_NET_PLAYER;
                     }
+                    pThis->gameData[pThis->plyer[2].x*2][pThis->plyer[2].y*2]=GD_GREEN;
                     tail->next=&pThis->plyer[2];
                     tail=&pThis->plyer[2];
                     break;
@@ -3173,6 +3202,7 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                     } else {
                         pThis->plyer[0].id=ID_NET_PLAYER;
                     }
+                    pThis->gameData[pThis->plyer[0].x*2][pThis->plyer[0].y*2]=GD_YELLOW;
                     // 当存在黄色玩家时，比较特别
                     pThis->ply_head->next=&pThis->plyer[0];
                     pThis->plyer[0].next=&pThis->plyer[1];
