@@ -35,12 +35,12 @@
 #pragma comment( lib, "winmm.lib")
 #pragma comment( lib, "opengl32.lib")
 #pragma comment( lib, "glu32.lib")
-#pragma comment( lib, "glaux.lib")	
+#pragma comment( lib, "glaux.lib")
 
-#define RAND_COORD(x)   ((float)rand()/RAND_MAX * (x))
-#define FRAND   (((float)rand()-(float)rand())/RAND_MAX)
+//#define RAND_COORD(x)   ((float)rand()/RAND_MAX * (x))
+//#define FRAND   (((float)rand()-(float)rand())/RAND_MAX)
 
-
+// 检测键盘按键，使用这个会有个问题，就是窗口脱离焦点，也会检测
 #define KEY_DOWN(vk_code)((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 
 // window size

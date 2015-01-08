@@ -56,9 +56,9 @@ enum {
 };
 // 定义玩家状态,注意，前三个顺序不能变动，为了单人游戏时，按钮的顺序
 enum {
-	ID_HUMAN=0,
-	ID_COMPUTER,
-	ID_CLOSED,
+    ID_HUMAN=0,
+    ID_COMPUTER,
+    ID_CLOSED,
     ID_NET_PLAYER
 };
 
@@ -119,20 +119,17 @@ public:
     // 键盘按键检测响应
     void keyupproc(int keyparam);
 
-    void showpreani();
+    // 开场动画绘制
+    //void showpreani();
     // 绘制主菜单
     void showmenu();
     // 显示测试数据
     void show_Font_test();
     // 鼠标处理函数
     //void mouseproc(int lparam);
-    
-    //void light0();
 
-    //加载位图
-    bool LoadT8(char *filename, GLuint &texture);
     //绑定贴图
-    void texture_select(UINT textur);			
+    void texture_select(UINT texture);
     //显示图片
     void tPic(float e);
     void tPicRectangle(float x,float y, float w, float h,float deep=-0.1f);
@@ -141,7 +138,7 @@ public:
 
     // 显示帮助信息
     void showHelp();
-
+    // 绘制独特样式的鼠标
     void drawMouse();
     // 绘制棋盘
     void drawChessBorad();
@@ -165,7 +162,7 @@ public:
     void playerActionRule();
     void playerActionRule_network();
     // 鼠标左键点击时，沙盒模式使用的，自由移动的规则
-    void freeRuleSendBox();
+    void freeSendBoxRule();
     // 正常游戏时，点击玩家位置后，生成可移动的位置
     void playerMovablePos(pos2d selected);
     // 判断新加入的墙位置是否合法
@@ -174,14 +171,8 @@ public:
     // 电脑控制行动函数
     //void computer_AI();
 
-    // 接收网络消息的回调函数
+    // 接收网络消息的回调函数 (静态)
     static void OnReceiveNetData(char* data, int length, DWORD userdata);
-
-    // 随机数产生函数
-    int random(double start, double end)
-    {
-        return (int)(start+(end-start)*rand()/(RAND_MAX + 1));
-    };
 
     ////////////////////////////////////////////////////////////
     // 定义一个自身的静态指针
@@ -192,18 +183,9 @@ public:
     int iButton;        // 按钮选择的结果
     int win_flag;       // 哪位玩家获得了胜利，0没人胜利，1，黄色....(复用GD_系列数据)
     bool g_debug_flag;  // 显示调试信息
-    
+
     //images
     unsigned int g_cactus[GAME_TEX_NUM];
-
-    //pre ani
-    //int param1;
-    
-    //鼠标位置
-    //int xmouse;
-    //int ymouse;
-    //int xmouseOld;
-    //int ymouseOld;
 
     //------------------------------------
     // 主菜单相关的计算参数

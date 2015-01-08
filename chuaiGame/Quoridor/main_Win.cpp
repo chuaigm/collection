@@ -17,7 +17,7 @@
 // 时钟
 MYCLOCK c1;
 // OpenGl对象
-COpenGLbase * m_OpenGL;
+COpenGLbase * g_OpenGL;
 // OpenGL字体对象(全局)
 CGLFont myfont;
 // 设备描述句柄
@@ -74,7 +74,7 @@ void GameLoop()
             if(c1.clockcount())
             {
                 gm.check();
-                m_OpenGL->Render();
+                g_OpenGL->Render();
             }
             else
             {
@@ -92,14 +92,14 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
             // 读取DC，从窗口句柄获取窗体描述句柄
             hDC = GetDC(hWnd);	
             // 设置像素格式，选择RC
-            m_OpenGL->SetupPixelFormat(hDC);
+            g_OpenGL->SetupPixelFormat(hDC);
             // 游戏数据初始化
             gm.init();
             return 0;
             break;
 
         case WM_CLOSE:
-            m_OpenGL->CleanUp();
+            g_OpenGL->CleanUp();
             PostQuitMessage(0);
             return 0;
             break;
@@ -111,13 +111,14 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
             if (WinHeight==0)
                 WinHeight=100;
             // 设置视口和映射方式
-            m_OpenGL->SetViewSize(WinWidth,WinHeight);
+            g_OpenGL->SetViewSize(WinWidth,WinHeight);
             gm.initView();
             return 0;
             break;
 
         case WM_DESTROY:
-            delete m_OpenGL;
+            delete g_OpenGL;
+            g_OpenGL=NULL;
             PostQuitMessage(0);
             return 0;
             break;
@@ -143,7 +144,7 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
 
         case WM_MOUSEMOVE:
             //gm.mouseproc(lParam);
-            m_OpenGL->mouseProc(lParam);
+            g_OpenGL->mouseProc(lParam);
             break;
         
         case WM_LBUTTONUP:
@@ -216,15 +217,15 @@ int APIENTRY WinMain(HINSTANCE hInst,
     char cc[]="Quoridor";
     // 窗体类
     WNDCLASSEX wc = { sizeof(WNDCLASSEX), 
-        CS_CLASSDC,								// 窗体类的风格，可以用or操作符连接
-        MsgProc,								// 窗口处理函数的指针
-        0L, 0L,									// 指定紧跟在窗口类结构后的附加字节数
-        GetModuleHandle(NULL),					// 本模块的实例句柄
-        LoadIcon(hInst, (LPCTSTR)IDI_ICON1),	// 图标的句柄
-        LoadCursor(NULL, IDC_ARROW),			// 光标的句柄，鼠标
-        NULL, 									// 背景画刷的句柄
-        NULL,									// 指向菜单的指针
-        cc,										// 指向类名称的指针
+        CS_CLASSDC,                             // 窗体类的风格，可以用or操作符连接
+        MsgProc,                                // 窗口处理函数的指针
+        0L, 0L,                                 // 指定紧跟在窗口类结构后的附加字节数
+        GetModuleHandle(NULL),                  // 本模块的实例句柄
+        LoadIcon(hInst, (LPCTSTR)IDI_ICON1),    // 图标的句柄
+        LoadCursor(NULL, IDC_ARROW),            // 光标的句柄，鼠标
+        NULL,                                   // 背景画刷的句柄
+        NULL,                                   // 指向菜单的指针
+        cc,                                     // 指向类名称的指针
         //LoadIcon(hInst, (LPCTSTR)IDI_ICON3)   // 和窗口类关联的小图标。如果该值为NULL。
                                                 // 则把hIcon中的图标转换成大小合适的小图标
         NULL
@@ -233,7 +234,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
     RegisterClassEx( &wc );
     //--------------------------------------------------
     // 声明OpenGL对象
-    m_OpenGL=new COpenGLbase();
+    g_OpenGL=new COpenGLbase();
     //--------------------------------------------------
     // 窗体风格
     //dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;

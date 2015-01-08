@@ -5,8 +5,7 @@
 #include "OpenGLbase.h"
 #include "myclock.h"
 // 此处添加游戏具体对象
-//#include "CQuoridor.h"
-#include "src/Quoridor_openGL.h"
+#include "Quoridor_openGL.h"
 
 //extern HWND	hWnd;
 
@@ -135,15 +134,15 @@ void COpenGLbase::init_3D()
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective	
+    gluPerspective
         ( 54.0f,
           (GLfloat)RCwidth/(GLfloat)RCheight,
-          0.1f,	
+          0.1f,
           3000.0f
         );
     
     //指定模型视图堆栈
-    glMatrixMode(GL_MODELVIEW);	
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     //启动颜色材质
@@ -201,7 +200,7 @@ void COpenGLbase::Render()
     // 游戏主体的绘制
     gm.showMain();
 
-    glFlush();		
+    glFlush();
     SwapBuffers(hDC);
 }
 
@@ -258,4 +257,53 @@ void COpenGLbase::mouseProc(long long lparam)
     Ymouse=RCheight - HIWORD(lparam);
 }
 
+void COpenGLbase::texture_select( UINT texture )
+{
+    glBindTexture(GL_TEXTURE_2D, texture);
 
+    // GL_TEXTURE_2D: 操作2D纹理.
+    // GL_TEXTURE_WRAP_S: S方向上的贴图模式.
+    // GL_CLAMP: 将纹理坐标限制在0.0,1.0的范围之内.如果超出了会如何呢.
+    //           不会错误,只是会边缘拉伸填充.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+
+    // 这里同上,只是它是T方向
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    // 这是纹理过滤
+    // GL_TEXTURE_MIN_FILTER: 缩小过滤
+    // GL_LINEAR: 线性过滤, 使用距离当前渲染像素中心最近的4个纹素加权平均值.
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+
+    // GL_TEXTURE_MAG_FILTER: 放大过滤
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // GL_LINEAR_MIPMAP_NEAREST: 使用GL_NEAREST对最接近当前多边形的解析度
+    //                  的两个层级贴图进行采样,然后用这两个值进行线性插值.
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+}
+
+bool COpenGLbase::LoadBMP_aux(char *filename, GLuint &texture)
+{
+    AUX_RGBImageRec *pImage = NULL;
+
+    //加载图片内容
+    pImage = auxDIBImageLoad(filename);
+    if(pImage == NULL)
+        return false;
+
+    //创建纹理
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D,texture);
+    //生成2维纹理
+    gluBuild2DMipmaps(GL_TEXTURE_2D,4, 
+        pImage->sizeX, 
+        pImage->sizeY, 
+        GL_RGB, GL_UNSIGNED_BYTE, 
+        pImage->data 
+        );
+    //释放内存
+    free(pImage->data);
+    free(pImage);
+    return true;
+}

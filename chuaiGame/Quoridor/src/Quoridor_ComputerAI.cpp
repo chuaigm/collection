@@ -19,7 +19,7 @@ void Quoridor_ComputerAI::SimpleComputer()
     {
         //Sleep(800);
         //if (random(0,2.0)==0)
-        if (pgm->random(0,1.0)==0)
+        if (random(0,1.0)==0)
         {
             /*
             switch (ply_head->color)
@@ -79,7 +79,7 @@ void Quoridor_ComputerAI::SimpleComputer()
             if (targ.x<0 || targ.y<0)
             {
                 // 纯选随机点
-                targ=pgm->preselect_pos[pgm->random(0,pgm->preselect_pos.size())];
+                targ=pgm->preselect_pos[random(0,pgm->preselect_pos.size())];
             }
             // 这种情况，进入到人物棋子处理阶段
             char tmp=0;
