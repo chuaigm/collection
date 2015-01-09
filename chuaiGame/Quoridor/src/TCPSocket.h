@@ -2,8 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(TCPSOCKET)
-#define TCPSOCKET
+#if !defined(_TCPSOCKET_H_)
+#define _TCPSOCKET_H_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -118,4 +118,4 @@ protected:
 
 };
 
-#endif
+#endif      // _TCPSOCKET_H_

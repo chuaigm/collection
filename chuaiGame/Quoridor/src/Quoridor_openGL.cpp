@@ -60,7 +60,7 @@ CQuoridor::CQuoridor()
     player_info_h=10;
     player_info_w=10;
     board_x=10;
-    board_y=10;
+
     arr.x=-1;
     arr.y=-1;
     // 玩家信息数据
@@ -235,7 +235,7 @@ void CQuoridor::initView()
     player_info_w=(g_OpenGL->RCwidth-g_OpenGL->RCheight)*3/8.0f;
     // 棋盘左下角，起点坐标
     board_x = (g_OpenGL->RCwidth-g_OpenGL->RCheight)/2;
-    board_y = 0;
+
     // 墙和路的宽度推算公式：
     //  x=roadw; y=wall_w
     //  9*x + 8*y = Height - lace*2

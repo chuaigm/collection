@@ -214,7 +214,7 @@ public:
     // |   |         |   |
     // |---*-------------|
     int board_x;
-    int board_y;
+
     // ”Œœ∑∆Â≈Ãª®±ﬂøÌ∂»
     int lace;
 

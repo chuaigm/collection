@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#define INI_TEST_MODE                 // 测试模式可以使用INIFileTestCreatMain和INIFileTestReadMain函数
+//#define INI_TEST_FUNC               // 测试函数是否开启
 //#define VS_2005_WARN_DISABLEx       // VS2005等windows集成环境下，屏蔽4996号字符警告
 
 #ifdef VS_2005_WARN_DISABLE
@@ -248,16 +248,16 @@ copy_end:
 *              /   \
 *            name:index
 *            jack  :   12 
-*   	     |     |   | 
+*            |     |   | 
 *            k1    k2  i 
 * 访问的表： 无
 * 修改的表： 无
 * 输入参数： char *section  
 * 输出参数： char **name, char **index
 * 返 回 值： 1 --- ok 
-*			 0 --- blank line 
-*			-1 --- no name, ":index" 
-*			-2 --- only name, no ':' 
+*            0 --- blank line 
+*           -1 --- no name, ":index" 
+*           -2 --- only name, no ':' 
 * 其它说明： 无
 * 修改日期        版本号     修改人       修改内容
 * -----------------------------------------------
@@ -717,6 +717,8 @@ cfg_keys_end:
     return ret; 
 }
 
+#ifdef INI_TEST_FUNC
+
 /**********************************************************************
 * 函数名称： test_iniFileCreate
 * 功能描述： 测试函数入口
@@ -825,5 +827,6 @@ void test_iniFileRead(void)
     printf("取到的rootkey信息如下：%s\n",buf);
 
 }
+#endif      // INI_TEST_FUNC
 
-#endif
+#endif      // __INIFILEOP_H__
