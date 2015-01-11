@@ -1210,7 +1210,7 @@ void CQuoridor::showHelp()
     // 半透明背景
     tRectangle((float)board_x,0,-0.3f,(float)g_OpenGL->RCheight,(float)g_OpenGL->RCheight,1,1,1,0.3f);
 
-    char tmpstr[256]="游戏简介";
+    char tmpstr[1024]="游戏简介";
     myfont.Print2D(g_OpenGL->RCwidth/2-60,g_OpenGL->RCheight-50,tmpstr,FONT5,1.0,1.0,0.0);
     sprintf(tmpstr,"游戏名称：《Quoridor》《墙棋》《步步为营》");
     myfont.Print2D(board_x+lace,g_OpenGL->RCheight-80,tmpstr,FONT3,0.8f,1.0,0.0);
@@ -1261,7 +1261,7 @@ void CQuoridor::showHelp()
     } else {
         sprintf(tmpstr,"音乐: 关");
     }
-    myfont.Print2D(menu.x+5,menu.y+menu_dis+5,tmpstr,FONT4,1,1,1);
+    myfont.Print2D(menu.x+8,menu.y+menu_dis+6,tmpstr,FONT4,1,1,1);
 
     //图片
     texture_select(g_cactus[9]);
@@ -1362,34 +1362,38 @@ void CQuoridor::drawAccessory()
     glPushMatrix();
     glDisable(GL_TEXTURE_2D);
     glBegin(GL_TRIANGLES);
-    // 下面这段代码是绘制轮到的玩家的指示三角形的，这段代码可以精简的重写，用循环
-    if (ply_head == &plyer[0])
+    // 下面这段代码是绘制轮到的玩家的指示三角形的
+    if (ply_head!=NULL)
     {
-        glColor4f(1, 1, 0, alp);
-        glVertex3f( player_info_w, 4.0f*player_info_h, layer);
-        glVertex3f( (float)board_x, 3.5f*player_info_h, layer);
-        glVertex3f( player_info_w, 3.0f*player_info_h, layer);
-    }
-    else if (ply_head == &plyer[1])
-    {
-        glColor4f(1, 0, 0, alp);
-        glVertex3f( player_info_w, 3.0f*player_info_h, layer);
-        glVertex3f( (float)board_x, 2.5f*player_info_h, layer);
-        glVertex3f( player_info_w, 2.0f*player_info_h, layer);
-    }
-    else if (ply_head == &plyer[2])
-    {
-        glColor4f(0, 1, 0, alp);
-        glVertex3f( player_info_w, 2.0f*player_info_h, layer);
-        glVertex3f( (float)board_x, 1.5f*player_info_h, layer);
-        glVertex3f( player_info_w, 1.0f*player_info_h, layer);
-    }
-    else if (ply_head == &plyer[3])
-    {
-        glColor4f(0, 0, 1, alp);
-        glVertex3f( player_info_w, 1.0f*player_info_h, layer);
-        glVertex3f( (float)board_x, 0.5f*player_info_h, layer);
-        glVertex3f( player_info_w, 0.0f*player_info_h, layer);
+        switch (ply_head->color)
+        {
+        case GD_YELLOW:
+            glColor4f(1, 1, 0, alp);
+            glVertex3f( player_info_w, 4.0f*player_info_h, layer);
+            glVertex3f( (float)board_x, 3.5f*player_info_h, layer);
+            glVertex3f( player_info_w, 3.0f*player_info_h, layer);
+            break;
+        case GD_RED:
+            glColor4f(1, 0, 0, alp);
+            glVertex3f( player_info_w, 3.0f*player_info_h, layer);
+            glVertex3f( (float)board_x, 2.5f*player_info_h, layer);
+            glVertex3f( player_info_w, 2.0f*player_info_h, layer);
+            break;
+        case GD_GREEN:
+            glColor4f(0, 1, 0, alp);
+            glVertex3f( player_info_w, 2.0f*player_info_h, layer);
+            glVertex3f( (float)board_x, 1.5f*player_info_h, layer);
+            glVertex3f( player_info_w, 1.0f*player_info_h, layer);
+            break;
+        case GD_BLUE:
+            glColor4f(0, 0, 1, alp);
+            glVertex3f( player_info_w, 1.0f*player_info_h, layer);
+            glVertex3f( (float)board_x, 0.5f*player_info_h, layer);
+            glVertex3f( player_info_w, 0.0f*player_info_h, layer);
+            break;
+        default:
+            break;
+        }
     }
     glEnd();
     glEnable(GL_TEXTURE_2D);
@@ -1857,31 +1861,6 @@ void CQuoridor::playerActionRule()
             default:
                 break;
             }
-            // 实际游戏时，非沙盒模式，目的位置上，一定是空
-            //// 对于旧的位置上，更新玩家变量
-            //switch (gameData[pickup.x][pickup.y])
-            //{
-            //case GD_BLANK:
-            //	break;
-            //case GD_YELLOW:
-            //	plyer[0].x=pickup.x/2;
-            //	plyer[0].y=pickup.y/2;
-            //	break;
-            //case GD_RED:
-            //	plyer[1].x=pickup.x/2;
-            //	plyer[1].y=pickup.y/2;
-            //	break;
-            //case GD_GREEN:
-            //	plyer[2].x=pickup.x/2;
-            //	plyer[2].y=pickup.y/2;
-            //	break;
-            //case GD_BLUE:
-            //	plyer[3].x=pickup.x/2;
-            //	plyer[3].y=pickup.y/2;
-            //	break;
-            //default:
-            //	break;
-            //}
             // 这里，是重要的算法流转。控制玩家移动后
             if (g_sound==1)
             {
@@ -2626,9 +2605,19 @@ SEND_BOX_EXIT:
 bool CQuoridor::judgeWallLegal()
 {
     /*
-     当前这种方法判断墙是否可放，在一些情况下是有问题的。
-     比如，某玩家的终点位置，被另外的玩家占着的情况。以后再考虑别的判定方法
+     注意：这里，为了游戏规则的严格性，判断一个墙是否被允许放下时，
+           指的是，每判断到一个玩家时，棋盘上不计任何玩家的位置，再计算可走位置
+           所以，这里保护一下游戏数据，在出函数的时候，再还原
     */
+    char backupGD[sz][sz]={0};
+    memcpy(backupGD,gameData,sizeof(gameData));
+    // 将游戏数据中，去除所有玩家所在的位置
+    player* pp=ply_head;
+    do 
+    {
+        gameData[pp->x*2][pp->y*2]=GD_BLANK;
+        pp=pp->next;
+    } while (pp!=ply_head);
     // 定义一个临时的存放玩家可走位置的队列
     std::deque<pos2d> que;
     // 9x9的临时标记，记录玩家可走的位置,0为空，1为遍历过，可走，2为已经处理过
@@ -2653,13 +2642,13 @@ bool CQuoridor::judgeWallLegal()
             que.push_back(tmpp);
             // 如果可走队列里还有内容，且没有找到终点的可走位置
             while (que.size()>0 && jump_flag == false)
-            {	// 使用队列的头重新搜索可走位置
+            {   // 使用队列的头重新搜索可走位置
                 playerMovablePos(*que.begin());
                 // 其实正常来说，选可走点算法是不可能返回空向量的
                 if (preselect_pos.size()>0)
                 {
                     for (size_t j=0;j<preselect_pos.size();j++)
-                    {	// 不同玩家不同的到达终点的条件
+                    {   // 不同玩家不同的到达终点的条件
                         switch(plyer[i].color)
                         {
                         case GD_YELLOW:
@@ -2697,10 +2686,14 @@ bool CQuoridor::judgeWallLegal()
             }
             if (jump_flag==false /*&& que.size()==0*/)
             {   // 如果当前玩家没有检测到可走的终点
+                // 还原被修改过的游戏数据
+                memcpy(gameData,backupGD,sizeof(gameData));
                 return false;
             }
         }
     }
+    // 还原被修改过的游戏数据
+    memcpy(gameData,backupGD,sizeof(gameData));
     // 参与游戏的玩家全都有解
     return true;
 }
@@ -2805,10 +2798,10 @@ void CQuoridor::drawNetworkOp()
         texture_select(g_cactus[9]);
         tPicButton((float)(g_OpenGL->RCwidth/4-menu_w/2),(float)(g_OpenGL->RCheight*2/3),
             (float)menu_w,(float)menu_h,0.5f);
-        sprintf(tmpstr,"主机测试");
-        myfont.Print2D(g_OpenGL->RCwidth/4-menu_w/2+10,g_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
-        tPicButton((float)(g_OpenGL->RCwidth/4-menu_w/2),(float)(g_OpenGL->RCheight*1/6),
-            (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_TEST)?0:0.5f);
+        //sprintf(tmpstr,"主机测试");
+        //myfont.Print2D(g_OpenGL->RCwidth/4-menu_w/2+10,g_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
+        //tPicButton((float)(g_OpenGL->RCwidth/4-menu_w/2),(float)(g_OpenGL->RCheight*1/6),
+        //    (float)menu_w,(float)menu_h,(iButton==BUTTON_SERVER_TEST)?0:0.5f);
         sprintf(tmpstr,"开始游戏");
         myfont.Print2D((g_OpenGL->RCwidth-menu_w)/2+10,menu.y+5,tmpstr,FONT4,1,1,1);
         tPicButton((float)(g_OpenGL->RCwidth-menu_w)/2,(float)menu.y,
@@ -2816,12 +2809,34 @@ void CQuoridor::drawNetworkOp()
         // 显示当前链接的IP列表
         // 先固定显示主机IP
         sprintf(tmpstr,"[1] %8s (%16s)",n_NameAll[0], n_loaclIP);
-        myfont.Print2D(g_OpenGL->RCwidth/12,g_OpenGL->RCheight*3/8,tmpstr,FONT4,1,1,1);
+        myfont.Print2D(g_OpenGL->RCwidth/12,(int)(g_OpenGL->RCheight*0.43),tmpstr,FONT4,1,1,1);
+        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-3,-0.3f,380,27,0,0,1,1);
         // 再显示已连接的客户端IP列表
         for (int i=0; i<3; i++)
         {
-            sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],strlen(n_TCPnet->GetClientIP(i))==0?"------[空]------":n_TCPnet->GetClientIP(i));
-            myfont.Print2D(g_OpenGL->RCwidth/12,g_OpenGL->RCheight*3/8-28*(i+1),tmpstr,FONT4,1,1,1);
+            if (strlen(n_TCPnet->GetClientIP(i))==0)
+            {
+                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,"--[空]--","---.---.---.---");
+            }
+            else
+            {
+                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],n_TCPnet->GetClientIP(i));
+                switch (i)
+                {
+                case 0:
+                    tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-33,-0.3f,380,27,1,0,0,1);
+                    break;
+                case 1:
+                    tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-63,-0.3f,380,27,0,1,0,1);
+                    break;
+                case 2:
+                    tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-93,-0.3f,380,27,1,1,0,1);
+                    break;
+                default:
+                    break;
+                }
+            }
+            myfont.Print2D(g_OpenGL->RCwidth/12,(int)(g_OpenGL->RCheight*0.43)-30*(i+1),tmpstr,FONT4,1,1,1);
         }
         break;
     case 2:
@@ -2829,9 +2844,9 @@ void CQuoridor::drawNetworkOp()
         myfont.Print2D(g_OpenGL->RCwidth*3/4-menu_w/2+10,g_OpenGL->RCheight*2/3+5,tmpstr,FONT4,0.1f,0.1f,0.1f);
         tPicButton((float)(g_OpenGL->RCwidth*3/4-menu_w/2),(float)(g_OpenGL->RCheight*2/3),
             (float)menu_w,(float)menu_h,0.5f);
-        sprintf(tmpstr,"客户测试");
-        myfont.Print2D(g_OpenGL->RCwidth*3/4-menu_w/2+10,g_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
-        tPicButton((float)(g_OpenGL->RCwidth*3/4-menu_w/2),(float)(g_OpenGL->RCheight*1/6),(float)menu_w,(float)menu_h,(iButton==BUTTON_CLIENT_TEST)?0:0.5f);
+        //sprintf(tmpstr,"客户测试");
+        //myfont.Print2D(g_OpenGL->RCwidth*3/4-menu_w/2+10,g_OpenGL->RCheight*1/6+5,tmpstr,FONT4,1,1,1);
+        //tPicButton((float)(g_OpenGL->RCwidth*3/4-menu_w/2),(float)(g_OpenGL->RCheight*1/6),(float)menu_w,(float)menu_h,(iButton==BUTTON_CLIENT_TEST)?0:0.5f);
         break;
     default:
         break;
