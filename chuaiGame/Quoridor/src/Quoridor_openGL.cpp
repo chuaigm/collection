@@ -102,6 +102,8 @@ CQuoridor::CQuoridor()
     win_flag=GD_BLANK;
     // 显示调试信息
     g_debug_flag=false;
+    // 显示退出警示信息
+    b_show_warning=false;
     tcounter=0;
 
     // 网络相关
@@ -481,6 +483,16 @@ void CQuoridor::lbuttonproc(int lparam)
     char tmpstr[32];
     if (iButton==BUTTON_RETURN)
     {
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+        {
+            b_show_warning=!b_show_warning;
+        }
+        else{iGameState=GAME_MENU;}
+        return;
+    }
+    else if (iButton==BUTTON_INIT_OR_CONFIRM&&b_show_warning)
+    {
+        b_show_warning=false;
         iGameState=GAME_MENU;
         return;
     }
@@ -888,40 +900,16 @@ void CQuoridor::keyupproc(int keyparam)
         break;
     case VK_ESCAPE:
         //回到菜单
-        iGameState=GAME_MENU;
-        //initView();
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+        {
+            b_show_warning=!b_show_warning;
+        }
+        else{iGameState=GAME_MENU;}
         break;
-
     default:
         break;
     }
 }
-
-////构造位图贴图
-//bool CQuoridor::g_OpenGL->LoadBMP_aux(char *filename, GLuint &texture)
-//{
-//    AUX_RGBImageRec *pImage = NULL;
-//    
-//    //加载图片内容
-//    pImage = auxDIBImageLoad(filename);
-//    if(pImage == NULL)
-//        return false;
-//
-//    //创建纹理
-//    glGenTextures(1, &texture);
-//    glBindTexture(GL_TEXTURE_2D,texture);
-//    //生成2维纹理
-//    gluBuild2DMipmaps(GL_TEXTURE_2D,4, 
-//                      pImage->sizeX, 
-//                      pImage->sizeY, 
-//                      GL_RGB, GL_UNSIGNED_BYTE, 
-//                      pImage->data 
-//                     );
-//    //释放内存
-//    free(pImage->data);
-//    free(pImage);
-//    return true;
-//}
 
 //指定贴图
 void CQuoridor::texture_select(UINT texture)
@@ -1009,22 +997,6 @@ void CQuoridor::tPicButton(float x,float y,float w,float h,float ytex)
 
     glPopMatrix();
 }
-
-//设置灯光
-//void CQuoridor::light0()
-//{
-//	GLfloat light_position[] = {10.0,10.0,3.0,1.0};
-//
-//	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-//	
-//	//glEnable(GL_LIGHTING);
-//	//glEnable(GL_LIGHT0);
-//	
-//	//启动深度检测
-//	glEnable(GL_DEPTH_TEST);
-//	//启动颜色材质
-//	glEnable(GL_COLOR_MATERIAL);
-//}
 
 //开屏动画
 //void CQuoridor::showpreani()
@@ -1128,16 +1100,6 @@ void CQuoridor::showmenu()
         }
     }
 }
-
-//鼠标检测函数
-//void CQuoridor::mouseproc(int lparam)
-//{
-//	xmouseOld=xmouse;
-//	ymouseOld=ymouse;
-//	xmouse=LOWORD(lparam);
-//	ymouse=HIWORD(lparam);
-//}
-
 // 显示测试数据
 void CQuoridor::show_Font_test()
 {
@@ -1150,15 +1112,6 @@ void CQuoridor::show_Font_test()
     char tmpstr[64]={0};
     sprintf(tmpstr, "iMenu=%d",iMenu);
     myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
-
-    //for (int i=0; i<9;i++)
-    //{
-    //	for (int j=0; j<9;j++)
-    //	{
-    //		sprintf(tmpstr, "%d,",tmpflag[j][i]);
-    //		myfont.Print2D(10*(j+1),260+10*i,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
-    //	}
-    //}
 
     for (int i=0; i<17;i++)
     {
@@ -1177,12 +1130,6 @@ void CQuoridor::show_Font_test()
     myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.y=%d",arr.y);
     myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
-
-    //myfont.Print2D(100,2,"1,0",FONT4,1.0f,0.0f,0.0f);
-    //myfont.Print2D(200,2,"2,0",FONT2,1.0f,1.0f,0.0f);
-    //myfont.Print2D(300,2,"3,0",FONT4,1.0f,0.0f,1.0f);
-    //myfont.Print2D(400,2,"4,0",FONT4,0.0f,0.0f,1.0f);
-    //myfont.Print2D(500,2,"5,0",FONT5,0.0f,1.0f,0.0f);
 }
 
 void CQuoridor::showHelp()
@@ -1506,6 +1453,23 @@ void CQuoridor::drawPickMask()
     //static int det=1;
     int det = 2;
     //static int ctick=0;
+    if (b_show_warning)
+    {   // 绘制退出警示信息,在这里绘制是因为透明度的原因
+        char tmpstr[64]={0};
+        float layer=0.3f;
+        float tri_w=g_OpenGL->RCwidth/3.0f;
+        float tri_h=g_OpenGL->RCheight/3.0f;
+        //绘制背景半透明底纹窗口
+        tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.8f);
+
+        glPushMatrix();
+        glTranslatef(0,0,0.5f);
+        sprintf(tmpstr,"        注    意  ！！    ");
+        myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.628),tmpstr,FONT8,1,0,0);
+        sprintf(tmpstr,"  您确定要退出当前游戏吗？");
+        myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.325),tmpstr,FONT8,1,1,0);
+        glPopMatrix();
+    }
     if (ply_head!=NULL)
     {
         // 轮到谁走，在玩家图标上，给个动态提示
@@ -1521,7 +1485,7 @@ void CQuoridor::drawPickMask()
         glVertex3f( cx-det,  cy-det,  0.5f);
         glVertex3f( cx-det,  cy-det+roadw/4.0f,  0.5f);	// 竖线
         glVertex3f( cx-det,  cy-det,  0.5f);
-        glVertex3f( cx-det+roadw/4.0f,  cy-det,  0.5f);	//	横线
+        glVertex3f( cx-det+roadw/4.0f,  cy-det,  0.5f);	// 横线
         // 左上
         glVertex3f( cx-det,  cy+roadw+det,  0.5f);
         glVertex3f( cx-det+roadw/4.0f,  cy+roadw+det,  0.5f);	// 横线
@@ -1675,11 +1639,6 @@ void CQuoridor::resetGameData()
     default:
         break;
     }
-    // 老代码玩家初始位置一次全都初始化，这里暂时注释掉
-    //gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
-    //gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
-    //gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
-    //gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
@@ -1698,14 +1657,6 @@ void CQuoridor::resetGameData()
 
 void CQuoridor::drawInConfig()
 {
-#if 0
-    // 原来方形的背景区，暂时不用这个样式
-    // 绘制玩家信息指示标志区域
-    tRectangle(0,3.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,1,1,0,0.4f);
-    tRectangle(0,2.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,1,0,0,0.4f);
-    tRectangle(0,1.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,0,1,0,0.4f);
-    tRectangle(0,0.1f*player_info_h,-0.2f,player_info_w*7,player_info_h*0.8f,0,0,1,0.4f);
-#endif
     float layer=-0.2f;
     // 绘制选择时的背景区
     //属性进栈

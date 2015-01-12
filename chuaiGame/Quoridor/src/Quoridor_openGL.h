@@ -183,6 +183,7 @@ public:
     int iButton;        // 按钮选择的结果
     int win_flag;       // 哪位玩家获得了胜利，0没人胜利，1，黄色....(复用GD_系列数据)
     bool g_debug_flag;  // 显示调试信息
+    bool b_show_warning;// 单机游戏和网络游戏时，防止一次性操作导致退出
 
     //images
     unsigned int g_cactus[GAME_TEX_NUM];
