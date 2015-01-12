@@ -2173,7 +2173,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x == 2 && selected.y < 14 
         && gameData[0][selected.y+2]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开 (option)
-        if ( (gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y+1]!=GD_WALL) || 
+        if ( /*(gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y+1]!=GD_WALL) || */
             (gameData[2][selected.y+1]!=GD_WALL 
             && gameData[2][selected.y+2]!=GD_BLANK 
             && gameData[2][selected.y+3]==GD_WALL 
@@ -2191,7 +2191,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x > 2 && selected.y == 14 
         && gameData[selected.x-2][16]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开 (option)
-        if ( (gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x-1][16]!=GD_WALL) || 
+        if ( /*(gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x-1][16]!=GD_WALL) || */
             (gameData[selected.x-1][14]!=GD_WALL 
             && gameData[selected.x-2][14]!=GD_BLANK 
             && gameData[selected.x-3][14]==GD_WALL 
@@ -2243,7 +2243,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右上角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y < 14 && gameData[16][selected.y+2]==GD_BLANK )
     {
-        if ( (gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y+1]!=GD_WALL) || 
+        if ( /*(gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y+1]!=GD_WALL) || */
             (gameData[14][selected.y+1]!=GD_WALL 
             && gameData[14][selected.y+2]!=GD_BLANK 
             && gameData[14][selected.y+3]==GD_WALL 
@@ -2260,7 +2260,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二行,右上角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 14 && gameData[selected.x+2][16]==GD_BLANK )
     {
-        if ( (gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x+1][16]!=GD_WALL ) || 
+        if ( /*(gameData[selected.x][15]!=GD_WALL && gameData[selected.x][16]!=GD_BLANK && gameData[selected.x+1][16]!=GD_WALL ) || */
             (gameData[selected.x+1][14]!=GD_WALL 
             && gameData[selected.x+2][14]!=GD_BLANK 
             && gameData[selected.x+3][14]==GD_WALL 
@@ -2312,7 +2312,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于第二列,左下角可跳的情况(单独讨论)
     else if ( selected.x == 2 && selected.y > 2 && gameData[0][selected.y-2]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y-1]!=GD_WALL ) || 
+        if ( /*(gameData[1][selected.y]!=GD_WALL && gameData[0][selected.y]!=GD_BLANK && gameData[0][selected.y-1]!=GD_WALL ) || */
             (gameData[2][selected.y-1]!=GD_WALL 
             && gameData[2][selected.y-2]!=GD_BLANK 
             && gameData[2][selected.y-3]==GD_WALL 
@@ -2330,7 +2330,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     else if ( selected.x > 2 && selected.y == 2 
         && gameData[selected.x-2][0]==GD_BLANK )
     {   // 如果边界可跳，则把第一个条件打开
-        if ( (gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x-1][0]!=GD_WALL ) || 
+        if ( /*(gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x-1][0]!=GD_WALL ) || */
             (gameData[selected.x-1][2]!=GD_WALL 
             && gameData[selected.x-2][2]!=GD_BLANK 
             && gameData[selected.x-3][2]==GD_WALL 
@@ -2382,7 +2382,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于右数第二列,右下角可跳的情况(单独讨论)
     else if ( selected.x == 14 && selected.y >2 && gameData[16][selected.y-2]==GD_BLANK )
     {
-        if ( (gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y-1]!=GD_WALL ) || 
+        if ( /*(gameData[15][selected.y]!=GD_WALL && gameData[16][selected.y]!=GD_BLANK && gameData[16][selected.y-1]!=GD_WALL ) || */
             (gameData[14][selected.y-1]!=GD_WALL 
             && gameData[14][selected.y-2]!=GD_BLANK 
             && gameData[14][selected.y-3]==GD_WALL 
@@ -2399,7 +2399,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
     // 如果玩家位于下数第二行,右下角可跳的情况(单独讨论)
     else if ( selected.x < 14 && selected.y == 2 && gameData[selected.x+2][0]==GD_BLANK )
     {
-        if ( (gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x+1][0]!=GD_WALL ) || 
+        if ( /*(gameData[selected.x][1]!=GD_WALL && gameData[selected.x][0]!=GD_BLANK && gameData[selected.x+1][0]!=GD_WALL ) || */
             (gameData[selected.x+1][2]!=GD_WALL 
             && gameData[selected.x+2][2]!=GD_BLANK 
             && gameData[selected.x+3][2]==GD_WALL 
@@ -2410,6 +2410,7 @@ void CQuoridor::playerMovablePos( pos2d selected )
             preselect_pos.push_back(tmppos);
         }
     }
+    // 如果边界可以跳，那么对于四角的情况还需要做单独的处理。
 }
 
 void CQuoridor::freeSendBoxRule()
