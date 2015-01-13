@@ -2724,6 +2724,37 @@ void CQuoridor::drawNetworkOp()
         // 如果已经是客户端状态了，这里显示本机IP
         if (2==n_netWorkStatus)
         {
+            // 客户端显示已知的玩家名
+            for (int i=0;i<4;i++)
+            {
+                if (strlen(n_NameAll[i])==0)
+                {
+                    sprintf(tmpstr,"[%1d] %8s ",i+1,"--[空]--");
+                }
+                else
+                {
+                    sprintf(tmpstr,"[%1d] %8s ",i+1,n_NameAll[i]);
+                    switch (i)
+                    {
+                    case 0:
+                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-3,-0.3f,380,27,0,0,1,1);
+                        break;
+                    case 1:
+                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-33,-0.3f,380,27,1,0,0,1);
+                        break;
+                    case 2:
+                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-63,-0.3f,380,27,0,1,0,1);
+                        break;
+                    case 3:
+                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-93,-0.3f,380,27,1,1,0,1);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                myfont.Print2D(g_OpenGL->RCwidth/12,(int)(g_OpenGL->RCheight*0.43)-30*(i),tmpstr,FONT4,1,1,1);
+            }
+
             sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-80,tmpstr,FONT4,1,1,1);
             sprintf(tmpstr,"本机名称: %8s", n_Name);
@@ -2915,6 +2946,17 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
             {   // 服务器接收客户端发来的玩家名
                 strncpy(pThis->n_NameAll[clientID+1],recMsg,8);
                 pThis->n_NameAll[clientID+1][8]='\0';
+                // 服务器向所有客户端转发收到的所有玩家名列表
+                char namelist[64]={0};
+                strncpy(namelist   ,"namelist",8);
+                strncpy(namelist+8 ,pThis->n_NameAll[0],8);
+                strncpy(namelist+16,pThis->n_NameAll[1],8);
+                strncpy(namelist+32,pThis->n_NameAll[2],8);
+                strncpy(namelist+40,pThis->n_NameAll[3],8);
+                for (int i=0;i<pThis->n_TCPnet->GetConnectionNumber();i++)
+                {
+                    pThis->n_TCPnet->SendServer(i,namelist,64);
+                }
             }
         }
     }
@@ -3003,6 +3045,13 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                 }
             }
             pThis->ply_head=pThis->ply_head->next;
+        }
+        else if (strncmp(data,"Cnamelist",9)==0)
+        {
+            strncpy(pThis->n_NameAll[0],data+9 ,8);
+            strncpy(pThis->n_NameAll[1],data+17,8);
+            strncpy(pThis->n_NameAll[2],data+25,8);
+            strncpy(pThis->n_NameAll[3],data+33,8);
         }
         else if (strncmp(data,"CREADY",6)==0)   // 前六个字节
         {   // 三个玩家格式，例如，CREADY1N3
