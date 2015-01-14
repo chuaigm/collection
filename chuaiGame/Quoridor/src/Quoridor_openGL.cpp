@@ -1360,7 +1360,7 @@ void CQuoridor::drawAccessory()
             texture_select(g_cactus[3+i]);
             tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,player_info_w*0.5f,player_info_w*0.5f,layer+0.1f);
             if (plyer[i].id==ID_COMPUTER)
-            {	// 绘制电脑的图标
+            {   // 绘制电脑的图标
                 texture_select(g_cactus[8]);
                 tPicRectangle((float)lace*2.5f+player_info_w*0.5f,(3-i+1/2.0f)*player_info_h,player_info_w*0.28f,player_info_w*0.28f,layer+0.1f);
             }
@@ -1368,13 +1368,20 @@ void CQuoridor::drawAccessory()
             myfont.Print2D(12,(int)((3-i+1/5.0f)*player_info_h),tmpstr,FONT3,1,1,1);
             if (iGameState==GAME_NETWORK)
             {
-                if (i==3)
+                // i 颜色 名字
+                // 0  黄  3
+                // 1  红  1
+                // 2  绿  2
+                // 3  蓝  0
+                if (i==1 || i==2)
                 {
-                    sprintf(tmpstr,"%8s",n_NameAll[0]);
-                    myfont.Print2D(12,(int)((3-i+1/3.0f)*player_info_h),tmpstr,FONT2,1,1,1);
+                    sprintf(tmpstr,"%8s",n_NameAll[i]);
                 }
-                /*sprintf(tmpstr,"%8s","XXXXXXXX");
-                myfont.Print2D(12,(int)((3-i+1/3.0f)*player_info_h),tmpstr,FONT2,1,1,1);*/
+                else 
+                {
+                    sprintf(tmpstr,"%8s",n_NameAll[3-i]);
+                }
+                myfont.Print2D(12,(int)((3-i+1/3.0f)*player_info_h),tmpstr,FONT2,1,1,1);
             }
         }
     }
@@ -2737,7 +2744,7 @@ void CQuoridor::drawNetworkOp()
                     switch (i)
                     {
                     case 0:
-                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-3,-0.3f,380,27,0,0,1,1);
+                        tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-3 ,-0.3f,380,27,0,0,1,1);
                         break;
                     case 1:
                         tRectangle(g_OpenGL->RCwidth/12-2.0f,g_OpenGL->RCheight*0.43f-33,-0.3f,380,27,1,0,0,1);
@@ -2951,8 +2958,8 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
                 strncpy(namelist   ,"namelist",8);
                 strncpy(namelist+8 ,pThis->n_NameAll[0],8);
                 strncpy(namelist+16,pThis->n_NameAll[1],8);
-                strncpy(namelist+32,pThis->n_NameAll[2],8);
-                strncpy(namelist+40,pThis->n_NameAll[3],8);
+                strncpy(namelist+24,pThis->n_NameAll[2],8);
+                strncpy(namelist+32,pThis->n_NameAll[3],8);
                 for (int i=0;i<pThis->n_TCPnet->GetConnectionNumber();i++)
                 {
                     pThis->n_TCPnet->SendServer(i,namelist,64);
