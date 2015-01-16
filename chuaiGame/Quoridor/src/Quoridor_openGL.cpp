@@ -177,17 +177,17 @@ int CQuoridor::haveDataFile()
 void CQuoridor::init()
 {
     //load images
-    g_OpenGL->LoadBMP_aux("data/images/quoridor_cover.bmp", g_cactus[0]);		// 封面
-    g_OpenGL->LoadBMP_aux("data/images/chess_board_shading.bmp", g_cactus[1]);	// 棋盘底纹
-    g_OpenGL->LoadBMP_aux("data/images/road.bmp", g_cactus[2]);				// 玩家可站的位置
-    g_OpenGL->LoadBMP_aux("data/images/bidiu1.bmp", g_cactus[3]);				// 玩家1形象
-    g_OpenGL->LoadBMP_aux("data/images/huangshou1.bmp", g_cactus[4]);			// 玩家2形象
-    g_OpenGL->LoadBMP_aux("data/images/diting1.bmp", g_cactus[5]);				// 玩家3形象
-    g_OpenGL->LoadBMP_aux("data/images/xiaohei1.bmp", g_cactus[6]);			// 玩家4形象
-    g_OpenGL->LoadBMP_aux("data/images/wall1.bmp", g_cactus[7]);				// 墙的贴图
-    g_OpenGL->LoadBMP_aux("data/images/computer_logo.bmp", g_cactus[8]);		// 电脑图标
+    g_OpenGL->LoadBMP_aux("data/images/quoridor_cover.bmp", g_cactus[0]);       // 封面
+    g_OpenGL->LoadBMP_aux("data/images/chess_board_shading.bmp", g_cactus[1]);  // 棋盘底纹
+    g_OpenGL->LoadBMP_aux("data/images/road.bmp", g_cactus[2]);                 // 玩家可站的位置
+    g_OpenGL->LoadBMP_aux("data/images/bidiu1.bmp", g_cactus[3]);               // 玩家1形象
+    g_OpenGL->LoadBMP_aux("data/images/huangshou1.bmp", g_cactus[4]);           // 玩家2形象
+    g_OpenGL->LoadBMP_aux("data/images/diting1.bmp", g_cactus[5]);              // 玩家3形象
+    g_OpenGL->LoadBMP_aux("data/images/xiaohei1.bmp", g_cactus[6]);             // 玩家4形象
+    g_OpenGL->LoadBMP_aux("data/images/wall1.bmp", g_cactus[7]);                // 墙的贴图
+    g_OpenGL->LoadBMP_aux("data/images/computer_logo.bmp", g_cactus[8]);        // 电脑图标
     //button
-    g_OpenGL->LoadBMP_aux("data/images/button.bmp", g_cactus[9]);				// 按钮
+    g_OpenGL->LoadBMP_aux("data/images/button.bmp", g_cactus[9]);               // 按钮
 
     g_OpenGL->LoadBMP_aux("data/images/example_show_help.bmp", g_cactus[10]);  // 帮助中使用的展示图
 
@@ -326,7 +326,7 @@ void CQuoridor::check()
     //    {
     //        if(param1<30)
     //        {			
-    //            param1++;		
+    //            param1++;
     //        }
     //    }
     //    //计时
