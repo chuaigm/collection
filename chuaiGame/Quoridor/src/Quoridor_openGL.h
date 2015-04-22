@@ -11,7 +11,7 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
-#include "TCPSocket.h"
+#include "Quoridor_Network.h"
 // 游戏的状态
 enum {
     GAME_PRE,
@@ -159,8 +159,7 @@ public:
     // 重设游戏数据
     void resetGameData();
     // 鼠标左键单击时，需要的游戏规则,正常游戏的规则(放在左键单击时的响应中)
-    void playerActionRule();
-    void playerActionRule_network();
+    void playerActionRule(bool network=false);
     // 鼠标左键点击时，沙盒模式使用的，自由移动的规则
     void freeSendBoxRule();
     // 正常游戏时，点击玩家位置后，生成可移动的位置
@@ -172,11 +171,11 @@ public:
     //void computer_AI();
 
     // 接收网络消息的回调函数 (静态)
-    static void OnReceiveNetData(char* data, int length, DWORD userdata);
+    //static void OnReceiveNetData(char* data, int length, DWORD userdata);
 
     ////////////////////////////////////////////////////////////
     // 定义一个自身的静态指针
-    static CQuoridor* pThis;
+    //static CQuoridor* pThis;
     //data
     int iGameState;     // 当前游戏状态
     int iMenu;          // 当前选择的菜单项
@@ -247,11 +246,12 @@ public:
 
     //------------------------------------
     // 网络相关
-    CTCPSocket *n_TCPnet;       // tcp网络连接
-    DWORD n_port;               // 通讯端口
-    char n_IP[16];              // 配置文件中的IP
+    Quoridor_Network n_net;
+    //CTCPSocket *n_TCPnet;       // tcp网络连接
+    //DWORD n_port;               // 通讯端口
+    //char n_IP[16];              // 配置文件中的IP
     char n_loaclIP[16];         // 本机IP
-    char n_Name[16];            // 配置文件中写明的用户名
+    //char n_Name[16];            // 配置文件中写明的用户名
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
     char n_NameAll[4][16];      // 目前所有连接的玩家名
 };

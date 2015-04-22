@@ -104,7 +104,8 @@ BOOL CTCPSocket::CreateServer(int nPort,int backlog)
 
     struct sockaddr_in local;
 
-    m_sSocket=socket(AF_INET,SOCK_STREAM,IPPROTO_IP);
+    //m_sSocket=socket(AF_INET,SOCK_STREAM,IPPROTO_IP);
+    m_sSocket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
     if(m_sSocket==SOCKET_ERROR)
     {
         error=WSAGetLastError();
@@ -382,7 +383,8 @@ BOOL CTCPSocket::Connect(LPCSTR pstrHost,int nPort)
     server.sin_addr.s_addr=*((u_long FAR*)(lpHost->h_addr));
     server.sin_port=htons(nPort);
 
-    m_sSocket=socket(AF_INET,SOCK_STREAM,0);
+    //m_sSocket=socket(AF_INET,SOCK_STREAM,0);
+    m_sSocket=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 
     if(m_sSocket<=0)
     {

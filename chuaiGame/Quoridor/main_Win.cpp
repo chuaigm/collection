@@ -33,8 +33,9 @@ int g_refresh_rate = 40;
 int g_sound = 1;
 // 目前游戏框架中，主要代码(全局)
 CQuoridor gm;
+// 全局指针
 CQuoridor* pgm=&gm;
-CQuoridor* CQuoridor::pThis=&gm;
+//CQuoridor* CQuoridor::pThis=&gm;
 
 //左键是否按下
 int Lbutdown=0;

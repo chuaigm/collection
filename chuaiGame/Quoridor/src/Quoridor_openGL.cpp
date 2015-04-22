@@ -107,13 +107,11 @@ CQuoridor::CQuoridor()
     tcounter=0;
 
     // 网络相关
-    n_TCPnet=NULL;
-    n_port=0;
-    memset(n_IP,0,sizeof(n_IP));
+    //memset(n_IP,0,sizeof(n_IP));
     memset(n_loaclIP,0,sizeof(n_loaclIP));
-    memset(n_Name,0,sizeof(n_Name));
+    //memset(n_Name,0,sizeof(n_Name));
     n_netWorkStatus=0;
-    memset(n_NameAll,0,sizeof(n_NameAll));
+    //memset(n_NameAll,0,sizeof(n_NameAll));
 }
 
 CQuoridor::~CQuoridor()
@@ -188,7 +186,6 @@ void CQuoridor::init()
     g_OpenGL->LoadBMP_aux("data/images/computer_logo.bmp", g_cactus[8]);        // 电脑图标
     //button
     g_OpenGL->LoadBMP_aux("data/images/button.bmp", g_cactus[9]);               // 按钮
-
     g_OpenGL->LoadBMP_aux("data/images/example_show_help.bmp", g_cactus[10]);  // 帮助中使用的展示图
 
     ///////////////////////////////////////////
@@ -196,25 +193,13 @@ void CQuoridor::init()
     glEnable(GL_TEXTURE_2D);
 
     //游戏状态
-//	iGameState=GAME_PRE_ANI;
+//  iGameState=GAME_PRE_ANI;
     iGameState=GAME_MENU;
 }
 
 //设置投影方式
 void CQuoridor::initView()
 {
-    //switch(iGameState)
-    //{
-    //case GAME_MENU:
-    //	g_OpenGL->init_2D();
-    //	break;
-
-    //default:
-    //	//g_OpenGL->init_3D();
-    //	g_OpenGL->init_2D();
-    //	break;
-    //}
-
     // 创建二维的OpenGL视图模型
     g_OpenGL->init_2D();
 
@@ -524,10 +509,10 @@ void CQuoridor::lbuttonproc(int lparam)
             WSACleanup();
             }
 
-            ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_Name);
-            ConfigGetKeyValue("config.ini", "Net_work", "IP", n_IP);
+            ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_net.Name);
+            ConfigGetKeyValue("config.ini", "Net_work", "IP", n_net.IP);
             ConfigGetKeyValue("config.ini", "Net_work", "port", tmpstr);
-            n_port=atoi(tmpstr);
+            n_net.port=atoi(tmpstr);
 
             iGameState=GAME_NET_CONFIG;
             resetGameData();
@@ -546,7 +531,7 @@ void CQuoridor::lbuttonproc(int lparam)
             break;
         default:
             break;
-        }		
+        }
         break;
     case GAME_IN_CONFIG:
         // 在单人配置模式下，此按钮为确定
@@ -652,14 +637,14 @@ void CQuoridor::lbuttonproc(int lparam)
         // 如果是玩家可控的角色
         if (ply_head->id==ID_HUMAN)
         {
-            playerActionRule();
+            playerActionRule(false);
         }
         break;
     case GAME_NETWORK:
         // 如果是玩家可控的角色
         if (ply_head->id==ID_HUMAN)
         {
-            playerActionRule_network();
+            playerActionRule(true);
         }
         break;
     case GAME_NET_CONFIG:
@@ -667,58 +652,20 @@ void CQuoridor::lbuttonproc(int lparam)
         {
         case BUTTON_SERVER:
             // 这里创建网络对象
-            n_TCPnet = new CTCPSocket(TCP_SOCKET_SERVER);
-            // 创建服务
-            if(!n_TCPnet->CreateServer(n_port))
-            {
-                int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"无法创建服务器，错误号: %d",err);
-                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
-                delete n_TCPnet;
-                n_TCPnet=NULL;
-            }
-            // 开始服务器
-            else if(!n_TCPnet->StartServer(NULL,OnReceiveNetData,NULL))
-            {
-                int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"无法开启服务器，错误号: %d",err);
-                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
-                delete n_TCPnet;
-                n_TCPnet=NULL;
-            }
-            else 
+            if (n_net.startServer())
             {
                 // 服务成功开启
-                strncpy(n_NameAll[0],n_Name,8);
                 n_netWorkStatus=1;
+                // 如果是服务器，首先把玩家链表中加入自己
+                // 服务器默认蓝色玩家
+                plyer[3].id=ID_HUMAN;
+                ply_head=&plyer[3];
             }
-            // 如果是服务器，首先把玩家链表中加入自己
-            // 服务器默认蓝色玩家
-            plyer[3].id=ID_HUMAN;
-            ply_head=&plyer[3];
             break;
         case BUTTON_CLIENT:
             // 这里创建网络对象
-            n_TCPnet = new CTCPSocket(TCP_SOCKET_CLIENT);
-            if(!n_TCPnet->Connect(n_IP,n_port))
+            if(n_net.startClient())
             {
-                int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"无法连接到服务器，错误号: %d",err);
-                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
-                delete n_TCPnet;
-                n_TCPnet=NULL;
-            }
-            else if(!n_TCPnet->StartReceiving(NULL,OnReceiveNetData,NULL))
-            {
-                int err=n_TCPnet->GetError();
-                sprintf(tmpstr,"无法开启客户端数据接收服务，错误号: %d",err);
-                MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
-                delete n_TCPnet;
-                n_TCPnet=NULL;
-            }
-            else
-            {
-                n_TCPnet->SendClient(n_Name,strlen(n_Name)+1);
                 n_netWorkStatus=2;
             }
             break;
@@ -728,14 +675,14 @@ void CQuoridor::lbuttonproc(int lparam)
             break;
         case BUTTON_SERVER_START:
             // 如果没有其他玩家连入
-            if (n_TCPnet->GetConnectionNumber()<1)
+            if (n_net.GetConnectionNumber()<1)
             {   // 这里以后可以给出提示
                 break;
             }
             player* tail=ply_head;
             // 点开始游戏，才给服务器玩家赋上棋盘数据值
             gameData[plyer[3].x*2][plyer[3].y*2]=GD_BLUE;
-            int ConNum=n_TCPnet->GetConnectionNumber();
+            int ConNum=n_net.GetConnectionNumber();
             // 由于网络游戏时，三个玩家的分配顺序，服务器必是蓝色
             // 第二个加入游戏的玩家为红色，如果再有玩家加入是绿色，最后是黄色
             for (int i=0; i<ConNum;i++)
@@ -765,7 +712,7 @@ void CQuoridor::lbuttonproc(int lparam)
                     break;
                 }
                 sprintf(tmpstr,"READY%1dN%1d",i,ConNum);
-                n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);     // 这里注意size上要考虑\0问题
+                n_net.n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);     // 这里注意size上要考虑\0问题
                 //n_TCPnet->SendServer(i,"START",5+1);      // 连续调用貌似有问题
             }
             tail->next=ply_head;        // 形成环状
@@ -979,21 +926,21 @@ void CQuoridor::tPicButton(float x,float y,float w,float h,float ytex)
     glPushMatrix();
 
     //画背景矩形
-    glTranslatef(x,y,-0.1f);	//z轴向后移动
+    glTranslatef(x,y,-0.1f);    //z轴向后移动
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, ytex);
         glVertex3f(0.0, 0.0, 0.0f);
         
         glTexCoord2f(1.0f, ytex);
-        glVertex3f(w, 0.0,  0.0f);
+        glVertex3f(w, 0.0, 0.0f);
 
         //up
         glTexCoord2f(1.0f, ytex+0.5f);
         glVertex3f(w, h,  0.0f);
-                
+
         glTexCoord2f(0.0f, ytex+0.5f);
-        glVertex3f(0.0, h,  0.0f);
-    glEnd();	
+        glVertex3f(0.0, h, 0.0f);
+    glEnd();
 
     glPopMatrix();
 }
@@ -1653,13 +1600,9 @@ void CQuoridor::resetGameData()
     ply_head=NULL;
     // 玩家胜利标志
     win_flag=GD_BLANK;
-    // 如果网络对象被创建，那么删除
-    if (n_TCPnet!=NULL)
-    {
-        n_netWorkStatus=0;
-        delete n_TCPnet;
-        n_TCPnet=NULL;
-    }
+    // 关闭网络对象
+    n_net.closeNetWork();
+    n_netWorkStatus=0;
 }
 
 void CQuoridor::drawInConfig()
@@ -1728,9 +1671,10 @@ void CQuoridor::drawInConfig()
         }
     }
 }
-
-void CQuoridor::playerActionRule()
+// 鼠标左键单击时，需要的游戏规则,正常游戏的规则(放在左键单击时的响应中)
+void CQuoridor::playerActionRule(bool network)
 {
+    char netstr[16];        // 网络发包所用缓存
     // 已经存在的墙的位置，是不能被选取的
     if (gameData[arr.x][arr.y]==GD_WALL)
     {
@@ -1825,6 +1769,21 @@ void CQuoridor::playerActionRule()
                 // 玩家棋子移动音效
                 sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
             }
+        if (network)
+        {
+            // 控制玩家移动后，向网络发送玩家移动的包
+            // 向所有客户机发出P1M45,P后数字为玩家颜色代码，
+            // M代表玩家移动，后数字代表移动后的坐标，最后一位F代表游戏结束，当前玩家胜利
+            if (iGameState==GAME_WIN)
+            {
+                sprintf(netstr,"P%1dM%1d%1dF",ply_head->color,arr.x/2,arr.y/2);
+            }
+            else
+            {
+                sprintf(netstr,"P%1dM%1d%1d_",ply_head->color,arr.x/2,arr.y/2);
+            }
+            n_net.NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
+        }   // end if network
             goto ACTION_RULE_EXIT;
         }
         // 能走到这里，应该是只有已经选了墙的情况，
@@ -1845,12 +1804,12 @@ void CQuoridor::playerActionRule()
         // 这里是产生实际墙位置的唯一入口，所以在这里判定玩家墙剩余数是否可用
         else if ((pickup.x+pickup.y)%2==1 
             && (arr.x+arr.y)%2==1 
-            && GD_BLANK == gameData[arr.x][arr.y]
+            && GD_BLANK == gameData[arr.x][arr.y] 
             && ply_head->wall_num_left>0)
         {
             // 如果是横墙,并且这次选的和上次选的在同一行上
             if (pickup.x%2==0&&arr.y==pickup.y)
-            {	// 如果这次选的在上一次选的左边一块位置
+            {   // 如果这次选的在上一次选的左边一块位置
                 // 并且两块连接的中间位置是可用的
                 if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
                 {
@@ -1861,6 +1820,12 @@ void CQuoridor::playerActionRule()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x+1][arr.y]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+            if (network)
+            {
+                // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                sprintf(netstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
+            }
                     goto RULE_WALL_EXIT;
                 }
                 // 如果在这次选的在上一次右边一块位置
@@ -1874,12 +1839,18 @@ void CQuoridor::playerActionRule()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x-1][arr.y]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+            if (network)
+            {
+                // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                sprintf(netstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
+            }
                     goto RULE_WALL_EXIT;
                 }
             }
             // 如果是竖墙，并且这次选的和上次选的在同一列上
             else if(pickup.y%2==0&&arr.x==pickup.x)
-            {	// 如果这次选择的在上一次选择的下面一块
+            {   // 如果这次选择的在上一次选择的下面一块
                 // 并且两块连接的中间位置是可用的
                 if (arr.y==pickup.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
                 {
@@ -1890,6 +1861,12 @@ void CQuoridor::playerActionRule()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x][arr.y+1]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+            if (network)
+            {
+                // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                sprintf(netstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
+            }
                     goto RULE_WALL_EXIT;
                 }
                 // 如果这次选择的在上一次选择的上面一块
@@ -1903,6 +1880,12 @@ void CQuoridor::playerActionRule()
                     gameData[arr.x][arr.y]=GD_WALL;
                     gameData[arr.x][arr.y-1]=GD_WALL;
                     gameData[pickup.x][pickup.y]=GD_WALL;
+            if (network)
+            {
+                // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
+                // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
+                sprintf(netstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
+            }
                     goto RULE_WALL_EXIT;
                 }
             }
@@ -1945,6 +1928,10 @@ RULE_WALL_EXIT:
         // 放置墙的音效
         sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
     }
+    if (network)
+    {
+        n_net.NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
+    }
     // 当前玩家的可用墙数减1
     ply_head->wall_num_left--;
 ACTION_RULE_EXIT:
@@ -1957,6 +1944,7 @@ ACTION_RULE_EXIT:
     preselect_pos.clear();
     return ;
 }
+
 // 此函数的前提是，selected是在棋盘上选取的可用位置
 // 此函数的出口是，preselect_pos玩家可走位置的向量
 void CQuoridor::playerMovablePos( pos2d selected )
@@ -2714,7 +2702,7 @@ void CQuoridor::drawNetworkOp()
         // 显示本机IP以及服务器信息
         sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
         myfont.Print2D(g_OpenGL->RCwidth/8,(int)(g_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-        sprintf(tmpstr,"监听端口: %u", n_port);
+        sprintf(tmpstr,"监听端口: %u", n_net.port);
         myfont.Print2D(g_OpenGL->RCwidth/8,(int)(g_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
     }
     else
@@ -2724,9 +2712,9 @@ void CQuoridor::drawNetworkOp()
         // 右边客户端一侧的底图
         tRectangle(g_OpenGL->RCwidth/2.0f,0,-0.5f,g_OpenGL->RCwidth/2.0f,(float)g_OpenGL->RCheight,0,0.8f,0,0.6f);
         // 显示连接服务器IP以及端口信息
-        sprintf(tmpstr,"服务器IP: %s", n_IP);
+        sprintf(tmpstr,"服务器IP: %s", n_net.IP);
         myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-        sprintf(tmpstr,"服务端口: %u", n_port);
+        sprintf(tmpstr,"服务端口: %u", n_net.port);
         myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
         // 如果已经是客户端状态了，这里显示本机IP
         if (2==n_netWorkStatus)
@@ -2764,7 +2752,7 @@ void CQuoridor::drawNetworkOp()
 
             sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-80,tmpstr,FONT4,1,1,1);
-            sprintf(tmpstr,"本机名称: %8s", n_Name);
+            sprintf(tmpstr,"本机名称: %8s", n_net.Name);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-110,tmpstr,FONT4,1,1,1);
         }
     }
@@ -2804,13 +2792,13 @@ void CQuoridor::drawNetworkOp()
         // 再显示已连接的客户端IP列表
         for (int i=0; i<3; i++)
         {
-            if (strlen(n_TCPnet->GetClientIP(i))==0)
+            if (strlen(n_net.n_TCPnet->GetClientIP(i))==0)
             {
                 sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,"--[空]--","---.---.---.---");
             }
             else
             {
-                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],n_TCPnet->GetClientIP(i));
+                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],n_net.n_TCPnet->GetClientIP(i));
                 switch (i)
                 {
                 case 0:
@@ -2846,7 +2834,7 @@ void CQuoridor::drawNetworkOp()
     myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
     tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,(iButton==BUTTON_RETURN)?0:0.5f);
 }
-
+/*
 void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
     if (pThis->n_netWorkStatus==1)
@@ -3130,279 +3118,4 @@ void CQuoridor::OnReceiveNetData( char* data, int length, DWORD userdata )
         }
     }
 }
-
-void CQuoridor::playerActionRule_network()
-{
-    char tmpstr[16];        // 网络发包所用缓存
-    // 已经存在的墙的位置，是不能被选取的
-    if (gameData[arr.x][arr.y]==GD_WALL)
-    {
-        return ;
-    }
-    // 如果之前没有选取任何位置
-    if ( pickup.x <0 && pickup.y <0 )
-    {
-        // 空白的玩家位，或者不能控制的玩家位
-        if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=ply_head->color)
-        {
-            return;
-        }
-        pickup.x=arr.x;
-        pickup.y=arr.y;
-        // 如果选完是当前玩家位置
-        if (gameData[pickup.x][pickup.y]==ply_head->color)
-        {
-            playerMovablePos(pickup);
-        }
-        // 这里是if else 后面有return，这里相当于return
-    }
-    // 之前有选取的位置
-    else
-    {   // 存在已选取的位置,连续点两次相同位置，在最开始过滤
-        if (arr == pickup)
-        {
-            pickup.x = -1;
-            pickup.y = -1;
-            // 清除玩家可走待选位置(虽然不清也是可以的)
-            preselect_pos.clear();
-            return ;	// 连续点击两次相同坐标视为重选
-        }
-        // 并且鼠标再次点击时，选取的位置是在玩家棋子可以移动的位置
-        // 要走的位置在可走位置的向量中
-        //else if (0==arr.x%2 && 0==arr.y%2 && 0==pickup.x%2 && 0==pickup.y%2)
-        else if (find(preselect_pos.begin(),preselect_pos.end(),arr)!=preselect_pos.end())
-        {
-            // 这种情况，进入到人物棋子处理阶段
-            char tmp=0;
-            // 交换
-            tmp=gameData[arr.x][arr.y];
-            gameData[arr.x][arr.y]=gameData[pickup.x][pickup.y];
-            gameData[pickup.x][pickup.y]=tmp;
-            // 在目标位置上，更新玩家变量
-            switch (gameData[arr.x][arr.y])
-            {
-            case GD_BLANK:
-                break;
-            case GD_YELLOW:
-                plyer[0].x=arr.x/2;
-                plyer[0].y=arr.y/2;
-                if (plyer[0].x==8)
-                {
-                    win_flag=GD_YELLOW;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_RED:
-                plyer[1].x=arr.x/2;
-                plyer[1].y=arr.y/2;
-                if (plyer[1].y==0)
-                {
-                    win_flag=GD_RED;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_GREEN:
-                plyer[2].x=arr.x/2;
-                plyer[2].y=arr.y/2;
-                if (plyer[2].x==0)
-                {
-                    win_flag=GD_GREEN;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_BLUE:
-                plyer[3].x=arr.x/2;
-                plyer[3].y=arr.y/2;
-                if (plyer[3].y==8)
-                {
-                    win_flag=GD_BLUE;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            default:
-                break;
-            }
-            // 这里，是重要的算法流转。控制玩家移动后
-            if (g_sound==1)
-            {
-                // 玩家棋子移动音效
-                sndPlaySound("data/sound/player_move.wav",SND_ASYNC);
-            }
-            // 控制玩家移动后，向网络发送玩家移动的包
-            // 向所有客户机发出P1M45,P后数字为玩家颜色代码，
-            // M代表玩家移动，后数字代表移动后的坐标，最后一位F代表游戏结束，当前玩家胜利
-            if (iGameState==GAME_WIN)
-            {
-                sprintf(tmpstr,"P%1dM%1d%1dF",ply_head->color,arr.x/2,arr.y/2);
-            }
-            else
-            {
-                sprintf(tmpstr,"P%1dM%1d%1d_",ply_head->color,arr.x/2,arr.y/2);
-            }
-            if (n_netWorkStatus==1)     // 如果是服务器端
-            {
-                for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
-                {
-                    n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);
-                }
-            }
-            else if (n_netWorkStatus==2)
-            {
-                n_TCPnet->SendClient(tmpstr,strlen(tmpstr)+1);
-            }
-            goto ACTION_RULE_EXIT;
-        }
-        // 能走到这里，应该是只有已经选了墙的情况，
-        // 这里单独过滤，如果又点击了当前玩家，则按选中玩家处理
-        else if (gameData[arr.x][arr.y]==ply_head->color)
-        {
-            pickup.x=arr.x;
-            pickup.y=arr.y;
-            playerMovablePos(pickup);
-        }
-        // 在选墙的过程中，跳过所有非墙的位置
-        else if ((arr.x+arr.y)%2!=1)
-        {
-            return ;
-        }
-        // 如果上次选取的位置也是墙，这次选取的也是墙，并且这次选取的位置是空
-        // 连续选取相同位置已经在最开始过滤
-        // 这里是产生实际墙位置的唯一入口，所以在这里判定玩家墙剩余数是否可用
-        else if ((pickup.x+pickup.y)%2==1 
-            && (arr.x+arr.y)%2==1 
-            && GD_BLANK == gameData[arr.x][arr.y]
-        && ply_head->wall_num_left>0)
-        {
-            // 如果是横墙,并且这次选的和上次选的在同一行上
-            if (pickup.x%2==0&&arr.y==pickup.y)
-            {	// 如果这次选的在上一次选的左边一块位置
-                // 并且两块连接的中间位置是可用的
-                if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
-                {
-                    // 压入墙绘制队列,一定先压入左边的块
-                    wall_vec.push_back(arr);
-                    wall_vec.push_back(pickup);
-                    // 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
-                    gameData[arr.x][arr.y]=GD_WALL;
-                    gameData[arr.x+1][arr.y]=GD_WALL;
-                    gameData[pickup.x][pickup.y]=GD_WALL;
-                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
-                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
-                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
-                    goto RULE_WALL_EXIT;
-                }
-                // 如果在这次选的在上一次右边一块位置
-                // 并且两块连接的中间位置是可用的
-                else if(arr.x==pickup.x+2&&gameData[arr.x-1][arr.y]==GD_BLANK)
-                {
-                    // 压入墙绘制队列,一定先压入左边的块
-                    wall_vec.push_back(pickup);
-                    wall_vec.push_back(arr);
-                    // 更新游戏算法数据
-                    gameData[arr.x][arr.y]=GD_WALL;
-                    gameData[arr.x-1][arr.y]=GD_WALL;
-                    gameData[pickup.x][pickup.y]=GD_WALL;
-                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
-                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
-                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
-                    goto RULE_WALL_EXIT;
-                }
-            }
-            // 如果是竖墙，并且这次选的和上次选的在同一列上
-            else if(pickup.y%2==0&&arr.x==pickup.x)
-            {	// 如果这次选择的在上一次选择的下面一块
-                // 并且两块连接的中间位置是可用的
-                if (arr.y==pickup.y-2&&gameData[arr.x][arr.y+1]==GD_BLANK)
-                {
-                    // 压入墙绘制队列，一定先压入下面的一块
-                    wall_vec.push_back(arr);
-                    wall_vec.push_back(pickup);
-                    // 更新游戏算法数据
-                    gameData[arr.x][arr.y]=GD_WALL;
-                    gameData[arr.x][arr.y+1]=GD_WALL;
-                    gameData[pickup.x][pickup.y]=GD_WALL;
-                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
-                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
-                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,arr.x,arr.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,pickup.x,pickup.y);
-                    goto RULE_WALL_EXIT;
-                }
-                // 如果这次选择的在上一次选择的上面一块
-                // 并且两块连接的中间位置是可用的
-                else if (arr.y==pickup.y+2&&gameData[arr.x][arr.y-1]==GD_BLANK)
-                {
-                    // 压入墙绘制队列，一定先压入下面的一块
-                    wall_vec.push_back(pickup);
-                    wall_vec.push_back(arr);
-                    // 更新游戏算法数据
-                    gameData[arr.x][arr.y]=GD_WALL;
-                    gameData[arr.x][arr.y-1]=GD_WALL;
-                    gameData[pickup.x][pickup.y]=GD_WALL;
-                    // 向所有客户机发出P1W070807090710,P后数字为玩家颜色代码，
-                    // W代表是墙的坐标信息，连续写入三个点的左边，表示墙的位置，由于绘制原因，需要严格按照顺序
-                    sprintf(tmpstr,"P%1dW%2d%2d%2d%2d%2d%2d",ply_head->color,pickup.x,pickup.y,(arr.x+pickup.x)/2,(arr.y+pickup.y)/2,arr.x,arr.y);
-                    goto RULE_WALL_EXIT;
-                }
-            }
-            // 上面使用goto语句，如果能够成功放置墙，那么已经跳出去了，
-            // 这里，如果不满足一个可放墙的条件，视为重新选取
-            pickup.x=arr.x;
-            pickup.y=arr.y;
-        }
-        // 其他情况，一律视为重新选取墙
-        else if ( gameData[arr.x][arr.y]!=GD_WALL )
-        {
-            pickup.x=arr.x;
-            pickup.y=arr.y;
-            // 清除玩家可走待选位置
-            preselect_pos.clear();
-        }
-    }
-    return ;
-RULE_WALL_EXIT:
-    // 这里判断，加入的墙是否合法的判定，如果新放的一堵墙，使得任何一个玩家无解，那么此墙非法
-    // 如果不合法，那么需要还原原来的游戏数据
-    if (!judgeWallLegal())
-    {
-        // 还原游戏算法数据
-        gameData[arr.x][arr.y]=GD_BLANK;
-        gameData[(arr.x+pickup.x)/2][(arr.y+pickup.y)/2]=GD_BLANK;
-        gameData[pickup.x][pickup.y]=GD_BLANK;
-        // 弹出刚压入的墙坐标(两个点)
-        wall_vec.pop_back();
-        wall_vec.pop_back();
-        // 清空预选位置
-        pickup.x=-1;
-        pickup.y=-1;
-        // 清除玩家可走待选位置
-        preselect_pos.clear();
-        return ;
-    }
-    if (g_sound==1)
-    {
-        // 放置墙的音效
-        sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
-    }
-    // 放置了墙后，向网络发送放置墙位置的包
-    if (n_netWorkStatus==1)     // 如果是服务器端
-    {
-        for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
-        {
-            n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);
-        }
-    }
-    else if (n_netWorkStatus==2)    // 如果是客户端
-    {
-        n_TCPnet->SendClient(tmpstr,strlen(tmpstr)+1);
-    }
-    // 当前玩家的可用墙数减1
-    ply_head->wall_num_left--;
-ACTION_RULE_EXIT:
-    // 当玩家选择了移动人物，那么此玩家的行动就结束了，控制权应该交由下一位玩家
-    ply_head=ply_head->next;
-    // 清空预选位置
-    pickup.x=-1;
-    pickup.y=-1;
-    // 清除玩家可走待选位置
-    preselect_pos.clear();
-    return ;
-}
+*/
