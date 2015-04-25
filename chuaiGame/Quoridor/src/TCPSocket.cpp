@@ -639,11 +639,9 @@ DWORD WINAPI CTCPSocket::ServerThread(LPVOID lpParameter)
         //回调处理
         if(m_pTCP->m_lpServerStatusProc!=NULL)
         {
-            char* inf;
-            inf=new char[22];
+            char inf[22]={0};
             sprintf(inf,"S%sC%3d",m_pTCP->m_cIp[i],i);
             m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-            delete [] inf;
         }
 
         m_pTCP->m_sServer[i]=sClient;
@@ -686,11 +684,9 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                 //回调处理
                 if(m_pTCP->m_lpServerStatusProc!=NULL)
                 {
-                    char* inf;
-                    inf=new char[22];
+                    char inf[22]={0};
                     sprintf(inf,"S%sD%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete [] inf;
                 }
 
                 break;
@@ -705,10 +701,12 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                 if(m_pTCP->m_lpServerDataArriveProc!=NULL)
                 {
                     char* inf;
-                    inf=new char[nRet+21];
+                    size_t len=nRet+21;
+                    inf=new char[len];
+                    memset(inf,0,len);
                     sprintf(inf,"S%s%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     memcpy(inf+21,buf,nRet);
-                    m_pTCP->m_lpServerDataArriveProc(inf,nRet+21,m_pTCP->m_dwUserData);
+                    m_pTCP->m_lpServerDataArriveProc(inf,len,m_pTCP->m_dwUserData);
                     delete [] inf;
                 }
 
@@ -723,11 +721,9 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                 //回调处理
                 if(m_pTCP->m_lpServerStatusProc!=NULL)
                 {
-                    char* inf;
-                    inf=new char[22];
+                    char inf[22];
                     sprintf(inf,"S%sD%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
-                    delete [] inf;
                 }
 
                 closesocket(m_pTCP->m_sServer[MyNumber]);

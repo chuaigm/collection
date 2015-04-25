@@ -3,6 +3,8 @@
 #include "Quoridor_openGL.h"
 #include "TCPSocket.h"
 
+extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
+
 extern CQuoridor* pgm;
 // 是否开启音乐标记
 extern int g_sound;
@@ -85,6 +87,14 @@ bool Quoridor_Network::startClient()
     else
     {
         n_TCPnet->SendClient(Name,strlen(Name)+1);
+#ifdef __DEBUG__
+        {
+            char stmp[16];
+            static int c_send=0;
+            sprintf(stmp, "%04d|Send%04d",__LINE__,c_send++);
+            ConfigSetKeyValue("debugLog.txt", "Client", stmp, Name);
+        }
+#endif
         return true;
     }
 }
@@ -117,10 +127,26 @@ void Quoridor_Network::NetWorkSendData( int netWorkStat, char* data, int length 
         for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
         {
             n_TCPnet->SendServer(i,data,length);
+#ifdef __DEBUG__
+            {
+            char stmp[16];
+            static int s_send=0;
+            sprintf(stmp, "%04d|Send%04d",__LINE__,s_send++);
+            ConfigSetKeyValue("debugLog.txt", "Server", stmp, data);
+            }
+#endif
         }
         break;
     case 2:
         n_TCPnet->SendClient(data,length);
+#ifdef __DEBUG__
+        {
+        char stmp[16];
+        static int c_send=0;
+        sprintf(stmp, "%04d|Send%04d",__LINE__,c_send++);
+        ConfigSetKeyValue("debugLog.txt", "Client", stmp, data);
+        }
+#endif
         break;
     default:
         break;
@@ -131,6 +157,23 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
 {
     if (pgm->n_netWorkStatus==1)
     {   // 服务器接收数据格式：
+#ifdef __DEBUG__
+        {
+            char stmp[16];
+            static int s_recv=0;
+            sprintf(stmp, "%04d|Recv%04d",__LINE__, s_recv++);
+            char tmpss[128]={0};
+            memcpy(tmpss,data,length);
+            for (int i=0;i<length;i++)
+            {
+                if (tmpss[i]==0)
+                {
+                    tmpss[i]='_';
+                }
+            }
+            ConfigSetKeyValue("debugLog.txt", "Server", stmp, tmpss);
+        }
+#endif
         // 00000000001111111111222222
         // 01234567890123456789012345
         // S127.  0.  0.  1_  2_unamed
@@ -146,7 +189,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 char tmpC=*(recMsg+1);
                 int color=atoi(&tmpC);      // 解析出玩家的颜色
                 tmpC=*(recMsg+2);           // 解析出玩家的行动，是移动角色(M)还是放墙(W)
-                if ('W'==tmpC)          // 服务器收到其他玩家放置墙的消息
+                if ('W'==tmpC)              // 服务器收到其他玩家放置墙的消息
                 {
                     char snum[3]={0};
                     pos2d wall1,wall2,mid;
@@ -223,6 +266,23 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                         continue;
                     }
                     n_TCPnet->SendServer(i,recMsg,strlen(recMsg)+1);
+#ifdef __DEBUG__
+                    {
+                        char stmp[16];
+                        static int s_send=0;
+                        sprintf(stmp, "%04d|Send%04d",__LINE__,s_send++);
+                        char tmpss[128]={0};
+                        memcpy(tmpss,recMsg,sizeof(recMsg));
+                        for (int i=0;i<sizeof(recMsg);i++)
+                        {
+                            if (tmpss[i]==0)
+                            {
+                                tmpss[i]='_';
+                            }
+                        }
+                        ConfigSetKeyValue("debugLog.txt", "Server", stmp, tmpss);
+                    }
+#endif
                 }
                 pgm->ply_head=pgm->ply_head->next;
             }
@@ -242,13 +302,47 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 strncpy(namelist+32,pgm->n_NameAll[3],8);
                 for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
                 {
-                    n_TCPnet->SendServer(i,namelist,64);
+                    n_TCPnet->SendServer(i,namelist,sizeof(namelist));
+#ifdef __DEBUG__
+                    {
+                        char stmp[16];
+                        static int s_send=0;
+                        sprintf(stmp, "%04d|Send%04d",__LINE__,s_send++);
+                        char tmpss[128]={0};
+                        memcpy(tmpss,namelist,sizeof(namelist));
+                        for (int i=0; i<sizeof(namelist);i++)
+                        {
+                            if (tmpss[i]==0)
+                            {
+                                tmpss[i]='_';
+                            }
+                        }
+                        ConfigSetKeyValue("debugLog.txt", "Server", stmp, tmpss);
+                    }
+#endif
                 }
             }
         }
     }
     else if (pgm->n_netWorkStatus==2)
     {   // 客户端接收数据格式：
+#ifdef __DEBUG__
+        {
+            char stmp[16];
+            static int c_recv=0;
+            sprintf(stmp, "%04d|Recv%04d",__LINE__, c_recv++);
+            char tmpss[128]={0};
+            memcpy(tmpss,data,length);
+            for (int i=0;i<length;i++)
+            {
+                if (tmpss[i]==0)
+                {
+                    tmpss[i]='_';
+                }
+            }
+            ConfigSetKeyValue("debugLog.txt", "Client", stmp, tmpss);
+        }
+#endif
         // 00000000001111111111222222
         // 01234567890123456789012345
         // CXXXXXXXXX
@@ -262,7 +356,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
             char tmpC=*(data+2);
             int color=atoi(&tmpC);      // 解析出玩家的颜色
             tmpC=*(data+3);             // 解析出玩家的行动，是移动角色(M)还是放墙(W)
-            if ('W'==tmpC)          // 客户端收到服务器发来的某玩家放墙的消息
+            if ('W'==tmpC)              // 客户端收到服务器发来的某玩家放墙的消息
             {
                 char snum[3]={0};
                 pos2d wall1,wall2,mid;
@@ -292,9 +386,11 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     // 放置墙的音效
                     sndPlaySound("data/sound/wall_set.wav",SND_ASYNC);
                 }
+                // 轮下一位玩家
+                pgm->ply_head=pgm->ply_head->next;
             }
             else if ('M'==tmpC)
-            {
+            {   // 客户端收到，某玩家移动棋子的消息
                 tmpC=*(data+4);
                 int plX=atoi(&tmpC);
                 tmpC=*(data+5);
@@ -329,9 +425,17 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                         break;
                     }
                     pgm->iGameState=GAME_WIN;
+                    // 直接返回
+                    return ;
                 }
+                // 轮下一位玩家
+                pgm->ply_head=pgm->ply_head->next;
             }
-            pgm->ply_head=pgm->ply_head->next;
+            else
+            {
+                MessageBox(NULL,"网络数据错误", "Quoridor_Game",MB_OK);
+                exit(1);
+            }
         }
         else if (strncmp(data,"Cnamelist",9)==0)
         {

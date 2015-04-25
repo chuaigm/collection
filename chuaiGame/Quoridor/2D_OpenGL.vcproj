@@ -146,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				Optimization="0"
 				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)/src&quot;;&quot;$(ProjectDir)/&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"

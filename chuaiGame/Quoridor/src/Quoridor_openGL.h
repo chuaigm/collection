@@ -131,7 +131,7 @@ public:
     //绑定贴图
     void texture_select(UINT texture);
     //显示图片
-    void tPic(float e);
+    //void tPic(float e);
     void tPicRectangle(float x,float y, float w, float h,float deep=-0.1f);
     void tPicButton(float x,float y,float w,float h,float ytex);
     void tRectangle(float x, float y, float z, float w, float h, float r, float g, float b, float a);
@@ -167,15 +167,11 @@ public:
     // 判断新加入的墙位置是否合法
     bool judgeWallLegal();
 
-    // 电脑控制行动函数
-    //void computer_AI();
-
     // 接收网络消息的回调函数 (静态)
     //static void OnReceiveNetData(char* data, int length, DWORD userdata);
-
-    ////////////////////////////////////////////////////////////
     // 定义一个自身的静态指针
     //static CQuoridor* pThis;
+
     //data
     int iGameState;     // 当前游戏状态
     int iMenu;          // 当前选择的菜单项
@@ -247,9 +243,7 @@ public:
     //------------------------------------
     // 网络相关
     Quoridor_Network n_net;
-    //CTCPSocket *n_TCPnet;       // tcp网络连接
-    //DWORD n_port;               // 通讯端口
-    //char n_IP[16];              // 配置文件中的IP
+
     char n_loaclIP[16];         // 本机IP
     //char n_Name[16];            // 配置文件中写明的用户名
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
