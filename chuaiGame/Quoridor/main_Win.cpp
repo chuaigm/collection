@@ -13,6 +13,7 @@
 #include "glfont.h"
 #include "inifileop.h"
 #include <ctime>
+//#include "RWLock.h"
 
 // 时钟
 MYCLOCK c1;
@@ -36,6 +37,8 @@ CQuoridor gm;
 // 全局指针
 CQuoridor* pgm=&gm;
 //CQuoridor* CQuoridor::pThis=&gm;
+
+//CMyRWLock g_RWLock;
 
 //左键是否按下
 int Lbutdown=0;

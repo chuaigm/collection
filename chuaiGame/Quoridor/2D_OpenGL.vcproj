@@ -286,6 +286,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\RWLock.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\RWLock.h"
+				>
+			</File>
+			<File
 				RelativePath="Script1.rc"
 				>
 				<FileConfiguration

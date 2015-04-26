@@ -2,12 +2,15 @@
 #include "Quoridor_Network.h"
 #include "Quoridor_openGL.h"
 #include "TCPSocket.h"
+//#include "RWLock.h"
 
 extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
 
 extern CQuoridor* pgm;
 // 是否开启音乐标记
 extern int g_sound;
+
+//extern CMyRWLock g_RWLock;
 
 CTCPSocket* Quoridor_Network::n_TCPnet=NULL;
 
@@ -152,9 +155,10 @@ void Quoridor_Network::NetWorkSendData( int netWorkStat, char* data, int length 
         break;
     }
 }
-
+// 这个是线程函数，有可能由于目前没加volatile原因，开O2优化时，此函数有问题，有时更新不了变量
 void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
+    //g_RWLock.WriteLock();
     if (pgm->n_netWorkStatus==1)
     {   // 服务器接收数据格式：
 #ifdef __DEBUG__
@@ -425,6 +429,8 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                         break;
                     }
                     pgm->iGameState=GAME_WIN;
+
+                    //g_RWLock.Unlock();
                     // 直接返回
                     return ;
                 }
@@ -513,4 +519,6 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
             pgm->iGameState=GAME_NETWORK;
         }
     }
+
+    //g_RWLock.Unlock();
 }
