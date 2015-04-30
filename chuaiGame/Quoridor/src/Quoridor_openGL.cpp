@@ -347,10 +347,11 @@ void CQuoridor::check()
         }
     case GAME_SENDBOX:
         // 实时检查鼠标位置
-        // 检查时，如果鼠标位于棋盘边界外
-        if (x>board_x+lace && x<board_x+g_OpenGL->RCheight-lace)
+        // 检查时，如果鼠标位于棋盘内
+        if (x>board_x+lace && x<board_x+g_OpenGL->RCheight-lace
+            && y>lace && y<g_OpenGL->RCheight-lace)
         {
-            // 当前位置除一个路的宽度和一个墙的宽度的整数部分
+            // 当前横坐标位置除一个路的宽度和一个墙的宽度的整数部分
             it=(int)((x-board_x-lace)/(roadw+wall_w));
             // 余数部分
             remain = (x-board_x-lace)-it*(roadw+wall_w);
@@ -538,7 +539,7 @@ void CQuoridor::lbuttonproc(int lparam)
             player* tail=NULL;
             // 这里也可以考虑清一下每个玩家的next指针
             for (int i=0; i<4; i++)
-            {	// 如果当前的玩家状态是参与游戏的(可能是人控制，也可能是电脑)
+            {   // 如果当前的玩家状态是参与游戏的(可能是人控制，也可能是电脑)
                 if (plyer[i].id!=ID_CLOSED)
                 {
                     if (ply_head==NULL)
@@ -569,7 +570,7 @@ void CQuoridor::lbuttonproc(int lparam)
                 }
                 // 如果当前玩家的状态是关闭的，不参与游戏的
                 //else
-                //{	// 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
+                //{   // 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
                 //    // 如果不参与游戏，需要再清空这个游戏数据
                 //    gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLANK;
                 //}

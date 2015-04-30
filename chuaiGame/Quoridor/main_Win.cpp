@@ -94,7 +94,7 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
     {
         case WM_CREATE:
             // 读取DC，从窗口句柄获取窗体描述句柄
-            hDC = GetDC(hWnd);	
+            hDC = GetDC(hWnd);
             // 设置像素格式，选择RC
             g_OpenGL->SetupPixelFormat(hDC);
             // 游戏数据初始化
@@ -130,8 +130,8 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
         case WM_KEYUP:
             switch (wParam)
             {
-            case VK_F4:	// F4 键
-                ShowWindow(hWnd, SW_MINIMIZE);	
+            case VK_F4: // F4 键
+                ShowWindow(hWnd, SW_MINIMIZE);
                 break;
             default:
                 gm.keyupproc(wParam);
