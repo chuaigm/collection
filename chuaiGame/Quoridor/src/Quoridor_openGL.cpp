@@ -850,6 +850,20 @@ void CQuoridor::keyupproc(int keyparam)
         }
         else{iGameState=GAME_MENU;}
         break;
+    //case 81:        // 'Q'
+    //    if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+    //    {
+    //        
+    //    }
+    //    break;
+    case 77:        // 'M'
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+        {
+            pickup.x = 2*ply_head->x;
+            pickup.y = 2*ply_head->y;
+            playerMovablePos(pickup);
+        }
+        break;
     default:
         break;
     }
