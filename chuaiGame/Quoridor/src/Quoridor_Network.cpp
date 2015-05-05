@@ -186,7 +186,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
         memcpy(recMsg,data+17,3);
         size_t clientID=atoi(recMsg);
         memcpy(recMsg,data+21,length-21);
-        if (pgm->iGameState==GAME_NETWORK)
+        if (iGameState==GAME_NETWORK)
         {
             if (*recMsg=='P')
             {   // CP1M46
@@ -213,9 +213,9 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     pgm->wall_vec.push_back(wall1);
                     pgm->wall_vec.push_back(wall2);
                     // 更新游戏算法数据
-                    pgm->gameData[wall1.x][wall1.y]=GD_WALL;
-                    pgm->gameData[mid.x][mid.y]=GD_WALL;
-                    pgm->gameData[wall2.x][wall2.y]=GD_WALL;
+                    gameData[wall1.x][wall1.y]=GD_WALL;
+                    gameData[mid.x][mid.y]=GD_WALL;
+                    gameData[wall2.x][wall2.y]=GD_WALL;
                     // color-1 实际上可以表示，玩家数组对应的下标
                     pgm->plyer[color-1].wall_num_left--;
                     if (g_sound==1)
@@ -231,8 +231,8 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     tmpC=*(recMsg+4);
                     int plY=atoi(&tmpC);
                     // 这基于颜色与玩家位置的对应关系
-                    pgm->gameData[pgm->plyer[color-1].x*2][pgm->plyer[color-1].y*2]=GD_BLANK;
-                    pgm->gameData[plX*2][plY*2]=color;
+                    gameData[pgm->plyer[color-1].x*2][pgm->plyer[color-1].y*2]=GD_BLANK;
+                    gameData[plX*2][plY*2]=color;
                     pgm->plyer[color-1].x=plX;
                     pgm->plyer[color-1].y=plY;
                     if (g_sound==1)
@@ -259,7 +259,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                         default:
                             break;
                         }
-                        pgm->iGameState=GAME_WIN;
+                        iGameState=GAME_WIN;
                     }
                 }
                 // 服务器向所有客户端转发收到的内容，跳过消息来源
@@ -291,7 +291,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 pgm->ply_head=pgm->ply_head->next;
             }
         }
-        else if (pgm->iGameState==GAME_NET_CONFIG)
+        else if (iGameState==GAME_NET_CONFIG)
         {
             if (clientID<=3)
             {   // 服务器接收客户端发来的玩家名
@@ -380,9 +380,9 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 pgm->wall_vec.push_back(wall1);
                 pgm->wall_vec.push_back(wall2);
                 // 更新游戏算法数据
-                pgm->gameData[wall1.x][wall1.y]=GD_WALL;
-                pgm->gameData[mid.x][mid.y]=GD_WALL;
-                pgm->gameData[wall2.x][wall2.y]=GD_WALL;
+                gameData[wall1.x][wall1.y]=GD_WALL;
+                gameData[mid.x][mid.y]=GD_WALL;
+                gameData[wall2.x][wall2.y]=GD_WALL;
                 // color-1 实际上可以表示，玩家数组对应的下标
                 pgm->plyer[color-1].wall_num_left--;
                 if (g_sound==1)
@@ -400,8 +400,8 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 tmpC=*(data+5);
                 int plY=atoi(&tmpC);
                 // 这基于颜色与玩家位置的对应关系
-                pgm->gameData[pgm->plyer[color-1].x*2][pgm->plyer[color-1].y*2]=GD_BLANK;
-                pgm->gameData[plX*2][plY*2]=color;
+                gameData[pgm->plyer[color-1].x*2][pgm->plyer[color-1].y*2]=GD_BLANK;
+                gameData[plX*2][plY*2]=color;
                 pgm->plyer[color-1].x=plX;
                 pgm->plyer[color-1].y=plY;
                 if (g_sound==1)
@@ -428,7 +428,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     default:
                         break;
                     }
-                    pgm->iGameState=GAME_WIN;
+                    iGameState=GAME_WIN;
 
                     //g_RWLock.Unlock();
                     // 直接返回
@@ -472,7 +472,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     } else {
                         pgm->plyer[1].id=ID_NET_PLAYER;
                     }
-                    pgm->gameData[pgm->plyer[1].x*2][pgm->plyer[1].y*2]=GD_RED;
+                    gameData[pgm->plyer[1].x*2][pgm->plyer[1].y*2]=GD_RED;
                     tail->next=&pgm->plyer[1];
                     tail=&pgm->plyer[1];
                     break;
@@ -483,7 +483,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     } else {
                         pgm->plyer[2].id=ID_NET_PLAYER;
                     }
-                    pgm->gameData[pgm->plyer[2].x*2][pgm->plyer[2].y*2]=GD_GREEN;
+                    gameData[pgm->plyer[2].x*2][pgm->plyer[2].y*2]=GD_GREEN;
                     tail->next=&pgm->plyer[2];
                     tail=&pgm->plyer[2];
                     break;
@@ -494,7 +494,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                     } else {
                         pgm->plyer[0].id=ID_NET_PLAYER;
                     }
-                    pgm->gameData[pgm->plyer[0].x*2][pgm->plyer[0].y*2]=GD_YELLOW;
+                    gameData[pgm->plyer[0].x*2][pgm->plyer[0].y*2]=GD_YELLOW;
                     // 当存在黄色玩家时，比较特别
                     pgm->ply_head->next=&pgm->plyer[0];
                     pgm->plyer[0].next=&pgm->plyer[1];
@@ -516,7 +516,7 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
                 tmp_head=tmp_head->next;
             }while (pgm->ply_head!=tmp_head);
 
-            pgm->iGameState=GAME_NETWORK;
+            iGameState=GAME_NETWORK;
         }
     }
 

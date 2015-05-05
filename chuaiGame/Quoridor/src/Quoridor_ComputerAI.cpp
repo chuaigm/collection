@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "gData.h"
 #include "Quoridor_ComputerAI.h"
 #include "Quoridor_openGL.h"
 
@@ -84,9 +85,9 @@ void Quoridor_ComputerAI::SimpleComputer()
             // 这种情况，进入到人物棋子处理阶段
             char tmp=0;
             // 交换
-            tmp=pgm->gameData[targ.x][targ.y];
-            pgm->gameData[targ.x][targ.y]=pgm->gameData[pgm->ply_head->x*2][pgm->ply_head->y*2];
-            pgm->gameData[pgm->ply_head->x*2][pgm->ply_head->y*2]=tmp;
+            tmp=gameData[targ.x][targ.y];
+            gameData[targ.x][targ.y]=gameData[pgm->ply_head->x*2][pgm->ply_head->y*2];
+            gameData[pgm->ply_head->x*2][pgm->ply_head->y*2]=tmp;
 
             pgm->ply_head->x=targ.x/2;
             pgm->ply_head->y=targ.y/2;
@@ -99,28 +100,28 @@ void Quoridor_ComputerAI::SimpleComputer()
                 if (pgm->ply_head->x==8)
                 {
                     pgm->win_flag=GD_YELLOW;
-                    pgm->iGameState=GAME_WIN;
+                    iGameState=GAME_WIN;
                 }
                 break;
             case GD_RED:
                 if (pgm->ply_head->y==0)
                 {
                     pgm->win_flag=GD_RED;
-                    pgm->iGameState=GAME_WIN;
+                    iGameState=GAME_WIN;
                 }
                 break;
             case GD_GREEN:
                 if (pgm->ply_head->x==0)
                 {
                     pgm->win_flag=GD_GREEN;
-                    pgm->iGameState=GAME_WIN;
+                    iGameState=GAME_WIN;
                 }
                 break;
             case GD_BLUE:
                 if (pgm->ply_head->y==8)
                 {
                     pgm->win_flag=GD_BLUE;
-                    pgm->iGameState=GAME_WIN;
+                    iGameState=GAME_WIN;
                 }
                 break;
             default:

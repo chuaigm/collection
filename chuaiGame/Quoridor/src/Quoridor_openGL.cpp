@@ -87,7 +87,8 @@ CQuoridor::CQuoridor()
     // 贴图数组初始化
     memset(g_cactus,0,sizeof(g_cactus));
     // 棋盘数据初始化
-    memset(gameData,0,sizeof(gameData));
+    void* tmpp = (void*)gameData;
+    memset(tmpp,0,sizeof(gameData));
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
@@ -1558,7 +1559,8 @@ void CQuoridor::resetGameData()
     // 清空vector
     wall_vec.swap(std::vector<pos2d>());
     // 棋盘数据初始化
-    memset(gameData,0,sizeof(gameData));
+    void* tmpp = (void*)gameData;
+    memset(tmpp,0,sizeof(gameData));
     // 重置玩家位置数据
     plyer[0].x=0;
     plyer[0].y=4;
@@ -2567,8 +2569,9 @@ bool CQuoridor::judgeWallLegal()
            指的是，每判断到一个玩家时，棋盘上不计任何玩家的位置，再计算可走位置
            所以，这里保护一下游戏数据，在出函数的时候，再还原
     */
-    char backupGD[sz][sz]={0};
-    memcpy(backupGD,gameData,sizeof(gameData));
+    char backupGD[GDSIZE][GDSIZE]={0};
+    void* tmpp = (void*)gameData;
+    memcpy(backupGD,tmpp,sizeof(gameData));
     // 将游戏数据中，去除所有玩家所在的位置
     player* pp=ply_head;
     do 
@@ -2645,13 +2648,15 @@ bool CQuoridor::judgeWallLegal()
             if (jump_flag==false /*&& que.size()==0*/)
             {   // 如果当前玩家没有检测到可走的终点
                 // 还原被修改过的游戏数据
-                memcpy(gameData,backupGD,sizeof(gameData));
+                void* tmpp = (void*)gameData;
+                memcpy(tmpp,backupGD,sizeof(gameData));
                 return false;
             }
         }
     }
     // 还原被修改过的游戏数据
-    memcpy(gameData,backupGD,sizeof(gameData));
+    tmpp = (void*)gameData;
+    memcpy(tmpp,backupGD,sizeof(gameData));
     // 参与游戏的玩家全都有解
     return true;
 }

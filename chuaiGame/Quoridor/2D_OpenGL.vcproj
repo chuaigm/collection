@@ -382,6 +382,14 @@
 			Name="Quoridor"
 			>
 			<File
+				RelativePath=".\src\gData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\gData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\Quoridor_ComputerAI.cpp"
 				>
 			</File>

@@ -11,19 +11,9 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include "gData.h"
 #include "Quoridor_Network.h"
-// 游戏的状态
-enum {
-    GAME_PRE,
-    GAME_MENU,
-    GAME_SINGE,
-    GAME_IN_CONFIG,
-    GAME_NETWORK,
-    GAME_NET_CONFIG,
-    GAME_SENDBOX,
-    GAME_HELP,
-    GAME_WIN
-};
+
 // 菜单数量
 #define MENU_NUM 5
 #define INVALID_VAL -1
@@ -45,15 +35,7 @@ enum {
     BUTTON_SERVER_TEST,
     BUTTON_CLIENT_TEST
 };
-// 棋盘数组里代表的含义
-enum {
-    GD_BLANK,
-    GD_YELLOW,
-    GD_RED,
-    GD_GREEN,
-    GD_BLUE,
-    GD_WALL
-};
+
 // 定义玩家状态,注意，前三个顺序不能变动，为了单人游戏时，按钮的顺序
 enum {
     ID_HUMAN=0,
@@ -89,12 +71,6 @@ public:
     unsigned int wall_num_left;
     player* next;
 };
-//struct walls{
-//	pos2d w[2];
-//};
-// 游戏棋盘数据的数组尺寸
-const int sz=17;
-const int wall_total_num=21;
 
 class CQuoridor
 {
@@ -173,7 +149,6 @@ public:
     //static CQuoridor* pThis;
 
     //data
-    int iGameState;     // 当前游戏状态
     int iMenu;          // 当前选择的菜单项
     int iButton;        // 按钮选择的结果
     int win_flag;       // 哪位玩家获得了胜利，0没人胜利，1，黄色....(复用GD_系列数据)
@@ -215,9 +190,6 @@ public:
     int lace;
 
     //------------------------------------
-    // 游戏算法数据
-    // 其值如上述枚举
-    char gameData[sz][sz];
     // 实时计算的获取鼠标在棋盘上的整数位置
     // 注意，这个值并不是只按照road计算，是包含墙在内的坐标
     pos2d arr;
@@ -245,7 +217,6 @@ public:
     Quoridor_Network n_net;
 
     char n_loaclIP[16];         // 本机IP
-    //char n_Name[16];            // 配置文件中写明的用户名
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
     char n_NameAll[4][16];      // 目前所有连接的玩家名
 };

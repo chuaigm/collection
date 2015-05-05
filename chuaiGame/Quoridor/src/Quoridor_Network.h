@@ -1,4 +1,6 @@
 #pragma once
+
+#include "gData.h"
 #include "TCPSocket.h"
 
 class Quoridor_Network
