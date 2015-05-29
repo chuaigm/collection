@@ -15,11 +15,13 @@ public:
     bool startClient();
     void closeNetWork();
 
-    void OnServerReceive();
-    void OnClientReceive();
-
+    // 发送只实现一个，而且把S和C,整合在一起
     void NetWorkSendData(int netWorkStat, char* data, int length);
 
+    // 接收数据的函数，做两份，因为实现代码太多，方便管理
+    static void OnServerReceive(char* data, int length);
+    static void OnClientReceive(char* data, int length);
+    // 接收数据函数的主入口，是一个回调函数
     static void OnReceiveNetData(char* data, int length, DWORD userdata);
 
     // 网络相关

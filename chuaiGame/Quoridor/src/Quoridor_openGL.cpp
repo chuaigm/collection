@@ -65,25 +65,25 @@ CQuoridor::CQuoridor()
     arr.y=-1;
     // 玩家信息数据
     // 黄
-    plyer[0].id=ID_CLOSED;
-    plyer[0].color=GD_YELLOW;
-    plyer[0].x=0;
-    plyer[0].y=4;
+    g_player[0].id=ID_CLOSED;
+    g_player[0].color=GD_YELLOW;
+    g_player[0].x=0;
+    g_player[0].y=4;
     // 红
-    plyer[1].id=ID_COMPUTER;
-    plyer[1].color=GD_RED;
-    plyer[1].x=4;
-    plyer[1].y=8;
+    g_player[1].id=ID_COMPUTER;
+    g_player[1].color=GD_RED;
+    g_player[1].x=4;
+    g_player[1].y=8;
     // 绿
-    plyer[2].id=ID_CLOSED;
-    plyer[2].color=GD_GREEN;
-    plyer[2].x=8;
-    plyer[2].y=4;
+    g_player[2].id=ID_CLOSED;
+    g_player[2].color=GD_GREEN;
+    g_player[2].x=8;
+    g_player[2].y=4;
     // 蓝
-    plyer[3].id=ID_HUMAN;
-    plyer[3].color=GD_BLUE;
-    plyer[3].x=4;
-    plyer[3].y=0;
+    g_player[3].id=ID_HUMAN;
+    g_player[3].color=GD_BLUE;
+    g_player[3].x=4;
+    g_player[3].y=0;
     // 贴图数组初始化
     memset(g_cactus,0,sizeof(g_cactus));
     // 棋盘数据初始化
@@ -541,29 +541,29 @@ void CQuoridor::lbuttonproc(int lparam)
             // 这里也可以考虑清一下每个玩家的next指针
             for (int i=0; i<4; i++)
             {   // 如果当前的玩家状态是参与游戏的(可能是人控制，也可能是电脑)
-                if (plyer[i].id!=ID_CLOSED)
+                if (g_player[i].id!=ID_CLOSED)
                 {
                     if (ply_head==NULL)
                     {
-                        ply_head=&plyer[i];
-                        tail=&plyer[i];
+                        ply_head=&g_player[i];
+                        tail=&g_player[i];
                     }
-                    tail->next=&plyer[i];
-                    tail=&plyer[i];
+                    tail->next=&g_player[i];
+                    tail=&g_player[i];
                     nn++;
-                    switch (plyer[i].color)
+                    switch (g_player[i].color)
                     {
                     case GD_YELLOW:
-                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_YELLOW;
+                        gameData[g_player[i].x*2][g_player[i].y*2]=GD_YELLOW;
                         break;
                     case GD_RED:
-                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_RED;
+                        gameData[g_player[i].x*2][g_player[i].y*2]=GD_RED;
                         break;
                     case GD_GREEN:
-                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_GREEN;
+                        gameData[g_player[i].x*2][g_player[i].y*2]=GD_GREEN;
                         break;
                     case GD_BLUE:
-                        gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLUE;
+                        gameData[g_player[i].x*2][g_player[i].y*2]=GD_BLUE;
                         break;
                     default:
                         break;
@@ -573,7 +573,7 @@ void CQuoridor::lbuttonproc(int lparam)
                 //else
                 //{   // 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
                 //    // 如果不参与游戏，需要再清空这个游戏数据
-                //    gameData[plyer[i].x*2][plyer[i].y*2]=GD_BLANK;
+                //    gameData[g_player[i].x*2][g_player[i].y*2]=GD_BLANK;
                 //}
             }
             // 当可用玩家数量，少于2时，无法进行游戏
@@ -625,7 +625,7 @@ void CQuoridor::lbuttonproc(int lparam)
                     && g_OpenGL->Ymouse<(player_info_h-menu_h)/2+menu_h+player_info_h*j
                     )
                 {
-                    plyer[3-j].id=i;
+                    g_player[3-j].id=i;
                 }
             }
         }
@@ -655,8 +655,8 @@ void CQuoridor::lbuttonproc(int lparam)
                 n_netWorkStatus=1;
                 // 如果是服务器，首先把玩家链表中加入自己
                 // 服务器默认蓝色玩家
-                plyer[3].id=ID_HUMAN;
-                ply_head=&plyer[3];
+                g_player[3].id=ID_HUMAN;
+                ply_head=&g_player[3];
             }
             break;
         case BUTTON_CLIENT:
@@ -678,7 +678,7 @@ void CQuoridor::lbuttonproc(int lparam)
             }
             player* tail=ply_head;
             // 点开始游戏，才给服务器玩家赋上棋盘数据值
-            gameData[plyer[3].x*2][plyer[3].y*2]=GD_BLUE;
+            gameData[g_player[3].x*2][g_player[3].y*2]=GD_BLUE;
             int ConNum=n_net.GetConnectionNumber();
             // 由于网络游戏时，三个玩家的分配顺序，服务器必是蓝色
             // 第二个加入游戏的玩家为红色，如果再有玩家加入是绿色，最后是黄色
@@ -687,23 +687,23 @@ void CQuoridor::lbuttonproc(int lparam)
                 switch (i)
                 {
                 case 0:// 设置为红色玩家
-                    plyer[1].id=ID_NET_PLAYER;
-                    gameData[plyer[1].x*2][plyer[1].y*2]=GD_RED;
-                    tail->next=&plyer[1];
-                    tail=&plyer[1];
+                    g_player[1].id=ID_NET_PLAYER;
+                    gameData[g_player[1].x*2][g_player[1].y*2]=GD_RED;
+                    tail->next=&g_player[1];
+                    tail=&g_player[1];
                     break;
                 case 1:// 设置为绿色玩家
-                    plyer[2].id=ID_NET_PLAYER;
-                    gameData[plyer[2].x*2][plyer[2].y*2]=GD_GREEN;
-                    tail->next=&plyer[2];
-                    tail=&plyer[2];
+                    g_player[2].id=ID_NET_PLAYER;
+                    gameData[g_player[2].x*2][g_player[2].y*2]=GD_GREEN;
+                    tail->next=&g_player[2];
+                    tail=&g_player[2];
                     break;
                 case 2:// 设置为黄色玩家
-                    plyer[0].id=ID_NET_PLAYER;
-                    gameData[plyer[0].x*2][plyer[0].y*2]=GD_YELLOW;
+                    g_player[0].id=ID_NET_PLAYER;
+                    gameData[g_player[0].x*2][g_player[0].y*2]=GD_YELLOW;
                     // 当存在黄色玩家时，比较特别
-                    ply_head->next=&plyer[0];
-                    plyer[0].next=&plyer[1];
+                    ply_head->next=&g_player[0];
+                    g_player[0].next=&g_player[1];
                     break;
                 default:
                     break;
@@ -773,23 +773,23 @@ void CQuoridor::rbuttonproc( int lparam )
         case GD_BLANK:
             break;
         case GD_YELLOW:
-            plyer[0].x=-1;
-            plyer[0].y=-1;
+            g_player[0].x=-1;
+            g_player[0].y=-1;
             gameData[arr.x][arr.y]=0;
             break;
         case GD_RED:
-            plyer[1].x=-1;
-            plyer[1].y=-1;
+            g_player[1].x=-1;
+            g_player[1].y=-1;
             gameData[arr.x][arr.y]=0;
             break;
         case GD_GREEN:
-            plyer[2].x=-1;
-            plyer[2].y=-1;
+            g_player[2].x=-1;
+            g_player[2].y=-1;
             gameData[arr.x][arr.y]=0;
             break;
         case GD_BLUE:
-            plyer[3].x=-1;
-            plyer[3].y=-1;
+            g_player[3].x=-1;
+            g_player[3].y=-1;
             gameData[arr.x][arr.y]=0;
             break;
         case GD_WALL:
@@ -1150,7 +1150,9 @@ void CQuoridor::showHelp()
     myfont.Print2D(board_x+lace,g_OpenGL->RCheight-460,tmpstr,FONT2,1.0,0.8f,0.0);
 
     sprintf(tmpstr,"             (F4 最小化窗口，F9 显示调试信息)");
-    myfont.Print2D(board_x+lace,lace+50,tmpstr,FONT2,1.0,0.8f,0.0);
+    myfont.Print2D(board_x+lace,lace+62,tmpstr,FONT2,1.0,0.8f,0.0);
+    sprintf(tmpstr,"             (本程序使用贴图，均来自网络，棋子头像取自《罗小黑战记》动漫)");
+    myfont.Print2D(board_x+lace,lace+46,tmpstr,FONT1,1.0,0.8f,0.0);
 
     sprintf(tmpstr,"OpenGL信息：[厂商:%s] [渲染器:%s]",glGetString(GL_VENDOR),glGetString(GL_RENDERER));
     myfont.Print2D(board_x+lace,lace+32,tmpstr,FONT0,1.0,1.0,0.0);
@@ -1312,17 +1314,17 @@ void CQuoridor::drawAccessory()
     
     for (int i=0; i<4; i++)
     {
-        if (plyer[i].id!=ID_CLOSED)
+        if (g_player[i].id!=ID_CLOSED)
         {
             // 这里需要注意贴图的标号顺序
             texture_select(g_cactus[3+i]);
             tPicRectangle((float)lace,(3-i+1/2.0f)*player_info_h,player_info_w*0.5f,player_info_w*0.5f,layer+0.1f);
-            if (plyer[i].id==ID_COMPUTER)
+            if (g_player[i].id==ID_COMPUTER)
             {   // 绘制电脑的图标
                 texture_select(g_cactus[8]);
                 tPicRectangle((float)lace*2.5f+player_info_w*0.5f,(3-i+1/2.0f)*player_info_h,player_info_w*0.28f,player_info_w*0.28f,layer+0.1f);
             }
-            sprintf(tmpstr,"墙剩余:%u",plyer[i].wall_num_left);
+            sprintf(tmpstr,"墙剩余:%u",g_player[i].wall_num_left);
             myfont.Print2D(12,(int)((3-i+1/5.0f)*player_info_h),tmpstr,FONT3,1,1,1);
             if (iGameState==GAME_NETWORK)
             {
@@ -1388,12 +1390,12 @@ void CQuoridor::drawPlayerWall()
     // 对应颜色的玩家，黄，红，绿，蓝
     for (int i=0; i<4; i++)
     {
-        if (plyer[i].id!=ID_CLOSED)
+        if (g_player[i].id!=ID_CLOSED)
         {
             texture_select(g_cactus[3+i]);
-            if (plyer[i].x>-1 && plyer[i].y>-1)
+            if (g_player[i].x>-1 && g_player[i].y>-1)
             {
-                tPicRectangle(board_x+lace+(roadw+wall_w)*plyer[i].x,lace+(roadw+wall_w)*plyer[i].y,roadw,roadw);
+                tPicRectangle(board_x+lace+(roadw+wall_w)*g_player[i].x,lace+(roadw+wall_w)*g_player[i].y,roadw,roadw);
             }
         }
     }
@@ -1562,45 +1564,49 @@ void CQuoridor::resetGameData()
     void* tmpp = (void*)gameData;
     memset(tmpp,0,sizeof(gameData));
     // 重置玩家位置数据
-    plyer[0].x=0;
-    plyer[0].y=4;
-    plyer[0].wall_num_left=0;
-    plyer[0].next=NULL;
-    plyer[1].x=4;
-    plyer[1].y=8;
-    plyer[1].wall_num_left=0;
-    plyer[1].next=NULL;
-    plyer[2].x=8;
-    plyer[2].y=4;
-    plyer[2].wall_num_left=0;
-    plyer[2].next=NULL;
-    plyer[3].x=4;
-    plyer[3].y=0;
-    plyer[3].wall_num_left=0;
-    plyer[3].next=NULL;
+    g_player[0].color=GD_YELLOW;
+    g_player[0].x=0;
+    g_player[0].y=4;
+    g_player[0].wall_num_left=0;
+    g_player[0].next=NULL;
+    g_player[1].color=GD_RED;
+    g_player[1].x=4;
+    g_player[1].y=8;
+    g_player[1].wall_num_left=0;
+    g_player[1].next=NULL;
+    g_player[2].color=GD_GREEN;
+    g_player[2].x=8;
+    g_player[2].y=4;
+    g_player[2].wall_num_left=0;
+    g_player[2].next=NULL;
+    g_player[3].color=GD_BLUE;
+    g_player[3].x=4;
+    g_player[3].y=0;
+    g_player[3].wall_num_left=0;
+    g_player[3].next=NULL;
     switch (iGameState)
     {
     case GAME_IN_CONFIG:
-        plyer[0].id=ID_CLOSED;
-        plyer[1].id=ID_COMPUTER;
-        plyer[2].id=ID_CLOSED;
-        plyer[3].id=ID_HUMAN;
+        g_player[0].id=ID_CLOSED;
+        g_player[1].id=ID_COMPUTER;
+        g_player[2].id=ID_CLOSED;
+        g_player[3].id=ID_HUMAN;
         break;
     case GAME_SENDBOX:
-        plyer[0].id=ID_HUMAN;
-        plyer[1].id=ID_HUMAN;
-        plyer[2].id=ID_HUMAN;
-        plyer[3].id=ID_HUMAN;
-        gameData[2*plyer[0].x][2*plyer[0].y]=GD_YELLOW;
-        gameData[2*plyer[1].x][2*plyer[1].y]=GD_RED;
-        gameData[2*plyer[2].x][2*plyer[2].y]=GD_GREEN;
-        gameData[2*plyer[3].x][2*plyer[3].y]=GD_BLUE;
+        g_player[0].id=ID_HUMAN;
+        g_player[1].id=ID_HUMAN;
+        g_player[2].id=ID_HUMAN;
+        g_player[3].id=ID_HUMAN;
+        gameData[2*g_player[0].x][2*g_player[0].y]=GD_YELLOW;
+        gameData[2*g_player[1].x][2*g_player[1].y]=GD_RED;
+        gameData[2*g_player[2].x][2*g_player[2].y]=GD_GREEN;
+        gameData[2*g_player[3].x][2*g_player[3].y]=GD_BLUE;
         break;
     case GAME_NET_CONFIG:
-        plyer[0].id=ID_CLOSED;
-        plyer[1].id=ID_CLOSED;
-        plyer[2].id=ID_CLOSED;
-        plyer[3].id=ID_CLOSED;
+        g_player[0].id=ID_CLOSED;
+        g_player[1].id=ID_CLOSED;
+        g_player[2].id=ID_CLOSED;
+        g_player[3].id=ID_CLOSED;
         break;
     default:
         break;
@@ -1670,7 +1676,7 @@ void CQuoridor::drawInConfig()
     {
         for (int i=0; i<3; i++)
         {
-            if(i==plyer[3-j].id)
+            if(i==g_player[3-j].id)
             {
                 myfont.Print2D((int)(board_x+(i*2.3+1)*(roadw+wall_w))+10,(int)((player_info_h-menu_h)/2)+5+(int)player_info_h*j,cfgstr[i],FONT4,1,1,1);
                 tPicButton((float)board_x+(i*2.3f+1)*(roadw+wall_w),(player_info_h-menu_h)/2+player_info_h*j,(float)menu_w,(float)menu_h,0.0f);
@@ -1738,36 +1744,36 @@ void CQuoridor::playerActionRule(bool network)
             case GD_BLANK:
                 break;
             case GD_YELLOW:
-                plyer[0].x=arr.x/2;
-                plyer[0].y=arr.y/2;
-                if (plyer[0].x==8)
+                g_player[0].x=arr.x/2;
+                g_player[0].y=arr.y/2;
+                if (g_player[0].x==8)
                 {
                     win_flag=GD_YELLOW;
                     iGameState=GAME_WIN;
                 }
                 break;
             case GD_RED:
-                plyer[1].x=arr.x/2;
-                plyer[1].y=arr.y/2;
-                if (plyer[1].y==0)
+                g_player[1].x=arr.x/2;
+                g_player[1].y=arr.y/2;
+                if (g_player[1].y==0)
                 {
                     win_flag=GD_RED;
                     iGameState=GAME_WIN;
                 }
                 break;
             case GD_GREEN:
-                plyer[2].x=arr.x/2;
-                plyer[2].y=arr.y/2;
-                if (plyer[2].x==0)
+                g_player[2].x=arr.x/2;
+                g_player[2].y=arr.y/2;
+                if (g_player[2].x==0)
                 {
                     win_flag=GD_GREEN;
                     iGameState=GAME_WIN;
                 }
                 break;
             case GD_BLUE:
-                plyer[3].x=arr.x/2;
-                plyer[3].y=arr.y/2;
-                if (plyer[3].y==8)
+                g_player[3].x=arr.x/2;
+                g_player[3].y=arr.y/2;
+                if (g_player[3].y==8)
                 {
                     win_flag=GD_BLUE;
                     iGameState=GAME_WIN;
@@ -2426,20 +2432,20 @@ void CQuoridor::freeSendBoxRule()
             case GD_BLANK:
                 break;
             case GD_YELLOW:
-                plyer[0].x=arr.x/2;
-                plyer[0].y=arr.y/2;
+                g_player[0].x=arr.x/2;
+                g_player[0].y=arr.y/2;
                 break;
             case GD_RED:
-                plyer[1].x=arr.x/2;
-                plyer[1].y=arr.y/2;
+                g_player[1].x=arr.x/2;
+                g_player[1].y=arr.y/2;
                 break;
             case GD_GREEN:
-                plyer[2].x=arr.x/2;
-                plyer[2].y=arr.y/2;
+                g_player[2].x=arr.x/2;
+                g_player[2].y=arr.y/2;
                 break;
             case GD_BLUE:
-                plyer[3].x=arr.x/2;
-                plyer[3].y=arr.y/2;
+                g_player[3].x=arr.x/2;
+                g_player[3].y=arr.y/2;
                 break;
             default:
                 break;
@@ -2450,20 +2456,20 @@ void CQuoridor::freeSendBoxRule()
             case GD_BLANK:
                 break;
             case GD_YELLOW:
-                plyer[0].x=pickup.x/2;
-                plyer[0].y=pickup.y/2;
+                g_player[0].x=pickup.x/2;
+                g_player[0].y=pickup.y/2;
                 break;
             case GD_RED:
-                plyer[1].x=pickup.x/2;
-                plyer[1].y=pickup.y/2;
+                g_player[1].x=pickup.x/2;
+                g_player[1].y=pickup.y/2;
                 break;
             case GD_GREEN:
-                plyer[2].x=pickup.x/2;
-                plyer[2].y=pickup.y/2;
+                g_player[2].x=pickup.x/2;
+                g_player[2].y=pickup.y/2;
                 break;
             case GD_BLUE:
-                plyer[3].x=pickup.x/2;
-                plyer[3].y=pickup.y/2;
+                g_player[3].x=pickup.x/2;
+                g_player[3].y=pickup.y/2;
                 break;
             default:
                 break;
@@ -2592,14 +2598,14 @@ bool CQuoridor::judgeWallLegal()
         // 证明可以找到出口的跳转标志置为false
         jump_flag=false;
         // 只要不是关闭的玩家
-        if (plyer[i].id!=ID_CLOSED)
+        if (g_player[i].id!=ID_CLOSED)
         {   // 先将当前玩家的位置传入，注意，玩家坐标是0~8的范围，转换为0~16的范围
             // 因为，选点算法返回的是0~16的范围
             pos2d tmpp;
-            tmpp.x=plyer[i].x*2;
-            tmpp.y=plyer[i].y*2;
+            tmpp.x=g_player[i].x*2;
+            tmpp.y=g_player[i].y*2;
             // 可走点标记二维数组是按照0~8设计的
-            tmpflag[plyer[i].x][plyer[i].y]=1;
+            tmpflag[g_player[i].x][g_player[i].y]=1;
             que.push_back(tmpp);
             // 如果可走队列里还有内容，且没有找到终点的可走位置
             while (que.size()>0 && jump_flag == false)
@@ -2610,7 +2616,7 @@ bool CQuoridor::judgeWallLegal()
                 {
                     for (size_t j=0;j<preselect_pos.size();j++)
                     {   // 不同玩家不同的到达终点的条件
-                        switch(plyer[i].color)
+                        switch(g_player[i].color)
                         {
                         case GD_YELLOW:
                             if (preselect_pos[j].x==16)

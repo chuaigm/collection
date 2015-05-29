@@ -32,6 +32,7 @@ int WinHeight= WIN_HEIGHT;
 int g_refresh_rate = 40;
 // 是否开启音乐
 int g_sound = 1;
+
 // 目前游戏框架中，主要代码(全局)
 CQuoridor gm;
 // 全局指针

@@ -2,6 +2,7 @@
 // OpenGL基础类，opengl对外接口与封装
 //====================================================================
 #include "stdafx.h"
+#include "gData.h"
 #include "OpenGLbase.h"
 #include "myclock.h"
 // 此处添加游戏具体对象

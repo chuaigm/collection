@@ -37,9 +37,6 @@
 #pragma comment( lib, "glu32.lib")
 #pragma comment( lib, "glaux.lib")
 
-//#define RAND_COORD(x)   ((float)rand()/RAND_MAX * (x))
-//#define FRAND   (((float)rand()-(float)rand())/RAND_MAX)
-
 // 检测键盘按键，使用这个会有个问题，就是窗口脱离焦点，也会检测
 #define KEY_DOWN(vk_code)((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 
@@ -47,12 +44,12 @@
 #define WIN_WIDTH 1024
 #define WIN_HEIGHT 700
 
-
+// 贴图数组的大小
 #define GAME_TEX_NUM 32
 
 #define PI  (3.14159265359)
 
-// 开启调试代码
+// 定义此宏，会开启调试代码
 #define __DEBUG__
 
 //字体

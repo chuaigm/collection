@@ -36,40 +36,9 @@ enum {
     BUTTON_CLIENT_TEST
 };
 
-// 定义玩家状态,注意，前三个顺序不能变动，为了单人游戏时，按钮的顺序
-enum {
-    ID_HUMAN=0,
-    ID_COMPUTER,
-    ID_CLOSED,
-    ID_NET_PLAYER
-};
-
-struct pos2d{
-    int x;
-    int y;
-    bool operator == (const pos2d &a)
-    {
-        return (a.x==this->x && a.y==this->y);
-    }
-};
 struct point2d{
     float x;
     float y;
-};
-class player {
-public:
-    player():id(0),color(0),x(0),y(0),wall_num_left(0),next(NULL){};
-    ~player(){};
-    // 并复用此变量作为控制角色是否在场上，0:玩家，1:电脑，2:关闭，3:网络玩家
-    // (由于在单人模式时，此值是由for循环判断鼠标位置实现的，所以，对应关系必须严格)
-    int id;
-    // 此玩家的颜色，复用GD_枚举数值
-    int color;
-    // 玩家的位置，是按照玩家可站的位置计算，0~8
-    int x;
-    int y;
-    unsigned int wall_num_left;
-    player* next;
 };
 
 class CQuoridor
@@ -193,18 +162,10 @@ public:
     // 实时计算的获取鼠标在棋盘上的整数位置
     // 注意，这个值并不是只按照road计算，是包含墙在内的坐标
     pos2d arr;
-    // 玩家信息，玩家的坐标是按照road格的位置坐标计算的，最大为9-1
-    // 序号默认包含颜色信息，0:黄色，1:红色，2:绿色，3:蓝色
-    player plyer[4];
+
     // 鼠标选定的位置,这个位置对应于算法数组的下标的一半
     pos2d pickup;
-    // 需要绘制的墙的队列,先压入的是左边的块与下边的块(方便绘制)
-    // 墙的数据结构里，包含三个位置的坐标，分别是可以挡住两块路的数组坐标，
-    // 和这两个位置之间的那一小块中间连接的位置，用于判断交叉情况
-    std::vector<pos2d> wall_vec;
 
-    // 正常游戏开始时，玩家顺序单链表,当前应该执行的玩家指针
-    player* ply_head;
     // 正式游戏时，玩家可行动预选位置
     std::vector<pos2d> preselect_pos;
 
