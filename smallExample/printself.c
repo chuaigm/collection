@@ -1,0 +1,1 @@
+void main(){char p[1000];char *p2="void main(){char p[1000];char *p2=%s;char*q=p;printf(p2,q=(strcpy(&p[1],p2))&&(p[0]=34)&&(p[120]=34)&&(p[121]=0)?p:p);}";char*q=p;printf(p2,q=(strcpy(&p[1],p2))&&(p[0]=34)&&(p[120]=34)&&(p[121]=0)?p:p);}
