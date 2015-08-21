@@ -1,6 +1,11 @@
+// modify by cgm 2015-8-21
+// 修改自网络获取的一段程序
+// A星路径搜索算法
+
 #include <stdio.h>
 #include <stdlib.h>
 
+#define BLANKNODE	0
 #define STARTNODE	1
 #define ENDNODE		2
 #define BARRIER		3
@@ -12,22 +17,20 @@ typedef struct AStarNode
 	int s_g;	// 起点到此点的距离( 由g和h可以得到f，此处f省略，f=g+h )
 	int	s_h;	// 启发函数预测的此点到终点的距离
 	int s_style;// 结点类型：起始点，终点，障碍物
+	int s_is_in_closetable;			// 是否在close表中
+	int s_is_in_opentable;			// 是否在open表中
 	struct AStarNode * s_parent;	// 父节点
-	int s_is_in_closetable;		// 是否在close表中
-	int s_is_in_opentable;		// 是否在open表中
 }AStarNode, *pAStarNode;
 
-AStarNode  map_maze[10][10];		// 结点数组
+AStarNode  map_maze[10][10];	// 结点数组
 pAStarNode open_table[100];		// open表
-pAStarNode close_table[100];		// close表
-int   open_node_count;		// open表中节点数量
-int	  close_node_count;	// close表中结点数量
+pAStarNode close_table[100];	// close表
 pAStarNode path_stack[100];		// 保存路径的栈
-int        top = -1;			// 栈顶
-
+int   open_node_count=0;		// open表中节点数量
+int	  close_node_count=0;		// close表中结点数量
+int   top = -1;					// 栈顶
 
 // 交换两个元素
-// 
 void swap( int idx1, int idx2 )  
 {  
 	pAStarNode tmp = open_table[idx1];
@@ -36,7 +39,6 @@ void swap( int idx1, int idx2 )
 }  
 
 // 堆调整
-// 
 void adjust_heap( int /*i*/nIndex )    
 { 	
 	int curr = nIndex;
@@ -94,7 +96,6 @@ void adjust_heap( int /*i*/nIndex )
 }  
 
 // 判断邻居点是否可以进入open表
-// 
 void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_node, int w )
 {
 	int i;
@@ -106,7 +107,6 @@ void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_nod
 			if ( map_maze[x][y].s_is_in_opentable )	// 在open表中
 			{
 				// 需要判断是否是一条更优化的路径
-				// 
 				if ( map_maze[x][y].s_g > curr_node->s_g + w )	// 如果更优化
 				{
 					map_maze[x][y].s_g = curr_node->s_g + w;
@@ -144,7 +144,6 @@ void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 	int y = curr_node->s_y;
 
 	// 下面对于8个邻居进行处理！
-	// 
 	if ( ( x + 1 ) >= 0 && ( x + 1 ) < 10 && y >= 0 && y < 10 )
 	{
 		insert_to_opentable( x+1, y, curr_node, end_node, 10 );
@@ -200,10 +199,10 @@ int main()
 						{ 0,0,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
 						{ 3,0,3,0,0,0,0,0,0,3 },
-						{ 3,0,0,0,0,3,0,0,0,3 },
+						{ 3,0,0,2,0,3,0,0,0,3 },
 						{ 3,0,0,3,0,0,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,0,0,0 },
-						{ 0,0,0,0,0,0,0,0,2,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 3,3,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
 					};
