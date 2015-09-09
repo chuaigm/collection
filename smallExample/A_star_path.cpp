@@ -10,6 +10,8 @@
 #define ENDNODE		2
 #define BARRIER		3
 
+//#define __eight_direction_enable__
+
 typedef struct AStarNode
 {
 	int s_x;	// 坐标(最终输出路径需要)
@@ -137,7 +139,7 @@ void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_nod
 
 // 查找邻居
 // 对上下左右8个邻居进行查找
-//  
+// 这里注意地图边界值
 void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 {
 	int x = curr_node->s_x;
@@ -164,6 +166,7 @@ void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 		insert_to_opentable( x, y-1, curr_node, end_node, 10 );
 	}
 
+#ifdef __eight_direction_enable__
 	if ( ( x + 1 ) >= 0 && ( x + 1 ) < 10 && ( y + 1 ) >= 0 && ( y + 1 ) < 10 )
 	{
 		insert_to_opentable( x+1, y+1, curr_node, end_node, 14 );
@@ -183,6 +186,7 @@ void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 	{
 		insert_to_opentable( x-1, y-1, curr_node, end_node, 14 );
 	}
+#endif
 }
 
 
@@ -195,6 +199,17 @@ int main()
 	AStarNode *curr_node;			// 当前点
 	int       is_found;			// 是否找到路径
 	int maze[][10] ={			// 仅仅为了好赋值给map_maze
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,3,0,0,0,0,0 },
+						{ 0,0,1,0,3,0,2,0,0,0 },
+						{ 0,0,0,0,3,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+						{ 0,0,0,0,0,0,0,0,0,0 },
+/*
 						{ 1,0,0,3,0,3,0,0,0,0 },
 						{ 0,0,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
@@ -205,6 +220,7 @@ int main()
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 3,3,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
+						*/
 					};
 	int		  i,j,x;
 	
@@ -261,14 +277,16 @@ int main()
 
 	while( 1 )
 	{
+#ifdef __debug_output_opentable__
 		// for test
-		// 
-/*		for ( x = 0; x < open_node_count; ++x )
+		printf("-------test output opentable-------\n");
+		for ( x = 0; x < open_node_count; ++x )
 		{
-			printf("(%d,%d):%d   ", open_table[x]->s_x, open_table[x]->s_y, open_table[x]->s_g+open_table[x]->s_h);
+			printf("(%d,%d):%d |", open_table[x]->s_x, open_table[x]->s_y, open_table[x]->s_g+open_table[x]->s_h);
 		}
-		printf("\n\n");
-*/
+		printf("\n");
+#endif
+
 		curr_node = open_table[0];		// open表的第一个点一定是f值最小的点(通过堆排序得到的)
 		open_table[0] = open_table[--open_node_count];	// 最后一个点放到第一个点，然后进行堆调整
 		adjust_heap( 0 );				// 调整堆
