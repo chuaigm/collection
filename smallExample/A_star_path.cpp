@@ -11,6 +11,7 @@
 #define BARRIER		3
 
 //#define __eight_direction_enable__
+//#define __debug_output_opentable__
 
 typedef struct AStarNode
 {
@@ -33,7 +34,7 @@ int	  close_node_count=0;		// close表中结点数量
 int   top = -1;					// 栈顶
 
 // 交换两个元素
-void swap( int idx1, int idx2 )  
+void swap_node( int idx1, int idx2 )  
 {  
 	pAStarNode tmp = open_table[idx1];
 	open_table[idx1] = open_table[idx2];
@@ -52,7 +53,7 @@ void adjust_heap( int /*i*/nIndex )
 		return;
 	}
 	
-	// 往下调整( 要比较左右孩子和cuur parent )
+	// 从上往下调整( 要比较左右孩子和cuur parent )
 	// 
 	while ( child < open_node_count )
 	{
@@ -69,7 +70,7 @@ void adjust_heap( int /*i*/nIndex )
 		}
 		else
 		{
-			swap( child, curr );			// 交换节点
+			swap_node( child, curr );			// 交换节点
 			curr = child;				// 再判断当前孩子节点
 			child = curr * 2 + 1;			// 再判断左孩子
 		}
@@ -90,12 +91,12 @@ void adjust_heap( int /*i*/nIndex )
 		}
 		else
 		{
-			swap( curr, parent );
+			swap_node( curr, parent );
 			curr = parent;
 			parent = (curr-1)/2;
 		}
 	}
-}  
+}
 
 // 判断邻居点是否可以进入open表
 void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_node, int w )
@@ -113,7 +114,7 @@ void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_nod
 				{
 					map_maze[x][y].s_g = curr_node->s_g + w;
 					map_maze[x][y].s_parent = curr_node;
-
+					// 在open表中，搜索这个节点
 					for ( i = 0; i < open_node_count; ++i )
 					{
 						if ( open_table[i]->s_x == map_maze[x][y].s_x && open_table[i]->s_y == map_maze[x][y].s_y )
@@ -121,17 +122,19 @@ void insert_to_opentable( int x, int y, pAStarNode curr_node, pAStarNode end_nod
 							break;
 						}
 					}
-
+	printf("have better way!!!!\n");
 					adjust_heap( i );					// 下面调整点
 				}
 			}
 			else									// 不在open中
 			{
 				map_maze[x][y].s_g = curr_node->s_g + w;
-				map_maze[x][y].s_h = abs(end_node->s_x - x ) + abs(end_node->s_y - y);
+				map_maze[x][y].s_h = 10*(abs(end_node->s_x - x ) + abs(end_node->s_y - y));
 				map_maze[x][y].s_parent = curr_node;
 				map_maze[x][y].s_is_in_opentable = 1;
 				open_table[open_node_count++] = &(map_maze[x][y]);
+
+				adjust_heap(open_node_count-1);					// 下面调整点
 			}
 		}
 	}
@@ -187,8 +190,37 @@ void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 		insert_to_opentable( x-1, y-1, curr_node, end_node, 14 );
 	}
 #endif
+	// 调整堆
+	adjust_heap( 0 );
 }
 
+void print_maze_color()
+{
+	int i,j;
+	printf("x\\y|0 1 2 3 4 5 6 7 8 9 \n");
+	printf("------------------------\n");
+	for( i = 0; i < 10; ++i )
+	{
+		printf(" %d |",i);
+		for ( j = 0; j < 10; ++j )
+		{
+			if(map_maze[i][j].s_is_in_closetable == 1)
+			{
+				printf("\033[0;31m""%d ""\033[m", map_maze[i][j].s_style);
+			}
+			else if(map_maze[i][j].s_is_in_opentable == 1)
+			{
+				printf("\033[0;32m""%d ""\033[m", map_maze[i][j].s_style);
+			}
+			else
+				printf("%d ", map_maze[i][j].s_style);
+
+		}
+
+		printf("\n");
+	}
+	printf("------------------------\n");
+}
 
 int main()
 { 
@@ -199,6 +231,7 @@ int main()
 	AStarNode *curr_node;			// 当前点
 	int       is_found;			// 是否找到路径
 	int maze[][10] ={			// 仅仅为了好赋值给map_maze
+		/*
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 0,0,0,0,0,0,0,0,0,0 },
@@ -209,7 +242,8 @@ int main()
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 0,0,0,0,0,0,0,0,0,0 },
-/*
+				*/
+
 						{ 1,0,0,3,0,3,0,0,0,0 },
 						{ 0,0,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
@@ -220,7 +254,6 @@ int main()
 						{ 0,0,0,0,0,0,0,0,0,0 },
 						{ 3,3,3,0,0,3,0,3,0,3 },
 						{ 3,0,0,0,0,3,3,3,0,3 },
-						*/
 					};
 	int		  i,j,x;
 	
@@ -260,11 +293,13 @@ int main()
 
 	// 下面使用A*算法得到路径
 	// 	
+	
+	// 1 .首先指定起点
 	open_table[open_node_count++] = start_node;			// 起始点加入open表
 	
 	start_node->s_is_in_opentable = 1;				// 加入open表
 	start_node->s_g = 0;
-	start_node->s_h = abs(end_node->s_x - start_node->s_x) + abs(end_node->s_y - start_node->s_y);
+	start_node->s_h = 10*(abs(end_node->s_x - start_node->s_x) + abs(end_node->s_y - start_node->s_y));
 	start_node->s_parent = NULL;
 	
 	if ( start_node->s_x == end_node->s_x && start_node->s_y == end_node->s_y )
@@ -274,25 +309,19 @@ int main()
 	}
 	
 	is_found = 0;
-
+	// 2. 开始循环处理
 	while( 1 )
 	{
-#ifdef __debug_output_opentable__
-		// for test
-		printf("-------test output opentable-------\n");
-		for ( x = 0; x < open_node_count; ++x )
-		{
-			printf("(%d,%d):%d |", open_table[x]->s_x, open_table[x]->s_y, open_table[x]->s_g+open_table[x]->s_h);
-		}
-		printf("\n");
-#endif
 
 		curr_node = open_table[0];		// open表的第一个点一定是f值最小的点(通过堆排序得到的)
 		open_table[0] = open_table[--open_node_count];	// 最后一个点放到第一个点，然后进行堆调整
+		// 变了头上的一个从上往下调
 		adjust_heap( 0 );				// 调整堆
 		
 		close_table[close_node_count++] = curr_node;	// 当前点加入close表
 		curr_node->s_is_in_closetable = 1;		// 已经在close表中了
+		// 严格意义上来说，这里应该把在open表标志置为0，相当于从open表中取出此元素
+		curr_node->s_is_in_opentable = 0;		// 已经在close表中了
 
 		if ( curr_node->s_x == end_node->s_x && curr_node->s_y == end_node->s_y )// 终点在close中，结束
 		{
@@ -307,11 +336,26 @@ int main()
 			is_found = 0;
 			break;
 		}
+#ifdef __debug_output_opentable__
+		// for test
+		printf("-------test output opentable-------\n");
+		for ( x = 0; x < open_node_count; ++x )
+		{
+			//printf("(%d,%d):%d |", open_table[x]->s_x, open_table[x]->s_y, open_table[x]->s_g+open_table[x]->s_h);
+			printf("(%d,%d):%d-(%d,%d) |", open_table[x]->s_x, open_table[x]->s_y, open_table[x]->s_g+open_table[x]->s_h,open_table[x]->s_parent->s_x,open_table[x]->s_parent->s_y);
+		}
+		printf("\n");
+
+		print_maze_color();
+		
+		getchar();
+#endif
 	}
 
 	if ( is_found )
 	{
-		curr_node = end_node;
+		// 这行加不加都行
+		//curr_node = end_node;
 		
 		while( curr_node )
 		{
@@ -323,7 +367,8 @@ int main()
 		{
 			if ( top > 0 )
 			{
-				printf("(%d,%d)-->", path_stack[top]->s_x, path_stack[top--]->s_y);
+				printf("(%d,%d)-->", path_stack[top]->s_x, path_stack[top]->s_y);
+				top--;
 			}
 			else
 			{
