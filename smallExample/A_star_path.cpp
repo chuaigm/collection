@@ -10,6 +10,7 @@
 #define ENDNODE		2
 #define BARRIER		3
 
+#define __linux__
 //#define __eight_direction_enable__
 //#define __debug_output_opentable__
 
@@ -170,6 +171,7 @@ void get_neighbors( pAStarNode curr_node, pAStarNode end_node )
 	}
 
 #ifdef __eight_direction_enable__
+	// 是否是八方向算法
 	if ( ( x + 1 ) >= 0 && ( x + 1 ) < 10 && ( y + 1 ) >= 0 && ( y + 1 ) < 10 )
 	{
 		insert_to_opentable( x+1, y+1, curr_node, end_node, 14 );
@@ -283,8 +285,15 @@ int main()
 			{
 				end_node = &(map_maze[i][j]);
 			}
-
+#ifdef __linux__
+			if(maze[i][j]==BARRIER) {
+			printf("\033[44m%d \033[m", maze[i][j]);
+			} else {
 			printf("%d ", maze[i][j]);
+			}
+#else
+			printf("%d ", maze[i][j]);
+#endif
 		}
 
 		printf("\n");
