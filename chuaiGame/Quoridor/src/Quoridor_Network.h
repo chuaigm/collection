@@ -22,6 +22,10 @@ public:
     static void OnServerReceive(char* data, int length);
     static void OnClientReceive(char* data, int length);
     // 接收数据函数的主入口，是一个回调函数
+    // **注意
+    // 由于网络部分涉及多线程，而目前编译器可能开启优化，
+    // 所以，此函数由另外一个线程触发，修改绘图类函数的部分，
+    // 涉及的相关变量，需要定义成volatile属性，这样，才不会出问题，否则结果不可预料
     static void OnReceiveNetData(char* data, int length, DWORD userdata);
 
     // 网络相关

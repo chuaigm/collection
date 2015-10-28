@@ -382,6 +382,14 @@
 			Name="Quoridor"
 			>
 			<File
+				RelativePath=".\src\A_star_alg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\A_star_alg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\gData.cpp"
 				>
 			</File>

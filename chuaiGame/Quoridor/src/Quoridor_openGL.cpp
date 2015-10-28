@@ -1092,6 +1092,9 @@ void CQuoridor::show_Font_test()
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+20,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.y=%d",arr.y);
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
+
+    sprintf(tmpstr, "best_path_length=%d",best_path.size());
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h+50,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 }
 
 void CQuoridor::showHelp()
@@ -1625,6 +1628,8 @@ void CQuoridor::resetGameData()
     // 关闭网络对象
     n_net.closeNetWork();
     n_netWorkStatus=0;
+    //清空最优路径
+    best_path.swap(std::vector<pos2d>());
 }
 
 void CQuoridor::drawInConfig()
@@ -2407,9 +2412,13 @@ void CQuoridor::freeSendBoxRule()
         pickup.y=arr.y;
 #ifdef __DEBUG__
         // 方便测试，在沙盒模式里，显示鼠标选取可走区
-        if (0==arr.x%2 && 0==arr.y%2 && gameData[arr.x][arr.y]!=GD_BLANK)
+        if (0==pickup.x%2 && 0==pickup.y%2 && gameData[pickup.x][pickup.y]!=GD_BLANK)
         {
             playerMovablePos(pickup);
+
+            // 这里测试最优路径选取
+            Quoridor_ComputerAI ai;
+            ai.TestBestPath(pickup, gameData[pickup.x][pickup.y]);
         }
 #endif
     }
@@ -2860,8 +2869,22 @@ void CQuoridor::drawNetworkOp()
     myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
     tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,(iButton==BUTTON_RETURN)?0:0.5f);
 }
-
+#ifdef __DEBUG__
 void CQuoridor::drawTestOptimalPath()
 {
-
+    if (pickup.x%2!=0 || pickup.y%2!=0)
+    {
+        return;
+    }
+    char tmpstr[128]="";
+    for (size_t i=0; i<best_path.size();i++)
+    {
+        tRectangle(board_x+lace+best_path[i].x/2*(roadw+wall_w),lace+best_path[i].y/2*(roadw+wall_w),0.1f,roadw/2,roadw/2,1.0f,1.0f,0.1f,0.6f);
+        sprintf(tmpstr,"%02d",i);
+        glPushMatrix();
+        glTranslatef(0,0,0.5f);
+        myfont.Print2D((int)(board_x+lace+best_path[i].x/2*(roadw+wall_w)),(int)(lace+best_path[i].y/2*(roadw+wall_w)),tmpstr,FONT4,1,1,1);
+        glPopMatrix();
+    }
 }
+#endif

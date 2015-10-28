@@ -2,6 +2,7 @@
 #include "gData.h"
 #include "Quoridor_ComputerAI.h"
 #include "Quoridor_openGL.h"
+#include "A_star_alg.h"
 
 extern CQuoridor* pgm;
 
@@ -157,4 +158,50 @@ void Quoridor_ComputerAI::SimpleComputer()
         // 下一位玩家
         ply_head=ply_head->next;
     }   // 如果不是电脑，什么都不做
+}
+
+void Quoridor_ComputerAI::TestBestPath(pos2d start, int end)
+{
+    AStarAlg aa;
+    size_t last_path_length=999;
+    int ret = 0;
+    std::vector<pos2d> tmppath;
+
+    switch (end)
+    {
+    case GD_YELLOW:
+        for (int i = GDSIZE-1;i>0;i-=2)
+        {
+            best_path.swap(std::vector<pos2d> ());
+            aa.Init(gameData,start.x,start.y,GDSIZE-1,i);
+            ret = aa.A_start_calculate();
+            if (ret ==0 && best_path.size()<last_path_length)
+            {
+                last_path_length = best_path.size();
+                tmppath=best_path;
+            }
+        }
+        break;
+    case GD_RED:
+        break;
+    case GD_GREEN:
+        break;
+    case GD_BLUE:
+        for (int i = 0;i<GDSIZE;i+=2)
+        {
+            best_path.swap(std::vector<pos2d> ());
+            aa.Init(gameData,start.x,start.y,i,GDSIZE-1);
+            ret = aa.A_start_calculate();
+            if (ret ==0 && best_path.size()<last_path_length)
+            {
+                last_path_length = best_path.size();
+                tmppath=best_path;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
+    best_path = tmppath;
 }

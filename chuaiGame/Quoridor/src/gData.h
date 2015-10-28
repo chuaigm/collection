@@ -81,3 +81,6 @@ extern player* ply_head;
 //
 //extern CQuoridor* pgm;
 
+#ifdef __DEBUG__
+extern std::vector<pos2d> best_path;
+#endif

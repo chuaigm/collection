@@ -28,3 +28,7 @@ player* ply_head;
 //// È«¾ÖÖ¸Õë
 //CQuoridor* pgm=&gm;
 ////CQuoridor* CQuoridor::pThis=&gm;
+
+#ifdef __DEBUG__
+std::vector<pos2d> best_path;
+#endif
