@@ -276,6 +276,9 @@ void CQuoridor::showMain()
         drawPlayerWall();
         // 注意此处，透明图层与绘制顺序有关
         drawPickMask();
+#ifdef __DEBUG__
+        drawTestOptimalPath();
+#endif
         break;
 
     case GAME_HELP:
@@ -1069,25 +1072,26 @@ void CQuoridor::show_Font_test()
 
     char tmpstr[64]={0};
     sprintf(tmpstr, "iMenu=%d",iMenu);
-    myfont.Print2D(50,2,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h,tmpstr,FONT0,1.0f,1.0f,1.0f,0.5f);
 
     for (int i=0; i<17;i++)
     {
         for (int j=0; j<17;j++)
         {
             sprintf(tmpstr, "%d,",gameData[j][i]);
-            myfont.Print2D(10*(j+1),70+10*i,tmpstr,FONT0,1.0f,0.0f,0.0f,1.0f);
+            //myfont.Print2D(10*(j+1),70+10*i,tmpstr,FONT0,1.0f,0.0f,0.0f,1.0f);
+            myfont.Print2D(board_x+g_OpenGL->RCheight+10*j,menu.y+2*menu_h+60+10*i,tmpstr,FONT0,1.0f,0.0f,0.0f,1.0f);
         }
     }
 
     sprintf(tmpstr, "pick_x=%d",pickup.x);
-    myfont.Print2D(50,40,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h+40,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "pick_y=%d",pickup.y);
-    myfont.Print2D(50,30,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h+30,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.x=%d",arr.x);
-    myfont.Print2D(50,20,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h+20,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
     sprintf(tmpstr, "arr.y=%d",arr.y);
-    myfont.Print2D(50,10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
+    myfont.Print2D(menu.x+10,menu.y+2*menu_h+10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 }
 
 void CQuoridor::showHelp()
@@ -2855,4 +2859,9 @@ void CQuoridor::drawNetworkOp()
     sprintf(tmpstr,"按ESC返回");
     myfont.Print2D(menu.x+4,menu.y+5,tmpstr,FONT4,1,1,1);
     tPicButton((float)menu.x,(float)menu.y,(float)menu_w,(float)menu_h,(iButton==BUTTON_RETURN)?0:0.5f);
+}
+
+void CQuoridor::drawTestOptimalPath()
+{
+
 }

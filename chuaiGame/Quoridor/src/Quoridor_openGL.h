@@ -111,6 +111,9 @@ public:
     void playerMovablePos(pos2d selected);
     // 判断新加入的墙位置是否合法
     bool judgeWallLegal();
+#ifdef __DEBUG__
+    void drawTestOptimalPath();
+#endif
 
     // 接收网络消息的回调函数 (静态)
     //static void OnReceiveNetData(char* data, int length, DWORD userdata);

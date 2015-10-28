@@ -54,7 +54,7 @@ void adjust_heap( int /*i*/nIndex )
 		return;
 	}
 	
-	// 从上往下调整( 要比较左右孩子和cuur parent )
+	// 从上往下调整( 要比较左右孩子和cur parent )
 	// 
 	while ( child < open_node_count )
 	{
@@ -388,7 +388,7 @@ int main()
 	}
 	else
 	{
-		printf("么有找到路径");
+		printf("么有找到路径\n");
 	}
 
 	puts("");
