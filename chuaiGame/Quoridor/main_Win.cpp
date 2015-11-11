@@ -272,7 +272,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
     //ShowWindow( hWnd, SW_MAXIMIZE );	//最大化显示
     ShowWindow( hWnd, SW_SHOWNORMAL );	// 正常
     // 更新窗口域
-    UpdateWindow( hWnd );	
+    UpdateWindow( hWnd );
 
     // init开屏动画计时
     //c1.ReStart(TIME_PRE_ANI);
@@ -281,7 +281,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
     //ShowCursor(false);
 
     // 程序主循环
-    GameLoop();	
+    GameLoop();
     
     return 0;
 }

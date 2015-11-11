@@ -40,7 +40,11 @@ void AStarAlg::Init(volatile char gameData[][GDSIZE],int start_x, int start_y,in
             map_maze[i][j].s_is_in_opentable = 0;
             // 这里根据实际情况进行数据意义的转换
             //map_maze[i][j].s_style = gameData[i][j];
-            if (gameData[i][j]!=0 || (i%2==1&&j%2==1))
+            // 目前暂定，只有放墙的位置才算障碍，其他玩家位置不算障碍，
+            // 只有当计算下一步的时候，再去考虑其他玩家的位置
+            // 另外，所有二维棋盘中，墙的交接点，都认为是不能走的，
+            // 方便A星寻路时，不把这些不能走的地方考虑进去
+            if (gameData[i][j]==GD_WALL || (i%2==1&&j%2==1))
             {
                 map_maze[i][j].s_style = BARRIER;
             } else {

@@ -342,7 +342,9 @@ void CQuoridor::check()
         if (ply_head->id==ID_COMPUTER)
         {
             Quoridor_ComputerAI ai;
-            ai.SimpleComputer();
+            // AI算法选择
+            //ai.FoolAI();
+            ai.AI_action();
             break;
         }
         else if (ply_head->id==ID_NET_PLAYER)
@@ -1038,6 +1040,10 @@ void CQuoridor::showmenu()
     texture_select(g_cactus[0]);
     tPicRectangle((g_OpenGL->RCwidth-g_OpenGL->RCheight)/2.0f, 0, (float)g_OpenGL->RCheight, (float)g_OpenGL->RCheight);
     glPopMatrix();
+
+#ifdef __DEBUG__
+    myfont.Print2D(5,5,"Debug 版,"__DATE__,FONT0,1,0.9f,0.1f);
+#endif
 
     //  对应枚举关系     0          1          2          3          4
     char *menustr[]={"退    出","游戏说明","沙盒模式","联网游戏","单机游戏"};
