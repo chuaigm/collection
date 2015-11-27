@@ -160,6 +160,7 @@ void Quoridor_ComputerAI::FoolAI()
     }   // 如果不是电脑，什么都不做
 }
 
+// 此函数中注释描述以AI本身为第一人称，其他都是敌人
 void Quoridor_ComputerAI::AI_action()
 {
     // 此判断应该在外层保证
@@ -183,7 +184,7 @@ void Quoridor_ComputerAI::AI_action()
     std::vector<pos2d> shortestenemypath;
     // 保护一下玩家轮询指针
     player* tmp_ply_head = ply_head;
-    // 循环计算其他对手的最优路径长度
+    // 循环计算其他对手的最优路径以及长度
     while (tmp_ply_head->next->color != mycolor)
     {
         // 先将指针往下移动一下
@@ -200,7 +201,7 @@ void Quoridor_ComputerAI::AI_action()
         }
     }
     // 如果别人的路径比我更优，并且我手里有可用的墙，那么就放墙挡对手
-    if (shortestpathlen != mybestlen && ply_head->wall_num_left>0)
+    if (shortestpathlen < mybestlen && ply_head->wall_num_left>0)
     {
         int x0 = shortestenemypath[0].x;
         int y0 = shortestenemypath[0].y;
