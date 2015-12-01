@@ -14,6 +14,7 @@
 #include "Quoridor_openGL.h"
 #include "Quoridor_ComputerAI.h"
 #include <stdlib.h>
+#include "Quoridor_Network.h"
 
 //font
 extern CGLFont myfont;
@@ -511,10 +512,10 @@ void CQuoridor::lbuttonproc(int lparam)
             WSACleanup();
             }
 
-            ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_net.Name);
-            ConfigGetKeyValue("config.ini", "Net_work", "IP", n_net.IP);
+            ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_net->Name);
+            ConfigGetKeyValue("config.ini", "Net_work", "IP", n_net->IP);
             ConfigGetKeyValue("config.ini", "Net_work", "port", tmpstr);
-            n_net.port=atoi(tmpstr);
+            n_net->port=atoi(tmpstr);
 
             iGameState=GAME_NET_CONFIG;
             resetGameData();
@@ -654,7 +655,7 @@ void CQuoridor::lbuttonproc(int lparam)
         {
         case BUTTON_SERVER:
             // 这里创建网络对象
-            if (n_net.startServer())
+            if (n_net->startServer())
             {
                 // 服务成功开启
                 n_netWorkStatus=1;
@@ -666,7 +667,7 @@ void CQuoridor::lbuttonproc(int lparam)
             break;
         case BUTTON_CLIENT:
             // 这里创建网络对象
-            if(n_net.startClient())
+            if(n_net->startClient())
             {
                 n_netWorkStatus=2;
             }
@@ -677,14 +678,14 @@ void CQuoridor::lbuttonproc(int lparam)
             break;
         case BUTTON_SERVER_START:
             // 如果没有其他玩家连入
-            if (n_net.GetConnectionNumber()<1)
+            if (n_net->GetConnectionNumber()<1)
             {   // 这里以后可以给出提示
                 break;
             }
             player* tail=ply_head;
             // 点开始游戏，才给服务器玩家赋上棋盘数据值
             gameData[g_player[3].x*2][g_player[3].y*2]=GD_BLUE;
-            int ConNum=n_net.GetConnectionNumber();
+            int ConNum=n_net->GetConnectionNumber();
             // 由于网络游戏时，三个玩家的分配顺序，服务器必是蓝色
             // 第二个加入游戏的玩家为红色，如果再有玩家加入是绿色，最后是黄色
             for (int i=0; i<ConNum;i++)
@@ -714,7 +715,7 @@ void CQuoridor::lbuttonproc(int lparam)
                     break;
                 }
                 sprintf(tmpstr,"READY%1dN%1d",i,ConNum);
-                n_net.n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);     // 这里注意size上要考虑\0问题
+                n_net->n_TCPnet->SendServer(i,tmpstr,strlen(tmpstr)+1);     // 这里注意size上要考虑\0问题
                 //n_TCPnet->SendServer(i,"START",5+1);      // 连续调用貌似有问题
 #ifdef __DEBUG__
                 {
@@ -1632,7 +1633,7 @@ void CQuoridor::resetGameData()
     // 玩家胜利标志
     win_flag=GD_BLANK;
     // 关闭网络对象
-    n_net.closeNetWork();
+    n_net->closeNetWork();
     n_netWorkStatus=0;
     //清空最优路径
     best_path.swap(std::vector<pos2d>());
@@ -1816,7 +1817,7 @@ void CQuoridor::playerActionRule(bool network)
             {
                 sprintf(netstr,"P%1dM%1d%1d_",ply_head->color,arr.x/2,arr.y/2);
             }
-            n_net.NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
+            n_net->NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
         }   // end if network
             goto ACTION_RULE_EXIT;
         }
@@ -1964,7 +1965,7 @@ RULE_WALL_EXIT:
     }
     if (network)
     {
-        n_net.NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
+        n_net->NetWorkSendData(n_netWorkStatus,netstr,strlen(netstr)+1);
     }
     // 当前玩家的可用墙数减1
     ply_head->wall_num_left--;
@@ -2743,7 +2744,7 @@ void CQuoridor::drawNetworkOp()
         // 显示本机IP以及服务器信息
         sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
         myfont.Print2D(g_OpenGL->RCwidth/8,(int)(g_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-        sprintf(tmpstr,"监听端口: %u", n_net.port);
+        sprintf(tmpstr,"监听端口: %u", n_net->port);
         myfont.Print2D(g_OpenGL->RCwidth/8,(int)(g_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
     }
     else
@@ -2753,9 +2754,9 @@ void CQuoridor::drawNetworkOp()
         // 右边客户端一侧的底图
         tRectangle(g_OpenGL->RCwidth/2.0f,0,-0.5f,g_OpenGL->RCwidth/2.0f,(float)g_OpenGL->RCheight,0,0.8f,0,0.6f);
         // 显示连接服务器IP以及端口信息
-        sprintf(tmpstr,"服务器IP: %s", n_net.IP);
+        sprintf(tmpstr,"服务器IP: %s", n_net->IP);
         myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6),tmpstr,FONT4,1,1,1);
-        sprintf(tmpstr,"服务端口: %u", n_net.port);
+        sprintf(tmpstr,"服务端口: %u", n_net->port);
         myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
         // 如果已经是客户端状态了，这里显示本机IP
         if (2==n_netWorkStatus)
@@ -2793,7 +2794,7 @@ void CQuoridor::drawNetworkOp()
 
             sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-80,tmpstr,FONT4,1,1,1);
-            sprintf(tmpstr,"本机名称: %8s", n_net.Name);
+            sprintf(tmpstr,"本机名称: %8s", n_net->Name);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-110,tmpstr,FONT4,1,1,1);
         }
     }
@@ -2833,13 +2834,13 @@ void CQuoridor::drawNetworkOp()
         // 再显示已连接的客户端IP列表
         for (int i=0; i<3; i++)
         {
-            if (strlen(n_net.n_TCPnet->GetClientIP(i))==0)
+            if (strlen(n_net->n_TCPnet->GetClientIP(i))==0)
             {
                 sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,"--[空]--","---.---.---.---");
             }
             else
             {
-                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],n_net.n_TCPnet->GetClientIP(i));
+                sprintf(tmpstr,"[%1d] %8s (%16s)",i+2,n_NameAll[i+1],n_net->n_TCPnet->GetClientIP(i));
                 switch (i)
                 {
                 case 0:
