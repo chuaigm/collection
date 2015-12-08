@@ -217,7 +217,6 @@ void Quoridor_ComputerAI::AI_action()
                 int tmpwally = (y0+y1)/2;
                 //if (x0 == 0 && gameData[2][tmpwally] == GD_BLANK)
                 //{
-
                 //}
                 // 这里相当于隐含既然找到这个路径，则当前路径上，肯定不存在墙
                 if (x0+2<GDSIZE && gameData[x0+2][tmpwally] == GD_BLANK)

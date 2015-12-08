@@ -107,7 +107,11 @@ CQuoridor::CQuoridor()
     memset(n_loaclIP,0,sizeof(n_loaclIP));
     //memset(n_Name,0,sizeof(n_Name));
     n_netWorkStatus=0;
-    memset(n_NameAll,0,sizeof(n_NameAll));
+    tmpp = (void*)n_NameAll;
+    memset(tmpp,0,sizeof(n_NameAll));
+
+    // 网络连接对象在构造时赋空
+    n_net = NULL;
 }
 
 CQuoridor::~CQuoridor()
@@ -510,6 +514,12 @@ void CQuoridor::lbuttonproc(int lparam)
             const char *IP =inet_ntoa(*((struct in_addr *)ph->h_addr_list[0]));//此处获得本机IP
             strncpy(n_loaclIP, IP, 16);
             WSACleanup();
+            }
+
+            // 创建网络连接对象
+            if (n_net == NULL)
+            {
+                n_net = new Quoridor_Network;
             }
 
             ConfigGetKeyValue("config.ini", "Net_work", "MyName", n_net->Name);
@@ -1043,7 +1053,7 @@ void CQuoridor::showmenu()
     glPopMatrix();
 
 #ifdef __DEBUG__
-    myfont.Print2D(5,5,"Debug 版,"__DATE__,FONT0,1,0.9f,0.1f);
+    myfont.Print2D(5,5,"测试版  ,"__DATE__,FONT0,1,0.9f,0.1f);
 #endif
 
     //  对应枚举关系     0          1          2          3          4
@@ -2764,7 +2774,8 @@ void CQuoridor::drawNetworkOp()
             // 客户端显示已知的玩家名
             for (int i=0;i<4;i++)
             {
-                if (strlen(n_NameAll[i])==0)
+                //if (strlen(const_cast<char*>(n_NameAll[i]))==0)
+                if (strlen(const_cast<char*>(n_NameAll[i]))==0)
                 {
                     sprintf(tmpstr,"[%1d] %8s ",i+1,"--[空]--");
                 }

@@ -180,7 +180,7 @@ public:
     char n_loaclIP[16];         // 本机IP
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
     // TODO 由于多线程问题，这个变量也应该放到gData里，赋予volatile属性
-    char n_NameAll[4][16];      // 目前所有连接的玩家名
+    //char n_NameAll[4][16];      // 目前所有连接的玩家名
 
 private:
     //------------------------------------

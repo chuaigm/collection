@@ -19,7 +19,7 @@ Quoridor_Network::Quoridor_Network(void)
     port=0;
     memset(IP,0,sizeof(IP));
     memset(Name,0,sizeof(Name));
-    memset(pgm->n_NameAll,0,sizeof(pgm->n_NameAll));
+    //memset(n_NameAll,0,sizeof(n_NameAll));
 }
 
 Quoridor_Network::~Quoridor_Network(void)
@@ -60,7 +60,8 @@ bool Quoridor_Network::startServer()
         n_TCPnet=NULL;
         return false;
     }
-    strncpy(pgm->n_NameAll[0],Name,8);
+    char* p = const_cast<char*>(n_NameAll[0]);
+    strncpy(p,Name,8);
     return true;
 }
 
@@ -250,15 +251,16 @@ void Quoridor_Network::OnServerReceive(char* data, int length)
     {
         if (clientID<=3)
         {   // 服务器接收客户端发来的玩家名
-            strncpy(pgm->n_NameAll[clientID+1],recMsg,8);
-            pgm->n_NameAll[clientID+1][8]='\0';
+            char* p = const_cast<char*>(n_NameAll[clientID+1]);
+            strncpy(p,recMsg,8);
+            n_NameAll[clientID+1][8]='\0';
             // 服务器向所有客户端转发收到的所有玩家名列表
             char namelist[64]={0};
             strncpy(namelist   ,"namelist",8);
-            strncpy(namelist+8 ,pgm->n_NameAll[0],8);
-            strncpy(namelist+16,pgm->n_NameAll[1],8);
-            strncpy(namelist+24,pgm->n_NameAll[2],8);
-            strncpy(namelist+32,pgm->n_NameAll[3],8);
+            strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
+            strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
+            strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
+            strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
             for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
             {
                 n_TCPnet->SendServer(i,namelist,sizeof(namelist));
@@ -402,10 +404,10 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
     }
     else if (strncmp(data,"Cnamelist",9)==0)
     {
-        strncpy(pgm->n_NameAll[0],data+9 ,8);
-        strncpy(pgm->n_NameAll[1],data+17,8);
-        strncpy(pgm->n_NameAll[2],data+25,8);
-        strncpy(pgm->n_NameAll[3],data+33,8);
+        strncpy(const_cast<char*>(n_NameAll[0]),data+9 ,8);
+        strncpy(const_cast<char*>(n_NameAll[1]),data+17,8);
+        strncpy(const_cast<char*>(n_NameAll[2]),data+25,8);
+        strncpy(const_cast<char*>(n_NameAll[3]),data+33,8);
     }
     else if (strncmp(data,"CREADY",6)==0)   // 前六个字节
     {   // 三个玩家格式，例如，CREADY1N3

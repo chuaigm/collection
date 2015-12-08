@@ -8,7 +8,8 @@
 volatile int iGameState;
 // 游戏算法数据，其值如上述枚举
 volatile char gameData[GDSIZE][GDSIZE];
-//char gameData[GDSIZE][GDSIZE];
+// 目前所有连接的玩家名
+volatile char n_NameAll[4][16];
 
 
 // 玩家信息，玩家的坐标是按照road格的位置坐标计算的，最大为9-1

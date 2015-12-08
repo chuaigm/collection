@@ -245,7 +245,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
     //dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;
     //DWORD dwStyle=WS_POPUP;			// 连窗体都没有，只有主体内容
     //DWORD dwStyle=WS_OVERLAPPEDWINDOW;
-    DWORD dwStyle=WS_DLGFRAME;		// 没有右上角三个功能按钮，只有一个窗体
+    DWORD dwStyle= /*WS_OVERLAPPED | */WS_CAPTION | WS_SYSMENU |WS_MINIMIZEBOX;		// 没有右上角三个功能按钮，只有一个窗体
 
     // 得到当前桌面分辨率
     int wid=GetSystemMetrics(SM_CXSCREEN);
