@@ -27,13 +27,14 @@
    此次操作之前和之后的commit和history都会保留，并且把这次撤销
    作为一次最新的提交
    git reset [commit号]
+   具体参考：http://hittyt.iteye.com/blog/1961386
 
 
 -------------------------------------
-git 可以分为三个区域
-working tree		就是本地的实体
-index				是commit后的本地状态，没有push时的状态
-commit后的remote	远程的仓库
+git 可以分为三个概念
+working tree
+index				
+commit后
 
 
 -----------------[一个例子]--------------------
