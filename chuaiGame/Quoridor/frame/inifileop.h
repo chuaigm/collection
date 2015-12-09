@@ -1,30 +1,30 @@
-ï»¿#ifndef __INIFILEOP_H__
+#ifndef __INIFILEOP_H__
 #define __INIFILEOP_H__
 
 /*********************************************************************
 *
-* æ–‡ä»¶åç§°ï¼š IniFileOP.h
-* æ–‡ä»¶æ ‡è¯†ï¼š 
-* å…¶å®ƒè¯´æ˜ï¼š INIæ–‡ä»¶çš„æ“ä½œ
-* å½“å‰ç‰ˆæœ¬ï¼š V1.1
-* ä½œ    è€…ï¼š å»–æœˆæ—º
-* ç¯    å¢ƒï¼š VS2005(windows 7)
+* ÎÄ¼şÃû³Æ£º IniFileOP.h
+* ÎÄ¼ş±êÊ¶£º 
+* ÆäËüËµÃ÷£º INIÎÄ¼şµÄ²Ù×÷
+* µ±Ç°°æ±¾£º V1.1
+* ×÷    Õß£º ÁÎÔÂÍú
+* »·    ¾³£º VS2005(windows 7)
 *
-* ä¿®æ”¹è®°å½•ï¼š
-*     2005-06-23    V1.0    å»–æœˆæ—º      åˆ›å»º
-*     2012-04-19    V1.1    chuaiGM    å­—ç¬¦ä»¥åŠå˜é‡å®šä¹‰æ”¹åŠ¨ï¼Œä»¥ç¬¦åˆC++ç¼–è¯‘è§„åˆ™
-*     2012-04-26    V1.1    chuaiGM    åœ¨linuxä¸‹ï¼Œtmpnameä¼šæŠ¥è­¦å‘Š(line:518)
-*     2013-08-22    V1.2    chuaiGM    æ›´æ”¹è‹¥å¹²å‡½æ•°çš„å…¥å£å‚æ•°ç±»å‹ä¸ºconst
-*                   è¯´æ˜ï¼šåŸæ¥é‡Œé¢å†™çš„å‡½æ•°å…¥å£å‚æ•°ç±»å‹å¤šä¸ºvoid*ï¼Œè¿™é‡Œå°†å…¶å…¨éƒ¨è½¬åŒ–
-*                         ä¸ºconst char *å‹ï¼Œå¦‚æœéœ€è¦è°ƒæ•´ï¼Œå‡½æ•°å†…éƒ¨éœ€è¦åšå¼ºè½¬
+* ĞŞ¸Ä¼ÇÂ¼£º
+*     2005-06-23    V1.0    ÁÎÔÂÍú      ´´½¨
+*     2012-04-19    V1.1    chuaiGM    ×Ö·ûÒÔ¼°±äÁ¿¶¨Òå¸Ä¶¯£¬ÒÔ·ûºÏC++±àÒë¹æÔò
+*     2012-04-26    V1.1    chuaiGM    ÔÚlinuxÏÂ£¬tmpname»á±¨¾¯¸æ(line:518)
+*     2013-08-22    V1.2    chuaiGM    ¸ü¸ÄÈô¸Éº¯ÊıµÄÈë¿Ú²ÎÊıÀàĞÍÎªconst
+*                   ËµÃ÷£ºÔ­À´ÀïÃæĞ´µÄº¯ÊıÈë¿Ú²ÎÊıÀàĞÍ¶àÎªvoid*£¬ÕâÀï½«ÆäÈ«²¿×ª»¯
+*                         Îªconst char *ĞÍ£¬Èç¹ûĞèÒªµ÷Õû£¬º¯ÊıÄÚ²¿ĞèÒª×öÇ¿×ª
 **********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//#define INI_TEST_FUNC               // æµ‹è¯•å‡½æ•°æ˜¯å¦å¼€å¯
-//#define VS_2005_WARN_DISABLEx       // VS2005ç­‰windowsé›†æˆç¯å¢ƒä¸‹ï¼Œå±è”½4996å·å­—ç¬¦è­¦å‘Š
+//#define INI_TEST_FUNC               // ²âÊÔº¯ÊıÊÇ·ñ¿ªÆô
+//#define VS_2005_WARN_DISABLEx       // VS2005µÈwindows¼¯³É»·¾³ÏÂ£¬ÆÁ±Î4996ºÅ×Ö·û¾¯¸æ
 
 #ifdef VS_2005_WARN_DISABLE
 #pragma warning (disable : 4996)
@@ -52,11 +52,11 @@
 #define COPYF_ERR_READ_FILE                      -13 
 #define COPYF_ERR_WRITE_FILE                     -14 
 
-/*-----mark-----å¯æ›´æ”¹çš„åˆ†éš”ç¬¦-----*/
-char CFG_ssl = '[', CFG_ssr = ']';  /* é¡¹æ ‡å¿—ç¬¦Section Symbol --å¯æ ¹æ®éœ€è¦æ›´æ”¹ï¼Œå¦‚{ }ç­‰*/
-char CFG_nis = ':';                 /* name ä¸ index ä¹‹é—´çš„åˆ†éš”ç¬¦ */
-char CFG_kvs = '=';                 /* keyä¸valueä¹‹é—´çš„åˆ†éš”ç¬¦ */
-char CFG_nts = '#';                 /* æ³¨é‡Šç¬¦ */
+/*-----mark-----¿É¸ü¸ÄµÄ·Ö¸ô·û-----*/
+char CFG_ssl = '[', CFG_ssr = ']';  /* Ïî±êÖ¾·ûSection Symbol --¿É¸ù¾İĞèÒª¸ü¸Ä£¬Èç{ }µÈ*/
+char CFG_nis = ':';                 /* name Óë index Ö®¼äµÄ·Ö¸ô·û */
+char CFG_kvs = '=';                 /* keyÓëvalueÖ®¼äµÄ·Ö¸ô·û */
+char CFG_nts = '#';                 /* ×¢ÊÍ·û */
 
 int  CFG_section_line_no, CFG_key_line_no, CFG_key_lines;
 
@@ -64,7 +64,7 @@ static char * strtrimr(char * buf);
 static char * strtriml(char * buf);
 static int  FileGetLine(FILE *fp, char *buffer, int maxlen);
 static int  SplitKeyValue(char *buf, char **key, char **val);
-// å£°æ˜externï¼Œä¿è¯å¤–éƒ¨è°ƒç”¨
+// ÉùÃ÷extern£¬±£Ö¤Íâ²¿µ÷ÓÃ
 extern int  FileCopy(const char *source_file, const char *dest_file);
 extern int  SplitSectionToNameIndex(char *section, char **name, char **index);
 extern int  JoinNameIndexToSection(char **section, const char *name, const char *index);
@@ -72,22 +72,22 @@ extern int  ConfigGetKeyValue(const char *CFG_file, const char *section, const c
 extern int  ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
 extern int  ConfigGetSections(const char *CFG_file, char *sections[]);
 extern int  ConfigGetKeys(const char *CFG_file, const char *section, char *keys[]);
-// ä¸ºäº†æµ‹è¯•å†™çš„æµ‹è¯•å‡½æ•°ï¼Œå»ºç«‹ä»¥åŠè¯»å–
+// ÎªÁË²âÊÔĞ´µÄ²âÊÔº¯Êı£¬½¨Á¢ÒÔ¼°¶ÁÈ¡
 extern void test_iniFileCreate(void);
 extern void test_iniFileRead(void);
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š strtrimr
-* åŠŸèƒ½æè¿°ï¼š å»é™¤å­—ç¬¦ä¸²å³è¾¹çš„ç©ºå­—ç¬¦
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char * buf å­—ç¬¦ä¸²æŒ‡é’ˆ
-* è¾“å‡ºå‚æ•°ï¼š æ— 
-* è¿” å› å€¼ï¼š å­—ç¬¦ä¸²æŒ‡é’ˆ
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º strtrimr
+* ¹¦ÄÜÃèÊö£º È¥³ı×Ö·û´®ÓÒ±ßµÄ¿Õ×Ö·û
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char * buf ×Ö·û´®Ö¸Õë
+* Êä³ö²ÎÊı£º ÎŞ
+* ·µ »Ø Öµ£º ×Ö·û´®Ö¸Õë
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
 * 
 ***********************************************************************/
 char * strtrimr(char * buf)
@@ -112,17 +112,17 @@ char * strtrimr(char * buf)
 }
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š strtriml
-* åŠŸèƒ½æè¿°ï¼š å»é™¤å­—ç¬¦ä¸²å·¦è¾¹çš„ç©ºå­—ç¬¦
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char * buf å­—ç¬¦ä¸²æŒ‡é’ˆ
-* è¾“å‡ºå‚æ•°ï¼š æ— 
-* è¿” å› å€¼ï¼š å­—ç¬¦ä¸²æŒ‡é’ˆ
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º strtriml
+* ¹¦ÄÜÃèÊö£º È¥³ı×Ö·û´®×ó±ßµÄ¿Õ×Ö·û
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char * buf ×Ö·û´®Ö¸Õë
+* Êä³ö²ÎÊı£º ÎŞ
+* ·µ »Ø Öµ£º ×Ö·û´®Ö¸Õë
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
 * 
 ***********************************************************************/
 char * strtriml(char * buf)
@@ -146,17 +146,17 @@ char * strtriml(char * buf)
 }
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š FileGetLine
-* åŠŸèƒ½æè¿°ï¼š ä»æ–‡ä»¶ä¸­è¯»å–ä¸€è¡Œ
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š FILE *fp æ–‡ä»¶å¥æŸ„ï¼›int maxlen ç¼“å†²åŒºæœ€å¤§é•¿åº¦
-* è¾“å‡ºå‚æ•°ï¼š char *buffer ä¸€è¡Œå­—ç¬¦ä¸²
-* è¿” å› å€¼ï¼š å®é™…è¯»çš„é•¿åº¦
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º FileGetLine
+* ¹¦ÄÜÃèÊö£º ´ÓÎÄ¼şÖĞ¶ÁÈ¡Ò»ĞĞ
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º FILE *fp ÎÄ¼ş¾ä±ú£»int maxlen »º³åÇø×î´ó³¤¶È
+* Êä³ö²ÎÊı£º char *buffer Ò»ĞĞ×Ö·û´®
+* ·µ »Ø Öµ£º Êµ¼Ê¶ÁµÄ³¤¶È
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
 * 
 ***********************************************************************/
 int  FileGetLine(FILE *fp, char *buffer, int maxlen)
@@ -170,21 +170,21 @@ int  FileGetLine(FILE *fp, char *buffer, int maxlen)
         { 
             if(feof(fp) != 0) 
             { 
-                if(j == 0) return -1;               /* æ–‡ä»¶ç»“æŸ */ 
+                if(j == 0) return -1;               /* ÎÄ¼ş½áÊø */ 
                 else break; 
             } 
-            if(ferror(fp) != 0) return -2;        /* è¯»æ–‡ä»¶å‡ºé”™ */ 
+            if(ferror(fp) != 0) return -2;        /* ¶ÁÎÄ¼ş³ö´í */ 
             return -2; 
         } 
         else 
         { 
-            if(ch1 == '\n' || ch1 == 0x00) break; /* æ¢è¡Œ */ 
-            if(ch1 == '\f' || ch1 == 0x1A)        /* '\f':æ¢é¡µç¬¦ä¹Ÿç®—æœ‰æ•ˆå­—ç¬¦ */ 
+            if(ch1 == '\n' || ch1 == 0x00) break; /* »»ĞĞ */ 
+            if(ch1 == '\f' || ch1 == 0x1A)        /* '\f':»»Ò³·ûÒ²ËãÓĞĞ§×Ö·û */ 
             { 
                 buffer[i++] = ch1; 
                 break; 
             } 
-            if(ch1 != '\r') buffer[i++] = ch1;    /* å¿½ç•¥å›è½¦ç¬¦ */ 
+            if(ch1 != '\r') buffer[i++] = ch1;    /* ºöÂÔ»Ø³µ·û */ 
         } 
     } 
     buffer[i] = '\0'; 
@@ -192,19 +192,19 @@ int  FileGetLine(FILE *fp, char *buffer, int maxlen)
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š FileCopy
-* åŠŸèƒ½æè¿°ï¼š æ–‡ä»¶æ‹·è´
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *source_fileã€€æºæ–‡ä»¶ã€€char *dest_fileã€€ç›®æ ‡æ–‡ä»¶
-* è¾“å‡ºå‚æ•°ï¼š æ— 
-* è¿” å› å€¼ï¼š 0 -- OK,é0ï¼ï¼å¤±è´¥
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º FileCopy
+* ¹¦ÄÜÃèÊö£º ÎÄ¼ş¿½±´
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *source_file¡¡Ô´ÎÄ¼ş¡¡char *dest_file¡¡Ä¿±êÎÄ¼ş
+* Êä³ö²ÎÊı£º ÎŞ
+* ·µ »Ø Öµ£º 0 -- OK,·Ç0£­£­Ê§°Ü
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23      V1.0      å»–æœˆæ—º       åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM       æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼
-* 2013-08-22     v1.2     chuaiGM       æ›´æ”¹å‚æ•°ä¸ºconstå‹
+* 2005/6/23      V1.0      ÁÎÔÂÍú       ´´½¨
+* 2012-04-19     v1.1     chuaiGM       ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½
+* 2013-08-22     v1.2     chuaiGM       ¸ü¸Ä²ÎÊıÎªconstĞÍ
 ***********************************************************************/
 int  FileCopy(const char *source_file, const char *dest_file)
 { 
@@ -227,7 +227,7 @@ int  FileCopy(const char *source_file, const char *dest_file)
             if(strlen(buf) == 0) 
             { 
                 if(ferror(fp1) != 0) goto copy_end; 
-                break;                                   /* æ–‡ä»¶å°¾ */ 
+                break;                                   /* ÎÄ¼şÎ² */ 
             } 
         } 
         ret = COPYF_ERR_WRITE_FILE; 
@@ -242,26 +242,26 @@ copy_end:
 
 /**********************************************************************
 
-* å‡½æ•°åç§°ï¼š SplitSectionToNameIndex
-* åŠŸèƒ½æè¿°ï¼š åˆ†ç¦»sectionä¸ºnameå’Œindex
+* º¯ÊıÃû³Æ£º SplitSectionToNameIndex
+* ¹¦ÄÜÃèÊö£º ·ÖÀësectionÎªnameºÍindex
 *            [section]
 *              /   \
 *            name:index
 *            jack  :   12 
 *            |     |   | 
 *            k1    k2  i 
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *section  
-* è¾“å‡ºå‚æ•°ï¼š char **name, char **index
-* è¿” å› å€¼ï¼š 1 --- ok 
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *section  
+* Êä³ö²ÎÊı£º char **name, char **index
+* ·µ »Ø Öµ£º 1 --- ok 
 *            0 --- blank line 
 *           -1 --- no name, ":index" 
 *           -2 --- only name, no ':' 
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
 * 
 ***********************************************************************/
 int  SplitSectionToNameIndex(char *section, char **name, char **index)
@@ -287,24 +287,24 @@ int  SplitSectionToNameIndex(char *section, char **name, char **index)
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š JoinNameIndexToSection
-* åŠŸèƒ½æè¿°ï¼š åˆæˆnameå’Œindexsectionä¸ºsection
+* º¯ÊıÃû³Æ£º JoinNameIndexToSection
+* ¹¦ÄÜÃèÊö£º ºÏ³ÉnameºÍindexsectionÎªsection
 *            jack  :   12 
 *            name:index
 *              \   /
 *            [section]
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *name, char *index
-* è¾“å‡ºå‚æ•°ï¼š char **section  
-* è¿” å› å€¼ï¼š 1 --- ok 
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *name, char *index
+* Êä³ö²ÎÊı£º char **section  
+* ·µ »Ø Öµ£º 1 --- ok 
 *			 0 --- blank line 
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23      V1.0      å»–æœˆæ—º        åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM       æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼
-* 2013-08-22     v1.1     chuaiGM       æ›´æ”¹åä¸¤ä¸ªå‚æ•°ç±»å‹ä¸ºconst
+* 2005/6/23      V1.0      ÁÎÔÂÍú        ´´½¨
+* 2012-04-19     v1.1     chuaiGM       ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½
+* 2013-08-22     v1.1     chuaiGM       ¸ü¸ÄºóÁ½¸ö²ÎÊıÀàĞÍÎªconst
 ***********************************************************************/
 int  JoinNameIndexToSection(char **section, const char *name, const char *index)
 { 
@@ -320,25 +320,25 @@ int  JoinNameIndexToSection(char **section, const char *name, const char *index)
     return 1; 
 } 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š SplitKeyValue
-* åŠŸèƒ½æè¿°ï¼š åˆ†ç¦»keyå’Œvalue
-*ã€€ã€€ã€€ã€€ã€€ã€€key=val
+* º¯ÊıÃû³Æ£º SplitKeyValue
+* ¹¦ÄÜÃèÊö£º ·ÖÀëkeyºÍvalue
+*¡¡¡¡¡¡¡¡¡¡¡¡key=val
 *			jack   =   liaoyuewang 
 *			|      |   | 
 *			k1     k2  i 
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *buf  
-* è¾“å‡ºå‚æ•°ï¼š char **key;char **val
-* è¿” å› å€¼ï¼š 1 --- ok 
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *buf  
+* Êä³ö²ÎÊı£º char **key;char **val
+* ·µ »Ø Öµ£º 1 --- ok 
 *			 0 --- blank line 
 *			-1 --- no key, "= val" 
 *			-2 --- only key, no '=' 
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23         V1.0      å»–æœˆæ—º        åˆ›å»º
-* 2005-08-22        V1.2     chuaiGM        ä¿®æ”¹keyä¸valueä¹‹é—´çš„åˆ†éš”ç¬¦å¯è‡ªå®šä¹‰CFG_kvs
+* 2005/6/23         V1.0      ÁÎÔÂÍú        ´´½¨
+* 2005-08-22        V1.2     chuaiGM        ĞŞ¸ÄkeyÓëvalueÖ®¼äµÄ·Ö¸ô·û¿É×Ô¶¨ÒåCFG_kvs
 * 
 ***********************************************************************/
 int  SplitKeyValue(char *buf, char **key, char **val)
@@ -364,19 +364,19 @@ int  SplitKeyValue(char *buf, char **key, char **val)
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š ConfigGetKeyValue
-* åŠŸèƒ½æè¿°ï¼š è·å¾—keyçš„å€¼
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *CFG_fileã€€æ–‡ä»¶ï¼›char *sectionã€€é¡¹å€¼ï¼›char *keyã€€é”®å€¼
-* è¾“å‡ºå‚æ•°ï¼š char *bufã€€keyçš„å€¼
-* è¿” å› å€¼ï¼š 0 --- ok é0 --- error 
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º ConfigGetKeyValue
+* ¹¦ÄÜÃèÊö£º »ñµÃkeyµÄÖµ
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *CFG_file¡¡ÎÄ¼ş£»char *section¡¡ÏîÖµ£»char *key¡¡¼üÖµ
+* Êä³ö²ÎÊı£º char *buf¡¡keyµÄÖµ
+* ·µ »Ø Öµ£º 0 --- ok ·Ç0 --- error 
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005-06-23     V1.0     å»–æœˆæ—º     åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM    æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼ï¼Œå‡½æ•°åä¿®æ”¹
-* 2013-08-22     v1.2     chuaiGM    æ›´æ”¹å‰ä¸‰ä¸ªå‚æ•°ä¸ºconstç±»å‹
+* 2005-06-23     V1.0     ÁÎÔÂÍú     ´´½¨
+* 2012-04-19     v1.1     chuaiGM    ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½£¬º¯ÊıÃûĞŞ¸Ä
+* 2013-08-22     v1.2     chuaiGM    ¸ü¸ÄÇ°Èı¸ö²ÎÊıÎªconstÀàĞÍ
 ***********************************************************************/
 int  ConfigGetKeyValue(const char *CFG_file, 
                        const char *section, 
@@ -395,16 +395,16 @@ int  ConfigGetKeyValue(const char *CFG_file,
     
     if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
     
-    while(1)                                       /* æœæ‰¾é¡¹section */ 
+    while(1)                                       /* ËÑÕÒÏîsection */ 
     { 
         ret = CFG_ERR_READ_FILE; 
         n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
         if(n < -1) goto r_cfg_end; 
         ret = CFG_SECTION_NOT_FOUND; 
-        if(n < 0) goto r_cfg_end;                    /* æ–‡ä»¶å°¾ï¼Œæœªå‘ç° */ 
+        if(n < 0) goto r_cfg_end;                    /* ÎÄ¼şÎ²£¬Î´·¢ÏÖ */ 
         line_no++; 
         n = strlen(strtriml(strtrimr(buf1))); 
-        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ç©ºè¡Œ æˆ– æ³¨é‡Šè¡Œ */ 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ¿ÕĞĞ »ò ×¢ÊÍĞĞ */ 
         ret = CFG_ERR_FILE_FORMAT; 
         if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
             goto r_cfg_end; 
@@ -412,25 +412,25 @@ int  ConfigGetKeyValue(const char *CFG_file,
         { 
             buf1[n-1] = 0x00; 
             if(strcmp(buf1+1, section) == 0) 
-                break;                                   /* æ‰¾åˆ°é¡¹section */ 
+                break;                                   /* ÕÒµ½Ïîsection */ 
         } 
     } 
     CFG_section_line_no = line_no; 
-    while(1)                                       /* æœæ‰¾key */ 
+    while(1)                                       /* ËÑÕÒkey */ 
     { 
         ret = CFG_ERR_READ_FILE; 
         n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
         if(n < -1) goto r_cfg_end; 
         ret = CFG_KEY_NOT_FOUND; 
-        if(n < 0) goto r_cfg_end;                    /* æ–‡ä»¶å°¾ï¼Œæœªå‘ç°key */ 
+        if(n < 0) goto r_cfg_end;                    /* ÎÄ¼şÎ²£¬Î´·¢ÏÖkey */ 
         line_no++; 
         CFG_key_line_no = line_no; 
         CFG_key_lines = 1; 
         n = strlen(strtriml(strtrimr(buf1))); 
-        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ç©ºè¡Œ æˆ– æ³¨é‡Šè¡Œ */ 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ¿ÕĞĞ »ò ×¢ÊÍĞĞ */ 
         ret = CFG_KEY_NOT_FOUND; 
         if(buf1[0] == CFG_ssl) goto r_cfg_end; 
-        if(buf1[n-1] == '+')                         /* é‡+å·è¡¨ç¤ºä¸‹ä¸€è¡Œç»§ç»­  */ 
+        if(buf1[n-1] == '+')                         /* Óö+ºÅ±íÊ¾ÏÂÒ»ĞĞ¼ÌĞø  */ 
         { 
             buf1[n-1] = 0x00; 
             while(1) 
@@ -438,12 +438,12 @@ int  ConfigGetKeyValue(const char *CFG_file,
                 ret = CFG_ERR_READ_FILE; 
                 n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
                 if(n < -1) goto r_cfg_end; 
-                if(n < 0) break;                         /* æ–‡ä»¶ç»“æŸ */ 
+                if(n < 0) break;                         /* ÎÄ¼ş½áÊø */ 
                 line_no++; 
                 CFG_key_lines++; 
                 n = strlen(strtrimr(buf2)); 
                 ret = CFG_ERR_EXCEED_BUF_SIZE; 
-                if(n > 0 && buf2[n-1] == '+')            /* é‡+å·è¡¨ç¤ºä¸‹ä¸€è¡Œç»§ç»­ */ 
+                if(n > 0 && buf2[n-1] == '+')            /* Óö+ºÅ±íÊ¾ÏÂÒ»ĞĞ¼ÌĞø */ 
                 { 
                     buf2[n-1] = 0x00; 
                     if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
@@ -462,7 +462,7 @@ int  ConfigGetKeyValue(const char *CFG_file,
             goto r_cfg_end; 
         strtriml(strtrimr(key_ptr)); 
         if(strcmp(key_ptr, key) != 0) 
-            continue;                                  /* å’Œkeyå€¼ä¸åŒ¹é… */ 
+            continue;                                  /* ºÍkeyÖµ²»Æ¥Åä */ 
         strcpy(buf, val_ptr); 
         break; 
     } 
@@ -473,21 +473,21 @@ r_cfg_end:
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š ConfigSetKeyValue
-* åŠŸèƒ½æè¿°ï¼š è®¾ç½®keyçš„å€¼
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *CFG_fileã€€æ–‡ä»¶ï¼›char *sectionã€€é¡¹å€¼ï¼›
-* 			 char *keyã€€é”®å€¼ï¼›char *bufã€€keyçš„å€¼
-* è¾“å‡ºå‚æ•°ï¼š æ— 
-* è¿” å› å€¼ï¼š   0 --- ok é0 --- error 
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º ConfigSetKeyValue
+* ¹¦ÄÜÃèÊö£º ÉèÖÃkeyµÄÖµ
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *CFG_file¡¡ÎÄ¼ş£»char *section¡¡ÏîÖµ£»
+* 			 char *key¡¡¼üÖµ£»char *buf¡¡keyµÄÖµ
+* Êä³ö²ÎÊı£º ÎŞ
+* ·µ »Ø Öµ£º   0 --- ok ·Ç0 --- error 
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005-06-23     V1.0      å»–æœˆæ—º      åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM     æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼ï¼Œå‡½æ•°å
-* 2012-04-26     v1.1     chuaiGM     tmpnamåœ¨linuxG++ä¸‹ä¼šæŠ¥è­¦å‘Š
-* 2013-08-22     v1.2     chuaiGM     å°†æ‰€æœ‰å‚æ•°æ”¹ä¸ºconstå‹ï¼Œå†™å…¥æ—¶åˆ†éš”ç¬¦æŒ‰ç…§ç”¨æˆ·æŒ‡å®š
+* 2005-06-23     V1.0      ÁÎÔÂÍú      ´´½¨
+* 2012-04-19     v1.1     chuaiGM     ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½£¬º¯ÊıÃû
+* 2012-04-26     v1.1     chuaiGM     tmpnamÔÚlinuxG++ÏÂ»á±¨¾¯¸æ
+* 2013-08-22     v1.2     chuaiGM     ½«ËùÓĞ²ÎÊı¸ÄÎªconstĞÍ£¬Ğ´ÈëÊ±·Ö¸ô·û°´ÕÕÓÃ»§Ö¸¶¨
 ***********************************************************************/
 int  ConfigSetKeyValue(const char *CFG_file, 
                        const char *section, 
@@ -575,19 +575,19 @@ w_cfg_end:
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š ConfigGetSections
-* åŠŸèƒ½æè¿°ï¼š è·å¾—æ‰€æœ‰section
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *CFG_fileã€€æ–‡ä»¶
-* è¾“å‡ºå‚æ•°ï¼š char *sections[]ã€€å­˜æ”¾sectionåå­—
-* è¿” å› å€¼ï¼š è¿”å›sectionä¸ªæ•°ã€‚è‹¥å‡ºé”™ï¼Œè¿”å›è´Ÿæ•°ã€‚
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º ConfigGetSections
+* ¹¦ÄÜÃèÊö£º »ñµÃËùÓĞsection
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *CFG_file¡¡ÎÄ¼ş
+* Êä³ö²ÎÊı£º char *sections[]¡¡´æ·ÅsectionÃû×Ö
+* ·µ »Ø Öµ£º ·µ»Øsection¸öÊı¡£Èô³ö´í£¬·µ»Ø¸ºÊı¡£
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23      V1.0      å»–æœˆæ—º        åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM       æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼
-* 2013-08-22     v1.1     chuaiGM       æ›´æ”¹ç¬¬ä¸€ä¸ªå‚æ•°ç±»å‹ä¸ºconst
+* 2005/6/23      V1.0      ÁÎÔÂÍú        ´´½¨
+* 2012-04-19     v1.1     chuaiGM       ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½
+* 2013-08-22     v1.1     chuaiGM       ¸ü¸ÄµÚÒ»¸ö²ÎÊıÀàĞÍÎªconst
 ***********************************************************************/
 int  ConfigGetSections(const char *CFG_file, char *sections[])
 { 
@@ -598,14 +598,14 @@ int  ConfigGetSections(const char *CFG_file, char *sections[])
     
     if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
     
-    while(1)                                       /*æœæ‰¾é¡¹section */ 
+    while(1)                                       /*ËÑÕÒÏîsection */ 
     { 
         ret = CFG_ERR_READ_FILE; 
         n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
         if(n < -1) goto cfg_scts_end; 
-        if(n < 0) break;                             /* æ–‡ä»¶å°¾ */ 
+        if(n < 0) break;                             /* ÎÄ¼şÎ² */ 
         n = strlen(strtriml(strtrimr(buf1))); 
-        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ç©ºè¡Œ æˆ– æ³¨é‡Šè¡Œ */ 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ¿ÕĞĞ »ò ×¢ÊÍĞĞ */ 
         ret = CFG_ERR_FILE_FORMAT; 
         if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
             goto cfg_scts_end; 
@@ -623,19 +623,19 @@ cfg_scts_end:
 } 
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š ConfigGetKeys
-* åŠŸèƒ½æè¿°ï¼š è·å¾—æ‰€æœ‰keyçš„åå­—ï¼ˆkey=valueå½¢å¼, valueå¯ç”¨åŠ å·è¡¨ç¤ºç»­è¡Œï¼‰
-* è®¿é—®çš„è¡¨ï¼š æ— 
-* ä¿®æ”¹çš„è¡¨ï¼š æ— 
-* è¾“å…¥å‚æ•°ï¼š char *CFG_fileã€€æ–‡ä»¶ char *section é¡¹å€¼
-* è¾“å‡ºå‚æ•°ï¼š char *keys[]ã€€å­˜æ”¾keyåå­—
-* è¿” å› å€¼ï¼š è¿”å›keyä¸ªæ•°ã€‚è‹¥å‡ºé”™ï¼Œè¿”å›è´Ÿæ•°ã€‚
-* å…¶å®ƒè¯´æ˜ï¼š æ— 
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º ConfigGetKeys
+* ¹¦ÄÜÃèÊö£º »ñµÃËùÓĞkeyµÄÃû×Ö£¨key=valueĞÎÊ½, value¿ÉÓÃ¼ÓºÅ±íÊ¾ĞøĞĞ£©
+* ·ÃÎÊµÄ±í£º ÎŞ
+* ĞŞ¸ÄµÄ±í£º ÎŞ
+* ÊäÈë²ÎÊı£º char *CFG_file¡¡ÎÄ¼ş char *section ÏîÖµ
+* Êä³ö²ÎÊı£º char *keys[]¡¡´æ·ÅkeyÃû×Ö
+* ·µ »Ø Öµ£º ·µ»Økey¸öÊı¡£Èô³ö´í£¬·µ»Ø¸ºÊı¡£
+* ÆäËüËµÃ÷£º ÎŞ
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005-06-23     V1.0      å»–æœˆæ—º       åˆ›å»º
-* 2012-04-19     v1.1     chuaiGM       æ›´æ”¹å‡½æ•°è¾“å…¥å‚æ•°æ ¼å¼
-* 2013-08-22     v1.1     chuaiGM       æ›´æ”¹å‰ä¸¤ä¸ªå‚æ•°ç±»å‹ä¸ºconst
+* 2005-06-23     V1.0      ÁÎÔÂÍú       ´´½¨
+* 2012-04-19     v1.1     chuaiGM       ¸ü¸Äº¯ÊıÊäÈë²ÎÊı¸ñÊ½
+* 2013-08-22     v1.1     chuaiGM       ¸ü¸ÄÇ°Á½¸ö²ÎÊıÀàĞÍÎªconst
 ***********************************************************************/
 int  ConfigGetKeys(const char *CFG_file, 
                    const char *section, 
@@ -649,15 +649,15 @@ int  ConfigGetKeys(const char *CFG_file,
     
     if((fp = fopen(CFG_file, "rb")) == NULL) return CFG_ERR_OPEN_FILE; 
     
-    while(1)                                       /* æœæ‰¾é¡¹section */ 
+    while(1)                                       /* ËÑÕÒÏîsection */ 
     { 
         ret = CFG_ERR_READ_FILE; 
         n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
         if(n < -1) goto cfg_keys_end; 
         ret = CFG_SECTION_NOT_FOUND; 
-        if(n < 0) goto cfg_keys_end;                 /* æ–‡ä»¶å°¾ */ 
+        if(n < 0) goto cfg_keys_end;                 /* ÎÄ¼şÎ² */ 
         n = strlen(strtriml(strtrimr(buf1))); 
-        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ç©ºè¡Œ æˆ– æ³¨é‡Šè¡Œ */ 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ¿ÕĞĞ »ò ×¢ÊÍĞĞ */ 
         ret = CFG_ERR_FILE_FORMAT; 
         if(n > 2 && ((buf1[0] == CFG_ssl && buf1[n-1] != CFG_ssr))) 
             goto cfg_keys_end; 
@@ -665,7 +665,7 @@ int  ConfigGetKeys(const char *CFG_file,
         { 
             buf1[n-1] = 0x00; 
             if(strcmp(buf1+1, section) == 0) 
-                break;                                   /* æ‰¾åˆ°é¡¹section */ 
+                break;                                   /* ÕÒµ½Ïîsection */ 
         } 
     } 
     while(1) 
@@ -673,13 +673,13 @@ int  ConfigGetKeys(const char *CFG_file,
         ret = CFG_ERR_READ_FILE; 
         n = FileGetLine(fp, buf1, MAX_CFG_BUF); 
         if(n < -1) goto cfg_keys_end; 
-        if(n < 0) break;                             /* æ–‡ä»¶å°¾ */ 
+        if(n < 0) break;                             /* ÎÄ¼şÎ² */ 
         n = strlen(strtriml(strtrimr(buf1))); 
-        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ç©ºè¡Œ æˆ– æ³¨é‡Šè¡Œ */ 
+        if(n == 0 || buf1[0] == CFG_nts) continue;       /* ¿ÕĞĞ »ò ×¢ÊÍĞĞ */ 
         ret = CFG_KEY_NOT_FOUND; 
         if(buf1[0] == CFG_ssl) 
-            break;                                     /* å¦ä¸€ä¸ª section */ 
-        if(buf1[n-1] == '+')                         /* é‡+å·è¡¨ç¤ºä¸‹ä¸€è¡Œç»§ç»­ */ 
+            break;                                     /* ÁíÒ»¸ö section */ 
+        if(buf1[n-1] == '+')                         /* Óö+ºÅ±íÊ¾ÏÂÒ»ĞĞ¼ÌĞø */ 
         { 
             buf1[n-1] = 0x00; 
             while(1) 
@@ -687,10 +687,10 @@ int  ConfigGetKeys(const char *CFG_file,
                 ret = CFG_ERR_READ_FILE; 
                 n = FileGetLine(fp, buf2, MAX_CFG_BUF); 
                 if(n < -1) goto cfg_keys_end; 
-                if(n < 0) break;                         /* æ–‡ä»¶å°¾ */ 
+                if(n < 0) break;                         /* ÎÄ¼şÎ² */ 
                 n = strlen(strtrimr(buf2)); 
                 ret = CFG_ERR_EXCEED_BUF_SIZE; 
-                if(n > 0 && buf2[n-1] == '+')            /* é‡+å·è¡¨ç¤ºä¸‹ä¸€è¡Œç»§ç»­ */ 
+                if(n > 0 && buf2[n-1] == '+')            /* Óö+ºÅ±íÊ¾ÏÂÒ»ĞĞ¼ÌĞø */ 
                 { 
                     buf2[n-1] = 0x00; 
                     if(strlen(buf1) + strlen(buf2) > MAX_CFG_BUF) 
@@ -720,12 +720,12 @@ cfg_keys_end:
 #ifdef INI_TEST_FUNC
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š test_iniFileCreate
-* åŠŸèƒ½æè¿°ï¼š æµ‹è¯•å‡½æ•°å…¥å£
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º test_iniFileCreate
+* ¹¦ÄÜÃèÊö£º ²âÊÔº¯ÊıÈë¿Ú
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
-* 2013-08-22       V1.0     chuaiGM        ä¿®æ”¹å‡½æ•°åï¼Œä¿®æ”¹ä¸ºæ™®é€šå‡½æ•°æ¥å£ 
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
+* 2013-08-22       V1.0     chuaiGM        ĞŞ¸Äº¯ÊıÃû£¬ĞŞ¸ÄÎªÆÕÍ¨º¯Êı½Ó¿Ú 
 * 
 ***********************************************************************/
 void test_iniFileCreate(void)
@@ -799,11 +799,11 @@ void test_iniFileCreate(void)
 }
 
 /**********************************************************************
-* å‡½æ•°åç§°ï¼š test_iniFileRead
-* åŠŸèƒ½æè¿°ï¼š æµ‹è¯•å‡½æ•°å…¥å£
-* ä¿®æ”¹æ—¥æœŸ        ç‰ˆæœ¬å·     ä¿®æ”¹äºº       ä¿®æ”¹å†…å®¹
+* º¯ÊıÃû³Æ£º test_iniFileRead
+* ¹¦ÄÜÃèÊö£º ²âÊÔº¯ÊıÈë¿Ú
+* ĞŞ¸ÄÈÕÆÚ        °æ±¾ºÅ     ĞŞ¸ÄÈË       ĞŞ¸ÄÄÚÈİ
 * -----------------------------------------------
-* 2005/6/23        V1.0      å»–æœˆæ—º        åˆ›å»º
+* 2005/6/23        V1.0      ÁÎÔÂÍú        ´´½¨
 * 
 ***********************************************************************/
 void test_iniFileRead(void)
@@ -814,17 +814,17 @@ void test_iniFileRead(void)
     ConfigSetKeyValue("Config.ini", "system", "trankey", "000");
     ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
     
-    printf("å–åˆ°çš„rootkeyä¿¡æ¯å¦‚ä¸‹ï¼š%s\n",buf);
+    printf("È¡µ½µÄrootkeyĞÅÏ¢ÈçÏÂ£º%s\n",buf);
     
     ConfigSetKeyValue("Config.ini", "system", "rootkey", "0001");
     ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
     
-    printf("å–åˆ°çš„rootkeyä¿¡æ¯å¦‚ä¸‹ï¼š%s\n",buf);
+    printf("È¡µ½µÄrootkeyĞÅÏ¢ÈçÏÂ£º%s\n",buf);
     
     ConfigSetKeyValue("Config.ini", "system", "rootkey", "000");
     ConfigGetKeyValue("Config.ini", "system", "rootkey", buf);
 
-    printf("å–åˆ°çš„rootkeyä¿¡æ¯å¦‚ä¸‹ï¼š%s\n",buf);
+    printf("È¡µ½µÄrootkeyĞÅÏ¢ÈçÏÂ£º%s\n",buf);
 
 }
 #endif      // INI_TEST_FUNC
