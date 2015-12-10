@@ -172,9 +172,8 @@ void Quoridor_ComputerAI::AI_action()
     //if (ply_head->id==ID_COMPUTER)
     //{
     //}
-    int mycolor = -1;
     // 先记录一下自己是谁
-    mycolor = ply_head->color;
+    int mycolor = ply_head->color;
     // 记录自己当前的位置
     pos2d mypos;
     mypos.x = ply_head->x*2;

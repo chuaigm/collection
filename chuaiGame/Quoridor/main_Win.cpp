@@ -179,10 +179,9 @@ int APIENTRY WinMain(HINSTANCE hInst,
     srand(unsigned(time(0)));
     //--------------------------------------------------
     // 文件检查
-    char errstr[]="缺少数据文件，请修复后重启游戏";
     if(!gm.haveDataFile())
     {
-        MessageBox(NULL,errstr, "Quoridor_Game",MB_OK);
+        MessageBox(NULL,"缺少数据文件，请修复后重启游戏", "Quoridor_Game",MB_OK);
         return 0;
     }
     //--------------------------------------------------

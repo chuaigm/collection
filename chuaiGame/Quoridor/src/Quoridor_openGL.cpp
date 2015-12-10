@@ -962,7 +962,7 @@ void CQuoridor::tPicButton(float x,float y,float w,float h,float ytex)
         glTexCoord2f(1.0f, ytex);
         glVertex3f(w, 0.0, 0.0f);
 
-        //up
+        // up
         glTexCoord2f(1.0f, ytex+0.5f);
         glVertex3f(w, h, 0.0f);
 
@@ -1110,7 +1110,7 @@ void CQuoridor::show_Font_test()
     sprintf(tmpstr, "arr.y=%d",arr.y);
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 
-    sprintf(tmpstr, "best_path_length=%d",best_path.size());
+    sprintf(tmpstr, "best_path_length=%zu",best_path.size());
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+50,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 }
 
@@ -1744,7 +1744,8 @@ void CQuoridor::playerActionRule(bool network)
     }
     // 之前有选取的位置
     else
-    {   // 存在已选取的位置,连续点两次相同位置，在最开始过滤
+    {
+        // 存在已选取的位置,连续点两次相同位置，在最开始过滤
         if (arr == pickup)
         {
             pickup.x = -1;
@@ -2898,7 +2899,7 @@ void CQuoridor::drawTestOptimalPath()
     for (size_t i=0; i<best_path.size();i++)
     {
         tRectangle(board_x+lace+best_path[i].x/2*(roadw+wall_w),lace+best_path[i].y/2*(roadw+wall_w),0.1f,roadw/2,roadw/2,1.0f,1.0f,0.1f,0.6f);
-        sprintf(tmpstr,"%02d",i);
+        sprintf(tmpstr,"%02zu",i);
         glPushMatrix();
         glTranslatef(0,0,0.5f);
         myfont.Print2D((int)(board_x+lace+best_path[i].x/2*(roadw+wall_w)),(int)(lace+best_path[i].y/2*(roadw+wall_w)),tmpstr,FONT4,1,1,1);

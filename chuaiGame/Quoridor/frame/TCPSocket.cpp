@@ -870,7 +870,7 @@ DWORD WINAPI CTCPSocket::TimeOutControl(LPVOID lpParameter)
             m_pTimeOut->s=NULL;
             CloseHandle(*(m_pTimeOut->phDataThread));
             *(m_pTimeOut->phDataThread)=NULL;
-            *(m_pTimeOut->pnConnections)--;
+            (*m_pTimeOut->pnConnections)--;
             
         }
         else

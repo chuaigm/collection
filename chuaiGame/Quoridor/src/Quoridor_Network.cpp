@@ -67,7 +67,7 @@ bool Quoridor_Network::startServer()
 
 bool Quoridor_Network::startClient()
 {
-    char tmpstr[32];
+    char tmpstr[64];
     // 这里创建网络对象
     n_TCPnet = new CTCPSocket(TCP_SOCKET_CLIENT);
     if(!n_TCPnet->Connect(IP,port))
