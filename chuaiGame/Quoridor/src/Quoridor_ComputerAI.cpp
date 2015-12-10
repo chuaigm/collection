@@ -3,11 +3,16 @@
 #include "Quoridor_ComputerAI.h"
 #include "Quoridor_openGL.h"
 #include "A_star_alg.h"
+#include "time.h"
 
 extern CQuoridor* pgm;
 
 Quoridor_ComputerAI::Quoridor_ComputerAI(void)
 {
+    // 如果使用随机函数的地方需要主要，使用随机种子
+    //srand(unsigned(time(0)));
+    // 但，随机种子实际上只需要在程序启动时执行一次即可，
+    //所以尽量放在外面去执行
 }
 
 Quoridor_ComputerAI::~Quoridor_ComputerAI(void)
@@ -160,7 +165,7 @@ void Quoridor_ComputerAI::FoolAI()
     }   // 如果不是电脑，什么都不做
 }
 
-// 此函数中注释描述以AI本身为第一人称，其他都是敌人
+// 此函数中注释描述以AI本身为第一人称“我”，其他都是敌人
 void Quoridor_ComputerAI::AI_action()
 {
     // 此判断应该在外层保证
@@ -214,18 +219,78 @@ void Quoridor_ComputerAI::AI_action()
             // 它们的x坐标相同
             if (x0 == x1)
             {
+                // 要放墙的那一行Y坐标是固定的
                 int tmpwally = (y0+y1)/2;
-                //if (x0 == 0 && gameData[2][tmpwally] == GD_BLANK)
-                //{
-                //}
+
                 // 这里相当于隐含既然找到这个路径，则当前路径上，肯定不存在墙
+                // 相当于隐含着，gameData[x0][tmpwally] == GD_BLANK
+                // 首先，判断中右位置可以放墙
                 if (x0+2<GDSIZE && gameData[x0+2][tmpwally] == GD_BLANK)
                 {
+                    // 再判断中左位置是否可以
+                    if (x0-2 >= 0 && gameData[x0-2][tmpwally] == GD_BLANK)
+                    {
+                        // 如果两边都可以放墙，那么随机选择一个方向
+                        // 下面函数会相对均匀的产生0和1
+                        if (random(0,2.0))
+                        {
+                            goto AI_WALL_RIGHT;
+                        }
+                        else
+                        {
+                            goto AI_WALL_LEFT;
+                        }
+                    }
+                    // 这里表示只能在中右的位置放墙
+                    else
+                    {
+AI_WALL_RIGHT:
+                        // 中右墙
+                        // 注意，下面这段代码，是放置一个中右墙
+                        pos2d wall1;
+                        wall1.x = x0;
+                        wall1.y = tmpwally;
+                        pos2d wall2;
+                        wall2.x = x0+2;
+                        wall2.y = tmpwally;
+                        // 压入墙绘制队列,一定先压入左边的块
+                        wall_vec.push_back(wall1);
+                        wall_vec.push_back(wall2);
+                        // 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
+                        gameData[wall1.x][wall1.y]=GD_WALL;
+                        gameData[wall1.x+1][wall1.y]=GD_WALL;
+                        gameData[wall2.x][wall2.y]=GD_WALL;
+
+                        // 如果新放的一堵墙，使得任何一个玩家无解，
+                        // 那么此墙非法，需要还原原来的游戏数据
+                        if (!pgm->judgeWallLegal())
+                        {
+                            // 恢复墙数据为空
+                            gameData[wall1.x][wall1.y]=GD_BLANK;
+                            gameData[wall1.x+1][wall1.y]=GD_BLANK;
+                            gameData[wall2.x][wall2.y]=GD_BLANK;
+                            // 弹出刚刚压入的墙绘制队列
+                            wall_vec.pop_back();
+                            wall_vec.pop_back();
+
+                            // TODO , 这里可以做更高级的算法，在别的地方设计墙
+                            goto AI_HAVE_TO_MOVE;
+                        }
+
+                        ply_head->wall_num_left--;
+                    }
+                }
+                // 其次，这里表示中右不可以，再判断中左是否可以
+                else if (x0-2 >= 0 && gameData[x0-2][tmpwally] == GD_BLANK)
+                {
+AI_WALL_LEFT:
+                    // 中左墙
+                    // 注意，下面这段代码，是放置一个中左墙
                     pos2d wall1;
-                    wall1.x = x0;
+                    wall1.x = x0-2;
                     wall1.y = tmpwally;
                     pos2d wall2;
-                    wall2.x = x0+2;
+                    wall2.x = x0;
                     wall2.y = tmpwally;
                     // 压入墙绘制队列,一定先压入左边的块
                     wall_vec.push_back(wall1);
@@ -235,33 +300,137 @@ void Quoridor_ComputerAI::AI_action()
                     gameData[wall1.x+1][wall1.y]=GD_WALL;
                     gameData[wall2.x][wall2.y]=GD_WALL;
 
+                    // 如果新放的一堵墙，使得任何一个玩家无解，
+                    // 那么此墙非法，需要还原原来的游戏数据
+                    if (!pgm->judgeWallLegal())
+                    {
+                        // 恢复墙数据为空
+                        gameData[wall1.x][wall1.y]=GD_BLANK;
+                        gameData[wall1.x+1][wall1.y]=GD_BLANK;
+                        gameData[wall2.x][wall2.y]=GD_BLANK;
+                        // 弹出刚刚压入的墙绘制队列
+                        wall_vec.pop_back();
+                        wall_vec.pop_back();
+
+                        // TODO , 这里可以做更高级的算法，在别的地方设计墙
+                        goto AI_HAVE_TO_MOVE;
+                    }
+
                     ply_head->wall_num_left--;
+                }
+                // 都不可以放墙，那么自己走一步
+                else 
+                {
+                    goto AI_HAVE_TO_MOVE;
                 }
             }
             // 如果是水平方向可行走，那么需要挡一个垂直方向的墙
             // 他们的y坐标相同
             else if (y0 == y1)
             {
+                // 要放墙的那一行X坐标是固定的
                 int tmpwallx = (x0+x1)/2;
 
                 // 这里相当于隐含既然找到这个路径，则当前路径上，肯定不存在墙
+                // 相当于隐含着，gameData[tmpwallx][y0] == GD_BLANK
+                // 首先，判断中上位置可以放墙
                 if (y0+2<GDSIZE && gameData[tmpwallx][y0+2] == GD_BLANK)
                 {
+                    // 再判断中下位置是否可以
+                    if (y0-2 >= 0 && gameData[tmpwallx][y0-2] == GD_BLANK)
+                    {
+                        // 如果两边都可以放墙，那么随机选择一个方向
+                        // 下面函数会相对均匀的产生0和1
+                        if (random(0,2.0))
+                        {
+                            goto AI_WALL_UP;
+                        }
+                        else
+                        {
+                            goto AI_WALL_DOWN;
+                        }
+                    }
+                    // 这里表示只能在中上的位置放墙
+                    else
+                    {
+AI_WALL_UP:
+                        // 中上墙
+                        // 注意，下面这段代码，是放置一个中上墙
+                        pos2d wall1;
+                        wall1.x = tmpwallx;
+                        wall1.y = y0;
+                        pos2d wall2;
+                        wall2.x = tmpwallx;
+                        wall2.y = y0+2;
+                        // 压入墙绘制队列,一定先压入下边的块
+                        wall_vec.push_back(wall1);
+                        wall_vec.push_back(wall2);
+                        // 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
+                        gameData[wall1.x][wall1.y]=GD_WALL;
+                        gameData[wall1.x][wall1.y+1]=GD_WALL;
+                        gameData[wall1.x][wall2.y]=GD_WALL;
+
+                        // 如果新放的一堵墙，使得任何一个玩家无解，
+                        // 那么此墙非法，需要还原原来的游戏数据
+                        if (!pgm->judgeWallLegal())
+                        {
+                            // 恢复墙数据为空
+                            gameData[wall1.x][wall1.y]=GD_BLANK;
+                            gameData[wall1.x][wall1.y+1]=GD_BLANK;
+                            gameData[wall2.x][wall2.y]=GD_BLANK;
+                            // 弹出刚刚压入的墙绘制队列
+                            wall_vec.pop_back();
+                            wall_vec.pop_back();
+
+                            // TODO , 这里可以做更高级的算法，在别的地方设计墙
+                            goto AI_HAVE_TO_MOVE;
+                        }
+
+                        ply_head->wall_num_left--;
+                    }
+                }
+                // 其次，这里表示中右不可以，再判断中左是否可以
+                else if (y0-2 >= 0 && gameData[tmpwallx][y0-2] == GD_BLANK)
+                {
+AI_WALL_DOWN:
+                    // 中左墙
+                    // 注意，下面这段代码，是放置一个中左墙
                     pos2d wall1;
                     wall1.x = tmpwallx;
-                    wall1.y = y0;
+                    wall1.y = y0-2;
                     pos2d wall2;
                     wall2.x = tmpwallx;
-                    wall2.y = y0+2;
+                    wall2.y = y0;
                     // 压入墙绘制队列,一定先压入左边的块
                     wall_vec.push_back(wall1);
                     wall_vec.push_back(wall2);
                     // 更新游戏算法数据,这里注意，把相连两墙位置的中间连接处也赋值
                     gameData[wall1.x][wall1.y]=GD_WALL;
                     gameData[wall1.x][wall1.y+1]=GD_WALL;
-                    gameData[wall1.x][wall2.y]=GD_WALL;
+                    gameData[wall2.x][wall2.y]=GD_WALL;
+
+                    // 如果新放的一堵墙，使得任何一个玩家无解，
+                    // 那么此墙非法，需要还原原来的游戏数据
+                    if (!pgm->judgeWallLegal())
+                    {
+                        // 恢复墙数据为空
+                        gameData[wall1.x][wall1.y]=GD_BLANK;
+                        gameData[wall1.x][wall1.y+1]=GD_BLANK;
+                        gameData[wall2.x][wall2.y]=GD_BLANK;
+                        // 弹出刚刚压入的墙绘制队列
+                        wall_vec.pop_back();
+                        wall_vec.pop_back();
+
+                        // TODO , 这里可以做更高级的算法，在别的地方设计墙
+                        goto AI_HAVE_TO_MOVE;
+                    }
 
                     ply_head->wall_num_left--;
+                }
+                // 都不可以放墙，那么自己走一步
+                else 
+                {
+                    goto AI_HAVE_TO_MOVE;
                 }
             }
             else
@@ -271,15 +440,17 @@ void Quoridor_ComputerAI::AI_action()
             }
         }
         // 如果下一步要走的地方被一个棋子所占有
-        // 那么，需要讨论一下下一步要走位置的关系，可以走位与最优路径的交集
+        // 那么，需要讨论一下下一步要走位置的关系，可以走的位置与最优路径的交集
         else
         {
             //TODO
+            goto AI_HAVE_TO_MOVE;
         }
     }
     // 如果我的路径是最短的，那么我就往前走一步
     else
     {
+AI_HAVE_TO_MOVE:
         // 先获取我当前可走的点
         pgm->playerMovablePos(mypos);
         // 是否找到重合点，跳出双循环标志
