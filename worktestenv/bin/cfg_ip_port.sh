@@ -31,6 +31,10 @@ else
 	../busgroup/fr_bus/conf/fr_bus.ini
 	"
 fi
+
+# caution! when you want to find the target, you can use sub-string
+# to find more potential targets, remeber do it with generation process
+# but, when you want to change targets, the key words must be the exact key word
 KEY_WORDS="
 ArbListenSvc
 FtListenSvc
@@ -64,6 +68,8 @@ do
 	echo $X | tee -a $TAG_CFG
 	for Y in $KEY_WORDS
 	do
+		# here! if you want to use sub-string to find more target
+		#grep $Y $X | tee -a $TAG_CFG
 		grep -w $Y $X | tee -a $TAG_CFG
 	done
 
