@@ -1,13 +1,22 @@
 #!/bin/sh
 # powered by chuaiGM!
-# 2014-09-24
+# create: 2014-09-24
+# update: 2015-12-22
 
-# this file will collect all the configure info
+#-------------- change the following as you wish --------------
+
+# this file will collect all the configuration info
 # rules here :
 #     1. the first line must be a absolute path and cfg file name
 #     2. following line are cfg info need to change(grep by keywords)
-#     3. different cfg files need to be separated by a blank line
+#     3. different cfg files need to be separated by just one blank line
 TAG_CFG="./collection_cfg.ini"
+
+# Keep the original file?
+KEEP_ORIGIN=1
+#wanna delete all backup files?
+#excute:
+# find . -name *.cgmbackup | xargs rm 
 
 # change all these config files, or just change part of them,
 # that's depends on you, just change this condition
@@ -40,6 +49,8 @@ QuotSwitchBPoint
 ExternSvc
 InterSvc
 "
+
+#-------------- configuration end --------------
 
 # if no configure collect file here, then, find the 
 # configure file in each module, and generate the file.
@@ -91,8 +102,14 @@ do
 						# <> method may have some problem
 						#awk '/'$KW'/ {print "'$myline'"; next} {print}' $file_path 1<>$file_path
 						# core cmd
+						# matching keyword, and print, else print original line
 						awk '/\<'$KW'\>/ {print "'$myline'"; next} {print}' $file_path >> tmp_file_cgm
+						if [ $KEEP_ORIGIN -eq 1 ]; then
+						mv $file_path $file_path.cgmbackup
 						mv tmp_file_cgm $file_path
+						else
+						mv tmp_file_cgm $file_path
+						fi
 						echo "[changing:]" $myline
 					fi
 				fi
@@ -101,3 +118,5 @@ do
 	fi
 done < $TAG_CFG
 fi
+
+#--------------------------------------------------
