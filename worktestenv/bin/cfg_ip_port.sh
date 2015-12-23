@@ -110,6 +110,9 @@ do
 						# core cmd
 						# matching keyword, and print, else print original line
 						awk '/\<'$KW'\>/ {print "'$myline'"; next} {print}' $file_path >> tmp_file_cgm
+						# in some enviroment \< \> can not be used, so remove it
+						#awk '/'$KW'/ {print "'$myline'"; next} {print}' $file_path >> tmp_file_cgm
+
 						if [ $KEEP_ORIGIN -eq 1 ]; then
 						mv $file_path $file_path.cgmbackup
 						mv tmp_file_cgm $file_path
