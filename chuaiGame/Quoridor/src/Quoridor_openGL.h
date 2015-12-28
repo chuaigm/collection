@@ -77,7 +77,6 @@ public:
     //∞Û∂®Ã˘Õº
     void texture_select(UINT texture);
     //œ‘ æÕº∆¨
-    //void tPic(float e);
     void tPicRectangle(float x,float y, float w, float h,float deep=-0.1f);
     void tPicButton(float x,float y,float w,float h,float ytex);
     void tRectangle(float x, float y, float z, float w, float h, float r, float g, float b, float a);

@@ -18,10 +18,7 @@
 
 //font
 extern CGLFont myfont;
-//clock
-extern MYCLOCK c1;
-//mouse
-extern int Lbutdown;
+
 // OpenGL环境对象指针在主函数文件中声明
 extern COpenGLbase* g_OpenGL;
 // 外部输入的窗口宽高
@@ -105,7 +102,7 @@ CQuoridor::CQuoridor()
 
     // 网络相关
     memset(n_loaclIP,0,sizeof(n_loaclIP));
-    //memset(n_Name,0,sizeof(n_Name));
+
     n_netWorkStatus=0;
     tmpp = (void*)n_NameAll;
     memset(tmpp,0,sizeof(n_NameAll));
@@ -193,7 +190,6 @@ void CQuoridor::init()
     glEnable(GL_TEXTURE_2D);
 
     //游戏状态
-//  iGameState=GAME_PRE_ANI;
     iGameState=GAME_MENU;
 }
 
@@ -210,12 +206,10 @@ void CQuoridor::initView()
     // 菜单按钮的宽度和高度
     menu_w=g_OpenGL->RCwidth/9;
     menu_h=g_OpenGL->RCheight/20;
-    // 帮助界面返回菜单按钮宽度
-    //helpRetButtonW=g_OpenGL->RCwidth/5;
-    //rButtonx=(g_OpenGL->RCwidth-helpRetButtonW)/2;
+
     // 菜单坐标位置
     menu.x=g_OpenGL->RCwidth-menu_dis/2-menu_w;
-    menu.y=/*menu_dis/2 +*/ menu_h;
+    menu.y=menu_h;
 
     // 游戏棋盘数据
     player_info_h=g_OpenGL->RCheight/4.0f;
@@ -245,9 +239,11 @@ void CQuoridor::showMain()
 
     switch(iGameState)
     {
+/*
     case GAME_PRE:
         //showpreani();
         break;
+*/
     case GAME_MENU:
         showmenu();
         break;
@@ -273,8 +269,6 @@ void CQuoridor::showMain()
     case GAME_NET_CONFIG:
         drawNetworkOp();
         break;
-    //case GAME_NETWORK:
-    //    break;
     case GAME_SENDBOX:
         drawAccessory();
         drawChessBorad();
@@ -585,12 +579,7 @@ void CQuoridor::lbuttonproc(int lparam)
                         break;
                     }
                 }
-                // 如果当前玩家的状态是关闭的，不参与游戏的
-                //else
-                //{   // 因为初始化的时候，已经把玩家所应该站的初始位置在游戏数据中建立了
-                //    // 如果不参与游戏，需要再清空这个游戏数据
-                //    gameData[g_player[i].x*2][g_player[i].y*2]=GD_BLANK;
-                //}
+                // 这里else分支依赖resetGameData()函数的实现
             }
             // 当可用玩家数量，少于2时，无法进行游戏
             if (nn<2)
@@ -913,17 +902,6 @@ void CQuoridor::texture_select(UINT texture)
     //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 }
 
-////画正方形 ，边长2e
-//void CQuoridor::tPic(float e)
-//{
-//    glBegin(GL_QUADS);
-//        glTexCoord2f(0.0f, 0.0f); glVertex3f(-e, -e,  0.0f);
-//        glTexCoord2f(1.0f, 0.0f); glVertex3f( e, -e,  0.0f);
-//        glTexCoord2f(1.0f, 1.0f); glVertex3f( e,  e,  0.0f);
-//        glTexCoord2f(0.0f, 1.0f); glVertex3f(-e,  e,  0.0f);
-//    glEnd();
-//}
-
 //画矩形，左下角坐标xy，宽度w，高h
 void CQuoridor::tPicRectangle(float x,float y,float w,float h,float deep)
 { 
@@ -1078,6 +1056,7 @@ void CQuoridor::showmenu()
         }
     }
 }
+#ifdef __DEBUG__
 // 显示测试数据
 void CQuoridor::show_Font_test()
 {
@@ -1110,9 +1089,10 @@ void CQuoridor::show_Font_test()
     sprintf(tmpstr, "arr.y=%d",arr.y);
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+10,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 
-    sprintf(tmpstr, "best_path_length=%zu",best_path.size());
+    sprintf(tmpstr, "best_path_length=%d",best_path.size());
     myfont.Print2D(menu.x+10,menu.y+2*menu_h+50,tmpstr,FONT0,1.0f,1.0f,1.0f,1.0f);
 }
+#endif
 
 void CQuoridor::showHelp()
 {
@@ -2899,7 +2879,7 @@ void CQuoridor::drawTestOptimalPath()
     for (size_t i=0; i<best_path.size();i++)
     {
         tRectangle(board_x+lace+best_path[i].x/2*(roadw+wall_w),lace+best_path[i].y/2*(roadw+wall_w),0.1f,roadw/2,roadw/2,1.0f,1.0f,0.1f,0.6f);
-        sprintf(tmpstr,"%02zu",i);
+        sprintf(tmpstr,"%02d",i);
         glPushMatrix();
         glTranslatef(0,0,0.5f);
         myfont.Print2D((int)(board_x+lace+best_path[i].x/2*(roadw+wall_w)),(int)(lace+best_path[i].y/2*(roadw+wall_w)),tmpstr,FONT4,1,1,1);

@@ -362,14 +362,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\frame\RWLock.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\frame\RWLock.h"
-				>
-			</File>
-			<File
 				RelativePath=".\frame\TCPSocket.cpp"
 				>
 			</File>

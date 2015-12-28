@@ -13,7 +13,6 @@
 #include "glfont.h"
 #include "inifileop.h"
 #include <ctime>
-//#include "RWLock.h"
 
 // 时钟
 MYCLOCK c1;
@@ -37,12 +36,9 @@ int g_sound = 1;
 CQuoridor gm;
 // 全局指针
 CQuoridor* pgm=&gm;
-//CQuoridor* CQuoridor::pThis=&gm;
-
-//CMyRWLock g_RWLock;
 
 //左键是否按下
-int Lbutdown=0;
+//int Lbutdown=0;
 // 程序主循环
 void GameLoop()
 {
@@ -139,21 +135,21 @@ LRESULT WINAPI MsgProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam )
                 break;
             } 
             break;
-
+/*
         case WM_LBUTTONDOWN:
-            Lbutdown=1;
+            //Lbutdown=1;
             break;
         case WM_RBUTTONDOWN:
             //Rbutdown=1;
             break;
-
+*/
         case WM_MOUSEMOVE:
             //gm.mouseproc(lParam);
             g_OpenGL->mouseProc(lParam);
             break;
         
         case WM_LBUTTONUP:
-            Lbutdown=0;
+            //Lbutdown=0;
             gm.lbuttonproc(lParam);
             break;
         case WM_RBUTTONUP:
@@ -242,9 +238,10 @@ int APIENTRY WinMain(HINSTANCE hInst,
     //--------------------------------------------------
     // 窗体风格
     //dwExStyle=WS_EX_APPWINDOW|WS_EX_WINDOWEDGE;
-    //DWORD dwStyle=WS_POPUP;			// 连窗体都没有，只有主体内容
-    //DWORD dwStyle=WS_OVERLAPPEDWINDOW;
-    DWORD dwStyle= /*WS_OVERLAPPED | */WS_CAPTION | WS_SYSMENU |WS_MINIMIZEBOX;		// 没有右上角三个功能按钮，只有一个窗体
+    //DWORD dwStyle=WS_POPUP;                   // 连窗体都没有，只有主体内容
+    //DWORD dwStyle=WS_OVERLAPPEDWINDOW;        // 一个正常的可调大小的窗体
+    //DWORD dwStyle= WS_OVERLAPPED;             // 没有右上角三个功能按钮，只有一个窗体
+    DWORD dwStyle= WS_CAPTION | WS_SYSMENU |WS_MINIMIZEBOX;     // 不能调整大小的窗口
 
     // 得到当前桌面分辨率
     int wid=GetSystemMetrics(SM_CXSCREEN);
