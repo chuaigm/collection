@@ -29,6 +29,14 @@
    git reset [commit号]
    具体参考：http://hittyt.iteye.com/blog/1961386
 
+9. // 换行符问题
+   // 提交，检出，不转换换行符
+   git config --global core.autocrlf false
+   // 拒绝提交混合换行符文件
+   git config --global core.safecrlf true
+   // 区分大小写
+   git config --global core.ignorecase false
+
 
 -------------------------------------
 git 可以分为三个概念
