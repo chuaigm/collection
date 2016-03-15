@@ -2,7 +2,10 @@
 
 # 获取min 和 max之间的随机数
 if [ $# -ne 2 ]; then
-	echo Usage: $@ min max
+	echo "========================="
+	echo "Usage: $@ min max"
+	echo "Usage: $@ file number"
+	echo "========================="
 	exit
 fi
 
@@ -16,8 +19,21 @@ function random()
 	echo $retnum;
 }
 
+# 如果参数1给出的文件存在
+if [ -f $1 ]; then
+	# 先获取总行数
+	nline=`cat $1| wc -l`
+	for((i=0;i<$2;i++));
+	do
+		ran=$(random 1 $nline+1);
+		sed -n "$ran p" $1
+	done
+else
+# 生成参数1与参数2直接的一个随机数
 out=$(random $1 $2+1);
-echo $out;
+echo ""
+echo "    [$out]";
+fi
 
 
 <<"XXX"
