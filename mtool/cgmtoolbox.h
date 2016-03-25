@@ -19,6 +19,7 @@
 #define __C6_  // Color character output
 #define __C7_  // judge endian
 #define __C8_  // function tracer
+//#define __C9_  // back tracer (LINUX only)
 
 /* -----[Option]------ INCLUDE --------------*/
 // you can't open both
@@ -469,7 +470,7 @@ public:
 		for(unsigned int i=0; i<indent; ++i) {
 			printf("  ");
 		}
-		printf("Entering %s()\n", _name);
+		printf("-->> %s()\n", _name);
 	}
 	~CFuncTracer()
 	{
@@ -477,7 +478,7 @@ public:
 		for(unsigned int i=0; i<indent; ++i) {
 			printf("  ");
 		}
-		printf("Leaving  %s()\n", _name);
+		printf("<<-- %s()\n", _name);
 		--indent;
 	}
 	void print(const char* level, const char *fmt, ...)
@@ -504,6 +505,35 @@ private:
 // initial
 unsigned int CFuncTracer::indent=0;
 #endif // for __C8_
+
+/*=================================================*\
+ *    C9. back trace
+\*=================================================*/
+#ifdef __C9_
+// remember add -rdynamic when you compile, like:
+// g++ -rdynamic prog.c
+#include <execinfo.h>
+void backTracer()
+{
+   int j, nptrs;
+   void *buffer[100];
+   char **strings;
+   nptrs = backtrace(buffer, 100);
+   printf("backtrace() returned %d addresses\n", nptrs);
+   /* The call backtrace_symbols_fd(buffer, nptrs, STDOUT_FILENO)
+    *  would produce similar output to the following: */
+ 
+   strings = backtrace_symbols(buffer, nptrs);
+   if (strings == NULL) {
+       perror("backtrace_symbols");
+       exit(EXIT_FAILURE);
+   }
+ 
+   for (j = 0; j < nptrs; j++)
+       printf("%s\n", strings[j]);
+   free(strings);
+}
+#endif // for __C9_
 
 #endif	// for __CHUAI_TOOL_BOX_H__
 

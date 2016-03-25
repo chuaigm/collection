@@ -1,4 +1,3 @@
-
 #include "cgmtoolbox.h"
 #include <fcntl.h>
 
@@ -6,16 +5,17 @@ void fun1()
 {
 	FUNC_TRACER;
 	MMM;
-	INFO_LOG("%d-test1\n", 56);
-	ERROR_LOG("%d-test1\n", 25);
+	//INFO_LOG("%d-test1\n", 56);
+	//ERROR_LOG("%d-test1\n", 25);
 }
 void fun2()
 {
 	FUNC_TRACER;
 	MMM;
-	INFO_LOG("%d-test2\n", 56);
-	ERROR_LOG("%d-test2\n", 25);
+	//INFO_LOG("%d-test2\n", 56);
+	//ERROR_LOG("%d-test2\n", 25);
 }
+
 void genRandHex(char *str, unsigned int len)
 {
 	char buf[len];
@@ -36,11 +36,45 @@ void genRandHex(char *str, unsigned int len)
 	}
 	memcpy(str, tmp, len);
 }
-void fun_test(int * &fp)
+
+class CTest1
 {
-	fp=new int;
-	printf("i-func:%X\n", fp);
-}
+public:
+	CTest1(){}
+	virtual ~CTest1(){}
+
+	void t1func1() {
+		//FUNC_TRACER;
+	}
+	virtual void vfunc1()=0;
+};
+
+class CTest2:public CTest1
+{
+public:
+	CTest2(){}
+	~CTest2(){}
+	void t2func1() {
+		//FUNC_TRACER;
+	}
+	void vfunc1() {
+		//FUNC_TRACER;
+	}
+};
+
+class CTest3
+{
+public:
+	CTest3(){}
+	virtual ~CTest3(){}
+	void t3func1() {
+		//FUNC_TRACER;
+		backTracer();
+		CTest2 *p=new CTest2();
+		p->vfunc1();
+		p->t2func1();
+	}
+};
 
 int main()
 {
@@ -50,40 +84,36 @@ int main()
 	printf("%s\n", ar);
 */
 
-	int a=-13341;
-	printf("!a=%d\n",!a);
-
-	int *p;
-	printf("o-func:%X\n", p);
-	fun_test(&p);
-	printf("o-func:%X\n", p);
-
-
-/*
 	FUNC_TRACER;
 	BEGIN_CALC_TIME;
+
+	printf("C2--------------\n");
+	CGM_VER_INFO;
+
 	printf("C1---------------\n");
 	MMM;
 	fun1();
 	fun2();
-	printf("C2--------------\n");
-	CGM_VER_INFO;
 	printf("C3--------------\n");
 	END_CALC_TIME;
 	SHOW_TIME_US;
 	SHOW_TIME_MS;
 	SHOW_TIME_S;
+#if 0
 	printf("C4--------------\n");
 	BEGIN_CALC_TIME;
 	delaySf(1.56);
-	printf("C3--------------\n");
 	END_CALC_TIME;
 	SHOW_TIME_US;
 	SHOW_TIME_MS;
 	SHOW_TIME_S;
+#endif
+#if 0
 	printf("C5--------------\n");
 	plantRandomSeed(0,0,1);
 	plantRandomSeed(1,3526,1);
+#endif
+#if 0
 	printf("C6--------------\n");
 	red<<11111;
 	std::cout<<std::endl;
@@ -101,14 +131,20 @@ int main()
 	cyan_bk<<11111;
 	white_bk<<11111;
 	std::cout<<std::endl;
+#endif
 	printf("C7--------------\n");
 	endianJdg(1);
-#ifdef _LITTLE_ENDIAN_
-	printf("little macro\n");
-#endif
-#ifdef _BIG_ENDIAN_
-	printf("big macro\n");
-#endif
+#if 0
 	printf("C8--------------\n");
-*/	
+	CTest3 *t3 = new CTest3;
+
+	t3->t3func1();
+#endif
+
+#if 1
+	printf("C9--------------\n");
+	CTest3 *t3 = new CTest3;
+
+	t3->t3func1();
+#endif
 }
