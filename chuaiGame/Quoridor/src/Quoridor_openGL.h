@@ -36,6 +36,12 @@ enum {
     BUTTON_CLIENT_TEST
 };
 
+enum {
+    HINT_NULL,
+    HINT_EXIT,
+    HINT_PLAY_NUMBER_INVALID
+};
+
 struct point2d{
     float x;
     float y;
@@ -97,8 +103,12 @@ public:
     void drawNetworkOp();
     // 绘制选定遮罩层
     void drawPickMask();
+    // 绘制游戏中的提示信息
+    void drawHint();
+    // 两行式的提示信息
+    void Hint2Line(const char*, const char*);
     // 确认窗口
-    void drawConfirm();
+    //void drawConfirm();
     // 绘制胜利窗口
     void drawVictory();
     // 重设游戏数据
@@ -113,6 +123,7 @@ public:
     bool judgeWallLegal();
 #ifdef __DEBUG__
     void drawTestOptimalPath();
+    bool g_debug_flag;  // 显示调试信息
 #endif
 
     // 接收网络消息的回调函数 (静态)
@@ -124,8 +135,7 @@ public:
     int iMenu;          // 当前选择的菜单项
     int iButton;        // 按钮选择的结果
     int win_flag;       // 哪位玩家获得了胜利，0没人胜利，1，黄色....(复用GD_系列数据)
-    bool g_debug_flag;  // 显示调试信息
-    bool b_show_warning;// 单机游戏和网络游戏时，防止一次性操作导致退出
+    int HintFlag;// 单机游戏和网络游戏时，防止一次性操作导致退出
 
     //images
     unsigned int g_cactus[GAME_TEX_NUM];
@@ -178,8 +188,6 @@ public:
 
     char n_loaclIP[16];         // 本机IP
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
-    // TODO 由于多线程问题，这个变量也应该放到gData里，赋予volatile属性
-    //char n_NameAll[4][16];      // 目前所有连接的玩家名
 
 private:
     //------------------------------------

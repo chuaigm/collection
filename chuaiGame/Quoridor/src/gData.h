@@ -65,15 +65,15 @@ public:
 // 墙总数，待除数
 const int wall_total_num=21;
 
-// 关于一下变量，volatile的使用，是用于使用网络通信类后
+// 关于以下变量，volatile的使用，是用于使用网络通信类后
 // 存在多线程访问变量的问题，为了防止编译器优化带来的影响，
 // 以下几个在多个线程中使用的变量，加入volatile属性，
-// 应该还可以有别的解决方法，但是，目前我还不知道怎么做好些
+// 应该还可以有别的解决方法，但是，目前我还不知道怎么做更好
 // 当前游戏状态
 extern volatile int iGameState;
 // 游戏算法数据，其值如上述枚举
 extern volatile char gameData[GDSIZE][GDSIZE];
-// 目前所有连接的玩家名(暂时有问题)
+// 目前所有连接的玩家名(暂时有问题?)
 extern volatile char n_NameAll[4][16];
 
 extern player g_player[4];

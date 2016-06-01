@@ -94,10 +94,14 @@ CQuoridor::CQuoridor()
     ply_head=NULL;
     // 玩家胜利标志
     win_flag=GD_BLANK;
+#ifdef __DEBUG__
     // 显示调试信息
     g_debug_flag=false;
-    // 显示退出警示信息
-    b_show_warning=false;
+#endif
+    // 提示信息内容
+    HintFlag=HINT_NULL;
+
+    // 时间计数器
     tcounter=0;
 
     // 网络相关
@@ -113,7 +117,6 @@ CQuoridor::CQuoridor()
 
 CQuoridor::~CQuoridor()
 {
-    
 }
 //游戏所需数据文件检查,如果缺少,程序中止
 int CQuoridor::haveDataFile()
@@ -143,13 +146,17 @@ int CQuoridor::haveDataFile()
         fp=fopen(fdata[i],"r");
         if(!fp)
         {
+#ifdef _UPPER_DIR_
             ihave=0;//缺少文件
+#else
+            return 0;
+#endif
             break;
         }
         else
             fclose(fp);
     }
-
+#ifdef _UPPER_DIR_
     //如果当前文件夹没有,返回上级文件夹,再检查
     if(!ihave)
         SetCurrentDirectory("..");
@@ -164,7 +171,7 @@ int CQuoridor::haveDataFile()
         else
             fclose(fp);
     }
-
+#endif
     return 1;
 }
 
@@ -229,13 +236,13 @@ void CQuoridor::initView()
 // 游戏主绘图函数
 void CQuoridor::showMain()
 {
+#ifdef __DEBUG__
     // 显示测试数据
     if (g_debug_flag)
     {
-#ifdef __DEBUG__
         show_Font_test();
-#endif
     }
+#endif
 
     switch(iGameState)
     {
@@ -287,6 +294,8 @@ void CQuoridor::showMain()
     default:
         break;
     }
+    // 绘制弹出式提示信息，注意透明图层需最后绘制
+    drawHint();
 }
 //实时检测
 void CQuoridor::check()
@@ -472,17 +481,32 @@ void CQuoridor::lbuttonproc(int lparam)
     {
         if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
         {
-            b_show_warning=!b_show_warning;
+            HintFlag=HintFlag==HINT_EXIT?HINT_NULL:HINT_EXIT;
+        } else {
+            HintFlag=HINT_NULL;
+            iGameState=GAME_MENU;
         }
-        else{iGameState=GAME_MENU;}
         return;
     }
-    else if (iButton==BUTTON_INIT_OR_CONFIRM && b_show_warning)
+    else if (iButton==BUTTON_INIT_OR_CONFIRM)
     {
-        b_show_warning=false;
-        iGameState=GAME_MENU;
+        if (HintFlag==HINT_EXIT)
+        {
+            HintFlag=HINT_NULL;
+            iGameState=GAME_MENU;
+            return;
+        } else if (HintFlag==HINT_PLAY_NUMBER_INVALID)
+        {
+            HintFlag=HINT_NULL;
+            return;
+        }
+    }
+    // 当有显示的提示信息时，只允许确认与返回按钮工作，跳过后面对游戏内容的判断
+    if (HintFlag!=HINT_NULL)
+    {
         return;
     }
+
     switch(iGameState)
     {
     case GAME_MENU:
@@ -583,7 +607,8 @@ void CQuoridor::lbuttonproc(int lparam)
             }
             // 当可用玩家数量，少于2时，无法进行游戏
             if (nn<2)
-            {   // TODO 以后添加弹窗提示, 玩家人数不能少于2人
+            {
+                HintFlag=HINT_PLAY_NUMBER_INVALID;
                 // 因为上面删了游戏数据，这里再补回来
                 resetGameData();
                 break;
@@ -845,14 +870,16 @@ void CQuoridor::keyupproc(int keyparam)
 {
     switch (keyparam)
     {
+#ifdef __DEBUG__
     case VK_F9:
         g_debug_flag=!g_debug_flag;
         break;
+#endif
     case VK_ESCAPE:
         //回到菜单
         if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
         {
-            b_show_warning=!b_show_warning;
+            HintFlag=HintFlag==HINT_EXIT?HINT_NULL:HINT_EXIT;
         }
         else{iGameState=GAME_MENU;}
         break;
@@ -1424,23 +1451,7 @@ void CQuoridor::drawPickMask()
     //static int det=1;
     int det = 2;
     //static int ctick=0;
-    if (b_show_warning)
-    {   // 绘制退出警示信息,在这里绘制是因为透明度的原因
-        char tmpstr[64]={0};
-        float layer=0.3f;
-        float tri_w=g_OpenGL->RCwidth/3.0f;
-        float tri_h=g_OpenGL->RCheight/3.0f;
-        //绘制背景半透明底纹窗口
-        tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.8f);
 
-        glPushMatrix();
-        glTranslatef(0,0,0.5f);
-        sprintf(tmpstr,"        注    意  ！！    ");
-        myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.628),tmpstr,FONT8,1,0,0);
-        sprintf(tmpstr,"  您确定要退出当前游戏吗？");
-        myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.325),tmpstr,FONT8,1,1,0);
-        glPopMatrix();
-    }
     if (ply_head!=NULL)
     {
         // 轮到谁走，在玩家图标上，给个动态提示
@@ -1551,14 +1562,14 @@ void CQuoridor::drawPickMask()
     return ;
 }
 // 绘制确认窗口
-void CQuoridor::drawConfirm()
-{
-    float layer=0.3f;
-    float tri_w=g_OpenGL->RCwidth/3.0f;
-    float tri_h=g_OpenGL->RCheight/3.0f;
-    //绘制背景半透明底纹窗口
-    tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.7f);
-}
+//void CQuoridor::drawConfirm()
+//{
+//    float layer=0.3f;
+//    float tri_w=g_OpenGL->RCwidth/3.0f;
+//    float tri_h=g_OpenGL->RCheight/3.0f;
+//    //绘制背景半透明底纹窗口
+//    tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.7f);
+//}
 
 void CQuoridor::resetGameData()
 {
@@ -2501,7 +2512,7 @@ void CQuoridor::freeSendBoxRule()
         {
             // 如果是横墙,并且这次选的和上次选的在同一行上
             if (pickup.x%2==0&&arr.y==pickup.y)
-            {	// 如果这次选的在上一次选的左边一块位置
+            {   // 如果这次选的在上一次选的左边一块位置
                 // 并且两块连接的中间位置是可用的
                 if(arr.x==pickup.x-2&&gameData[arr.x+1][arr.y]==GD_BLANK)
                 {
@@ -2886,4 +2897,37 @@ void CQuoridor::drawTestOptimalPath()
         glPopMatrix();
     }
 }
+// 绘制弹出式的信息提示
+void CQuoridor::drawHint()
+{
+    switch (HintFlag)
+    {
+    case HINT_NULL:
+        break;
+    case HINT_EXIT:
+        Hint2Line("        [注    意]  ！！   ", "   您确定要退出当前游戏吗？");
+        break;
+    case HINT_PLAY_NUMBER_INVALID:
+        Hint2Line("        [错    误]  ！！   ", "   游戏人数不能少于两个玩家");
+    default:
+        break;
+    }
+}
+// 信息提示的内容
+void CQuoridor::Hint2Line(const char* line1, const char* line2)
+{
+    //char tmpstr[64]={0};
+    float layer=0.3f;
+    float tri_w=g_OpenGL->RCwidth/3.0f;
+    float tri_h=g_OpenGL->RCheight/3.0f;
+    //绘制背景半透明底纹窗口
+    tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.8f);
+
+    glPushMatrix();
+    glTranslatef(0,0,0.5f);
+    myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.628),line1,FONT8,1,0,0);
+    myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.325),line2,FONT8,1,1,0);
+    glPopMatrix();
+}
+
 #endif

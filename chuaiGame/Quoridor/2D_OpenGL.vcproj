@@ -175,7 +175,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Quoridor.exe"
+				OutputFile="$(OutDir)\Quoridor.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ProgramDatabaseFile=".\Release/quoridor.pdb"
