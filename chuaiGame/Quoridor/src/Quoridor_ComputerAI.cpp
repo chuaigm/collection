@@ -24,23 +24,9 @@ void Quoridor_ComputerAI::FoolAI()
     // 只有当前玩家是电脑才做处理
     if (ply_head->id==ID_COMPUTER)
     {
-        //Sleep(800);
         //if (random(0,2.0)==0)
-        if (random(0,1.0)==0)
+        if (1)
         {
-            /*
-            switch (ply_head->color)
-            {
-            case GD_YELLOW:
-                break;
-            case GD_RED:
-                break;
-            case GD_GREEN:
-                break;
-            case GD_BLUE:
-                break;
-            }
-            */
             pos2d tmppoint;
             tmppoint.x=ply_head->x*2;
             tmppoint.y=ply_head->y*2;
@@ -134,32 +120,32 @@ void Quoridor_ComputerAI::FoolAI()
                 break;
             }
         }
-        else
-        {	// 在敌人玩家前面放墙
-            switch (ply_head->next->color)
-            {
-            case GD_YELLOW:
-                break;
-            case GD_RED:
-                break;
-            case GD_GREEN:
-                break;
-            case GD_BLUE:
-                if (ply_head->next->x>0&&ply_head->next->x<8)
-                {
-                    //int x=ply_head->next->x;
-                    //int y=ply_head->next->y;
-                    //pos2d tpwall1,tmpwall2;
-                    //tpwall1.x=x;
-                    //tpwall1.y=y+1;
-                    //tpwall2.x=x+1;
-                    //tpwall2.y=y;
-                    //wall_vec.push_back()
-                    //gameData[][]=GD_WALL;
-                }
-                break;
-            }
-        }
+        //else
+        //{   // 在敌人玩家前面放墙
+        //    switch (ply_head->next->color)
+        //    {
+        //    case GD_YELLOW:
+        //        break;
+        //    case GD_RED:
+        //        break;
+        //    case GD_GREEN:
+        //        break;
+        //    case GD_BLUE:
+        //        if (ply_head->next->x>0&&ply_head->next->x<8)
+        //        {
+        //            //int x=ply_head->next->x;
+        //            //int y=ply_head->next->y;
+        //            //pos2d tpwall1,tmpwall2;
+        //            //tpwall1.x=x;
+        //            //tpwall1.y=y+1;
+        //            //tpwall2.x=x+1;
+        //            //tpwall2.y=y;
+        //            //wall_vec.push_back()
+        //            //gameData[][]=GD_WALL;
+        //        }
+        //        break;
+        //    }
+        //}
         // 下一位玩家
         ply_head=ply_head->next;
     }   // 如果不是电脑，什么都不做
@@ -224,10 +210,12 @@ void Quoridor_ComputerAI::AI_action()
                 // 这里相当于隐含既然找到这个路径，则当前路径上，肯定不存在墙
                 // 相当于隐含着，gameData[x0][tmpwally] == GD_BLANK
                 // 首先，判断中右位置可以放墙
-                if (x0+2<GDSIZE && gameData[x0+2][tmpwally] == GD_BLANK)
+                if (x0+2<GDSIZE && gameData[x0+1][tmpwally] == GD_BLANK 
+                                && gameData[x0+2][tmpwally] == GD_BLANK)
                 {
                     // 再判断中左位置是否可以
-                    if (x0-2 >= 0 && gameData[x0-2][tmpwally] == GD_BLANK)
+                    if (x0-2 >= 0 && gameData[x0-1][tmpwally] == GD_BLANK 
+                                  && gameData[x0-2][tmpwally] == GD_BLANK)
                     {
                         // 如果两边都可以放墙，那么随机选择一个方向
                         // 下面函数会相对均匀的产生0和1
@@ -280,7 +268,8 @@ AI_WALL_RIGHT:
                     }
                 }
                 // 其次，这里表示中右不可以，再判断中左是否可以
-                else if (x0-2 >= 0 && gameData[x0-2][tmpwally] == GD_BLANK)
+                else if (x0-2 >= 0 && gameData[x0-1][tmpwally] == GD_BLANK
+                                   && gameData[x0-2][tmpwally] == GD_BLANK)
                 {
 AI_WALL_LEFT:
                     // 中左墙
@@ -332,11 +321,13 @@ AI_WALL_LEFT:
 
                 // 这里相当于隐含既然找到这个路径，则当前路径上，肯定不存在墙
                 // 相当于隐含着，gameData[tmpwallx][y0] == GD_BLANK
-                // 首先，判断中上位置可以放墙
-                if (y0+2<GDSIZE && gameData[tmpwallx][y0+2] == GD_BLANK)
+                // 首先，判断中上位置是否可以放墙
+                if (y0+2<GDSIZE && gameData[tmpwallx][y0+1] == GD_BLANK 
+                                && gameData[tmpwallx][y0+2] == GD_BLANK)
                 {
                     // 再判断中下位置是否可以
-                    if (y0-2 >= 0 && gameData[tmpwallx][y0-2] == GD_BLANK)
+                    if (y0-2 >= 0 && gameData[tmpwallx][y0-1] == GD_BLANK 
+                                  && gameData[tmpwallx][y0-2] == GD_BLANK)
                     {
                         // 如果两边都可以放墙，那么随机选择一个方向
                         // 下面函数会相对均匀的产生0和1
@@ -389,7 +380,8 @@ AI_WALL_UP:
                     }
                 }
                 // 其次，这里表示中右不可以，再判断中左是否可以
-                else if (y0-2 >= 0 && gameData[tmpwallx][y0-2] == GD_BLANK)
+                else if (y0-2 >= 0 && gameData[tmpwallx][y0-1] == GD_BLANK 
+                                   && gameData[tmpwallx][y0-2] == GD_BLANK)
                 {
 AI_WALL_DOWN:
                     // 中左墙
@@ -475,58 +467,55 @@ AI_HAVE_TO_MOVE:
                 break;
             }
         }
-        if (dloopjump)
+        // 如果最优路径没有与可走路径重合，那么随机选取可走点，作为下一步行走
+        if (dloopjump != 1)
         {
-            // 这种情况，进入到人物棋子处理阶段
-            char tmp=0;
-            // 交换
-            tmp=gameData[targ.x][targ.y];
-            gameData[targ.x][targ.y]=gameData[ply_head->x*2][ply_head->y*2];
-            gameData[ply_head->x*2][ply_head->y*2]=tmp;
-
-            ply_head->x=targ.x/2;
-            ply_head->y=targ.y/2;
-
-            pgm->preselect_pos.clear();
-            // 在目标位置上，更新玩家变量
-            switch (ply_head->color)
-            {
-            case GD_YELLOW:
-                if (ply_head->x==8)
-                {
-                    pgm->win_flag=GD_YELLOW;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_RED:
-                if (ply_head->y==0)
-                {
-                    pgm->win_flag=GD_RED;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_GREEN:
-                if (ply_head->x==0)
-                {
-                    pgm->win_flag=GD_GREEN;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            case GD_BLUE:
-                if (ply_head->y==8)
-                {
-                    pgm->win_flag=GD_BLUE;
-                    iGameState=GAME_WIN;
-                }
-                break;
-            default:
-                break;
-            }
+            targ=pgm->preselect_pos[random(0,pgm->preselect_pos.size())];
         }
-        else
+        // 这种情况，进入到人物棋子处理阶段
+        char tmp=0;
+        // 交换
+        tmp=gameData[targ.x][targ.y];
+        gameData[targ.x][targ.y]=gameData[ply_head->x*2][ply_head->y*2];
+        gameData[ply_head->x*2][ply_head->y*2]=tmp;
+
+        ply_head->x=targ.x/2;
+        ply_head->y=targ.y/2;
+
+        pgm->preselect_pos.clear();
+        // 在目标位置上，更新玩家变量
+        switch (ply_head->color)
         {
-            MessageBox(NULL,"AI算法中，没有找到最优路径和可走位置的匹配关系", "Quoridor_ComputerAI",MB_OK);
-            exit(-1);
+        case GD_YELLOW:
+            if (ply_head->x==8)
+            {
+                pgm->win_flag=GD_YELLOW;
+                iGameState=GAME_WIN;
+            }
+            break;
+        case GD_RED:
+            if (ply_head->y==0)
+            {
+                pgm->win_flag=GD_RED;
+                iGameState=GAME_WIN;
+            }
+            break;
+        case GD_GREEN:
+            if (ply_head->x==0)
+            {
+                pgm->win_flag=GD_GREEN;
+                iGameState=GAME_WIN;
+            }
+            break;
+        case GD_BLUE:
+            if (ply_head->y==8)
+            {
+                pgm->win_flag=GD_BLUE;
+                iGameState=GAME_WIN;
+            }
+            break;
+        default:
+            break;
         }
     }
     // 下一位玩家
