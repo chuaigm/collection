@@ -482,7 +482,13 @@ void CQuoridor::lbuttonproc(int lparam)
         if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
         {
             HintFlag=HintFlag==HINT_EXIT?HINT_NULL:HINT_EXIT;
-        } else {
+        }
+        else
+        {
+            if (iGameState==GAME_NET_CONFIG)
+            {
+                n_net->closeNetWork();
+            }
             HintFlag=HINT_NULL;
             iGameState=GAME_MENU;
         }
@@ -492,6 +498,10 @@ void CQuoridor::lbuttonproc(int lparam)
     {
         if (HintFlag==HINT_EXIT)
         {
+            if (iGameState==GAME_NET_CONFIG)
+            {
+                n_net->closeNetWork();
+            }
             HintFlag=HINT_NULL;
             iGameState=GAME_MENU;
             return;

@@ -108,6 +108,7 @@ void Quoridor_Network::closeNetWork()
     // 如果网络对象被创建，那么删除
     if (n_TCPnet!=NULL)
     {
+        n_TCPnet->Close();
         delete n_TCPnet;
         n_TCPnet=NULL;
     }

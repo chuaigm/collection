@@ -57,7 +57,7 @@ public:
     //函数
     // 获取本机的IP
     char* GetLocalIP();
-    const int GetError(){return error;};            // 取得错误
+    const int GetError(){return error;};      // 取得错误
     SOCKET GetSocket(){return m_sSocket;};    // 取得套接字
     int GetType(){return m_nType;};           // 取得类型
     BOOL IsConnected(SOCKET s);               // 判断一个socket是否连接
@@ -82,6 +82,7 @@ public:
     int SendClient(char* data, int length); //发送指定字节的数据
     BOOL m_bConnected[MAX_CONNECTION]; //服务器判断每个能够使用的连接的状态
     BOOL m_bconnect;               //客户端判断连接的状态
+
     void Close(); //关闭
 
 protected:
