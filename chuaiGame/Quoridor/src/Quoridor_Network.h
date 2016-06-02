@@ -16,6 +16,7 @@ public:
     void closeNetWork();
 
     // 发送只实现一个，而且把S和C,整合在一起
+    // 这里的netWorkStat的定义与约定是在Quoridor_OpenGL中约定的
     void NetWorkSendData(int netWorkStat, char* data, int length);
 
     // 接收数据的函数，做两份，因为实现代码太多，方便管理

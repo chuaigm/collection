@@ -2747,6 +2747,7 @@ void CQuoridor::drawVictory()
 void CQuoridor::drawNetworkOp()
 {
     char tmpstr[128]="";
+    // 要么非客户端且鼠标停留在左边，要么处于服务器状态
     if ((2!=n_netWorkStatus && g_OpenGL->Xmouse<g_OpenGL->RCwidth/2) || 1==n_netWorkStatus)
     {
         // 左边服务器一侧的底图
@@ -2759,6 +2760,7 @@ void CQuoridor::drawNetworkOp()
         sprintf(tmpstr,"监听端口: %u", n_net->port);
         myfont.Print2D(g_OpenGL->RCwidth/8,(int)(g_OpenGL->RCheight*0.6)-30,tmpstr,FONT4,1,1,1);
     }
+    // 客户端状态或者鼠标停留在右侧(上面逻辑之外的逻辑)
     else
     {
         // 左边服务器一侧的底图

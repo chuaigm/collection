@@ -2,15 +2,12 @@
 #include "Quoridor_Network.h"
 #include "Quoridor_openGL.h"
 #include "TCPSocket.h"
-//#include "RWLock.h"
 
 extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
 
 extern CQuoridor* pgm;
 // 是否开启音乐标记
 extern int g_sound;
-
-//extern CMyRWLock g_RWLock;
 
 CTCPSocket* Quoridor_Network::n_TCPnet=NULL;
 
@@ -60,6 +57,8 @@ bool Quoridor_Network::startServer()
         n_TCPnet=NULL;
         return false;
     }
+    // 这里对全局的IP数据进行赋值，赋第一个默认为服务器的ip名字
+    // const和volatile都用const_cast转
     char* p = const_cast<char*>(n_NameAll[0]);
     strncpy(p,Name,8);
     return true;
@@ -517,7 +516,6 @@ void Quoridor_Network::NetWorkSendData( int netWorkStat, char* data, int length 
 // 这个是线程函数，有可能由于目前没加volatile原因，开O2优化时，此函数有问题，有时更新不了变量
 void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
-    //g_RWLock.WriteLock();
     if (pgm->n_netWorkStatus==1)
     {   // 服务器端的处理
         OnServerReceive(data,length);
@@ -526,6 +524,4 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
     {   // 客户端的处理
         OnClientReceive(data,length);
     }
-
-    //g_RWLock.Unlock();
 }
