@@ -63,7 +63,9 @@ public:
 
     // 1. 先执行CreateServer，初始化socket，bind(), listen()
     BOOL CreateServer(int nPort,int backlog=5);
-    // 2. 再执行StartServer，第二个参数需要传入静态的回调函数，外部定义来获取数据，这里创建ServerThread不断accept
+    // 2. 再执行StartServer，第一个参数可以传入服务器状态回调函数，检测连接与断开。
+    //    第二个参数需要传入静态的回调函数，外部定义来获取数据。此函数创建ServerThread不断accept
+    //    accept默认是阻塞的，当accept成功后，对新的连接创建DataThread线程
     BOOL StartServer(LPStatusProc proc1=NULL,LPDataArriveProc proc2=NULL,DWORD userdata=NULL);
     // 3. 服务器端调用，对客户端发送指定数据，第一个参数为客户端编号与m_sServer[]套接字数组对应
     int SendServer(int nNo,char* data, int length);
@@ -78,6 +80,19 @@ public:
     SOCKET Listen(char* ClientIP=NULL); //监听单个IP的连接
     int ReceiveServer(int nNo,char* data, int length,int timeout); //接收指定字节的数据
     void Disconnect(int nNo);       // 单独断开一个socket
+
+    // 服务器线程流程：
+    //                主线程
+    //                  |
+    //                  |      ServerThread
+    //     StartServer  >------------|
+    //                  |            |
+    //                  | accept阻塞 X        DataThread(有多个连接，
+    //                  | 有新连接时 >------------|      就有多个DataThread)
+    //                  |            |            |
+    //                  |       循环 U            |
+    //                  |                         U 循环判断当前连接，
+    //                  |                           接收数据回调，
 
     //==============================
     // 客户端相关函数

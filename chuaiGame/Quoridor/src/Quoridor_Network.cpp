@@ -48,7 +48,7 @@ bool Quoridor_Network::startServer()
         return false;
     }
     // 开始服务器
-    else if(!n_TCPnet->StartServer(NULL,OnReceiveNetData,NULL))
+    else if(!n_TCPnet->StartServer(OnNetStatus,OnReceiveNetData,NULL))
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法开启服务器，错误号: %d",err);
@@ -78,7 +78,7 @@ bool Quoridor_Network::startClient()
         n_TCPnet=NULL;
         return false;
     }
-    else if(!n_TCPnet->StartReceiving(NULL,OnReceiveNetData,NULL))
+    else if(!n_TCPnet->StartReceiving(OnNetStatus,OnReceiveNetData,NULL))
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法开启客户端数据接收服务，错误号: %d",err);
@@ -135,10 +135,10 @@ void Quoridor_Network::OnServerReceive(char* data, int length)
     // 服务器接收数据格式：
     // 00000000001111111111222222
     // 01234567890123456789012345
-    // S127.  0.  0.  1_  2_unamed
-    // S[     IP       ][cn][ data ]
+    // S127.  0.  0.  1  2__unamed
+    // S[     IP      ][c]  [ data ]
     char recMsg[128]={0};
-    memcpy(recMsg,data+17,3);
+    memcpy(recMsg,data+16,3);
     size_t clientID=atoi(recMsg);
     memcpy(recMsg,data+21,length-21);
     // 网络通信分两种游戏状态，一是网络游戏进行中，(另一是网络准备配置阶段)
@@ -389,7 +389,6 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
                 }
                 iGameState=GAME_WIN;
 
-                //g_RWLock.Unlock();
                 // 直接返回
                 return ;
             }
@@ -513,7 +512,8 @@ void Quoridor_Network::NetWorkSendData( int netWorkStat, char* data, int length 
     }
 }
 
-// 这个是线程函数，有可能由于目前没加volatile原因，开O2优化时，此函数有问题，有时更新不了变量
+// 这个是线程函数，注意这里使用的变量，如果涉及编译器O2优化，
+// 可能需要在全局加入volatile属性，以防止优化所带来的不确定结果
 void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata )
 {
     if (pgm->n_netWorkStatus==1)
@@ -523,5 +523,79 @@ void Quoridor_Network::OnReceiveNetData( char* data, int length, DWORD userdata 
     else if (pgm->n_netWorkStatus==2)
     {   // 客户端的处理
         OnClientReceive(data,length);
+    }
+}
+
+void Quoridor_Network::OnServerStatus( char* data, int length )
+{
+    // 服务器接收状态数据格式：
+    // 00000000001111111111222222
+    // 01234567890123456789012345
+    // S127.  0.  0.  1D  2_
+    // S[     IP      ]Z[cn]
+    char status=*(data+16);
+    if (status == 'D')
+    {
+        char recMsg[128]={0};
+        memcpy(recMsg,data+17,3);
+        size_t clientID=atoi(recMsg);
+        // 从名字列表中移除
+        void* tmp=(void*)n_NameAll[clientID+1];
+        memset(tmp,0,sizeof(n_NameAll[clientID+1]));
+
+        if (iGameState==GAME_NETWORK)
+        {
+        }
+        else if (iGameState==GAME_NET_CONFIG)
+        {
+            if (clientID<=3)
+            {
+                // 服务器向所有客户端转发收到的所有玩家名列表
+                char namelist[64]={0};
+                strncpy(namelist   ,"namelist",8);
+                strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
+                strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
+                strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
+                strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
+                for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
+                {
+                    n_TCPnet->SendServer(i,namelist,sizeof(namelist));
+#ifdef __DEBUG__
+    {
+        char stmp[16];
+        static int s_send=0;
+        sprintf(stmp, "%04d|Send%04d",__LINE__,s_send++);
+        char tmpss[128]={0};
+        memcpy(tmpss,namelist,sizeof(namelist));
+        for (int i=0; i<sizeof(namelist);i++)
+        {
+            if (tmpss[i]==0)
+            {
+                tmpss[i]='_';
+            }
+        }
+        ConfigSetKeyValue("debugLog.txt", "Server", stmp, tmpss);
+    }
+#endif
+                }
+            }
+        }
+    }
+}
+
+void Quoridor_Network::OnClientStatus( char* data, int length )
+{
+
+}
+
+void Quoridor_Network::OnNetStatus( char* data, int length, DWORD userdata )
+{
+    if (pgm->n_netWorkStatus==1)
+    {   // 服务器端的处理
+        OnServerStatus(data,length);
+    }
+    else if (pgm->n_netWorkStatus==2)
+    {   // 客户端的处理
+        OnClientStatus(data,length);
     }
 }

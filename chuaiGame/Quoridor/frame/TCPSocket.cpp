@@ -351,6 +351,8 @@ void CTCPSocket::Disconnect(int nNo)
     m_hServerDataThread[nNo]=NULL;
     m_nConnections--;
 
+    // 清除IP记录表
+    memset(m_cIp[nNo],0,sizeof(m_cIp[nNo]));
 }
 
 BOOL CTCPSocket::Connect(LPCSTR pstrHost,int nPort)
@@ -613,6 +615,7 @@ DWORD WINAPI CTCPSocket::ServerThread(LPVOID lpParameter)
     //不断监听连接
     while(m_pTCP->m_bAuto)
     {
+        // 正常会阻塞在这里，直到有新连接出现
         sClient=accept(m_pTCP->m_sSocket,(struct sockaddr*)&addr,&iAddrSize);
         if(sClient==SOCKET_ERROR)
         {
@@ -688,6 +691,8 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                     sprintf(inf,"S%sD%3d",m_pTCP->m_cIp[MyNumber],MyNumber);
                     m_pTCP->m_lpServerStatusProc(inf,22,m_pTCP->m_dwUserData);
                 }
+                // 清除IP记录表
+                memset(m_pTCP->m_cIp[MyNumber],0,sizeof(m_pTCP->m_cIp[MyNumber]));
 
                 break;
             }
@@ -729,6 +734,9 @@ DWORD WINAPI CTCPSocket::DataThread(LPVOID lpParameter)
                 closesocket(m_pTCP->m_sServer[MyNumber]);
                 m_pTCP->m_bConnected[MyNumber]=FALSE;
                 m_pTCP->m_nConnections--;
+                // 清除IP记录表
+                memset(m_pTCP->m_cIp[MyNumber],0,sizeof(m_pTCP->m_cIp[MyNumber]));
+
                 break;
             }
         }

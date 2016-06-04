@@ -2778,7 +2778,6 @@ void CQuoridor::drawNetworkOp()
             // 客户端显示已知的玩家名
             for (int i=0;i<4;i++)
             {
-                //if (strlen(const_cast<char*>(n_NameAll[i]))==0)
                 if (strlen(const_cast<char*>(n_NameAll[i]))==0)
                 {
                     sprintf(tmpstr,"[%1d] %8s ",i+1,"--[空]--");
@@ -2806,6 +2805,8 @@ void CQuoridor::drawNetworkOp()
                 }
                 myfont.Print2D(g_OpenGL->RCwidth/12,(int)(g_OpenGL->RCheight*0.43)-30*(i),tmpstr,FONT4,1,1,1);
             }
+            sprintf(tmpstr,"   [ 请等待主机开始游戏！]");
+            myfont.Print2D(g_OpenGL->RCwidth/12,(int)(g_OpenGL->RCheight*0.43)-30*5,tmpstr,FONT4,1,1,1);
 
             sprintf(tmpstr,"本 机 IP: %s", n_loaclIP);
             myfont.Print2D((int)(g_OpenGL->RCwidth*0.62),(int)(g_OpenGL->RCheight*0.6)-80,tmpstr,FONT4,1,1,1);
