@@ -198,6 +198,7 @@ void CQuoridor::init()
 
     //游戏状态
     iGameState=GAME_MENU;
+    resetGameData();
 }
 
 //设置投影方式
@@ -485,12 +486,13 @@ void CQuoridor::lbuttonproc(int lparam)
         }
         else
         {
-            if (iGameState==GAME_NET_CONFIG)
-            {
-                n_net->closeNetWork();
-            }
+            //if (iGameState==GAME_NET_CONFIG)
+            //{
+            //    n_net->closeNetWork();
+            //}
             HintFlag=HINT_NULL;
             iGameState=GAME_MENU;
+            resetGameData();
         }
         return;
     }
@@ -498,12 +500,13 @@ void CQuoridor::lbuttonproc(int lparam)
     {
         if (HintFlag==HINT_EXIT)
         {
-            if (iGameState==GAME_NET_CONFIG)
-            {
-                n_net->closeNetWork();
-            }
+            //if (iGameState==GAME_NET_CONFIG)
+            //{
+            //    n_net->closeNetWork();
+            //}
             HintFlag=HINT_NULL;
             iGameState=GAME_MENU;
+            resetGameData();
             return;
         } else if (HintFlag==HINT_PLAY_NUMBER_INVALID)
         {
@@ -1643,8 +1646,16 @@ void CQuoridor::resetGameData()
     ply_head=NULL;
     // 玩家胜利标志
     win_flag=GD_BLANK;
+
     // 关闭网络对象
-    n_net->closeNetWork();
+    // 这里值得讨论，复位函数到底应该退出一个状态时加入，还是进入一个状态时加入
+    // 目前是都加入了，关于处理网络状态，这里如果做法不统一可能会有问题，
+    // 目前先这样写，如果有问题，这里需要调整
+    if (n_net!=NULL)
+    {
+        n_net->closeNetWork();
+    }
+
     n_netWorkStatus=0;
     //清空最优路径
     best_path.swap(std::vector<pos2d>());

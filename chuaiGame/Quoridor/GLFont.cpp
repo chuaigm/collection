@@ -37,11 +37,11 @@ CGLFont::CGLFont()
             0,                  // 字体是否有下划线
             0,                  // 字体是否有删除线
             GB2312_CHARSET,     // 字体使用的字符集
-            OUT_CHARACTER_PRECIS,   // 指定如何选择合适的字体
+            OUT_DEFAULT_PRECIS,   // 指定如何选择合适的字体
             CLIP_CHARACTER_PRECIS,  // 用来确定裁剪的精度
             PROOF_QUALITY,        // 怎么样跟选择的字体相符合
             FF_MODERN,          // 间距标志和属性标志
-            "宋体"              // 字体的名称
+            "黑体"              // 字体的名称
             );
     }
 

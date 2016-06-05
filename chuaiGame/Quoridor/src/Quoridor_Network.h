@@ -49,4 +49,5 @@ public:
     //int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端
     //char NameAll[4][16];      // 目前所有连接的玩家名
     static CTCPSocket *n_TCPnet;       // tcp网络连接
+
 };

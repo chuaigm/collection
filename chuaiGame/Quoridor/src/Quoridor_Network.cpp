@@ -8,6 +8,8 @@ extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const ch
 extern CQuoridor* pgm;
 // 是否开启音乐标记
 extern int g_sound;
+// 主窗体句柄
+extern HWND hWnd;
 
 CTCPSocket* Quoridor_Network::n_TCPnet=NULL;
 
@@ -59,7 +61,8 @@ bool Quoridor_Network::startServer()
     }
     // 这里对全局的IP数据进行赋值，赋第一个默认为服务器的ip名字
     // const和volatile都用const_cast转
-    char* p = const_cast<char*>(n_NameAll[0]);
+    //char* p = const_cast<char*>(n_NameAll[0]);
+    char* p = (char*)(n_NameAll[0]);
     strncpy(p,Name,8);
     return true;
 }
@@ -251,16 +254,25 @@ void Quoridor_Network::OnServerReceive(char* data, int length)
     {
         if (clientID<=3)
         {   // 服务器接收客户端发来的玩家名
-            char* p = const_cast<char*>(n_NameAll[clientID+1]);
+            //char* p = const_cast<char*>(n_NameAll[clientID+1]);
+            char* p = (char*)(n_NameAll[clientID+1]);
             strncpy(p,recMsg,8);
             n_NameAll[clientID+1][8]='\0';
             // 服务器向所有客户端转发收到的所有玩家名列表
             char namelist[64]={0};
             strncpy(namelist   ,"namelist",8);
-            strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
-            strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
-            strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
-            strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
+            //strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
+            //strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
+            //strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
+            //strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
+            p = (char*)(n_NameAll[0]);
+            strncpy(namelist+8 ,p,8);
+            p = (char*)(n_NameAll[1]);
+            strncpy(namelist+16 ,p,8);
+            p = (char*)(n_NameAll[2]);
+            strncpy(namelist+24 ,p,8);
+            p = (char*)(n_NameAll[3]);
+            strncpy(namelist+32 ,p,8);
             for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
             {
                 n_TCPnet->SendServer(i,namelist,sizeof(namelist));
@@ -403,10 +415,19 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
     }
     else if (strncmp(data,"Cnamelist",9)==0)
     {
-        strncpy(const_cast<char*>(n_NameAll[0]),data+9 ,8);
-        strncpy(const_cast<char*>(n_NameAll[1]),data+17,8);
-        strncpy(const_cast<char*>(n_NameAll[2]),data+25,8);
-        strncpy(const_cast<char*>(n_NameAll[3]),data+33,8);
+        //strncpy(const_cast<char*>(n_NameAll[0]),data+9 ,8);
+        //strncpy(const_cast<char*>(n_NameAll[1]),data+17,8);
+        //strncpy(const_cast<char*>(n_NameAll[2]),data+25,8);
+        //strncpy(const_cast<char*>(n_NameAll[3]),data+33,8);
+        char *p = NULL;
+        p = (char*)n_NameAll[0];
+        strncpy(p, data+9 , 8);
+        p = (char*)n_NameAll[1];
+        strncpy(p, data+17 , 8);
+        p = (char*)n_NameAll[2];
+        strncpy(p, data+25 , 8);
+        p = (char*)n_NameAll[3];
+        strncpy(p, data+33 , 8);
     }
     else if (strncmp(data,"CREADY",6)==0)   // 前六个字节
     {   // 三个玩家格式，例如，CREADY1N3
@@ -540,11 +561,21 @@ void Quoridor_Network::OnServerStatus( char* data, int length )
         memcpy(recMsg,data+17,3);
         size_t clientID=atoi(recMsg);
         // 从名字列表中移除
-        void* tmp=(void*)n_NameAll[clientID+1];
+        char* tmp=(char*)n_NameAll[clientID+1];
+        char keepname[16]={0};
+        strncpy(keepname, tmp, 8);
         memset(tmp,0,sizeof(n_NameAll[clientID+1]));
 
         if (iGameState==GAME_NETWORK)
         {
+            char tmpstr[32];
+            sprintf(tmpstr,"客户端[%s]已经退出！本局游戏解散！", keepname);
+            MessageBox(hWnd, tmpstr, "Quoridor_Network",MB_OK);
+
+            n_TCPnet->Close();
+            iGameState=GAME_MENU;
+            // 以后考虑是否统一复位操作
+            pgm->resetGameData();
         }
         else if (iGameState==GAME_NET_CONFIG)
         {
@@ -553,10 +584,19 @@ void Quoridor_Network::OnServerStatus( char* data, int length )
                 // 服务器向所有客户端转发收到的所有玩家名列表
                 char namelist[64]={0};
                 strncpy(namelist   ,"namelist",8);
-                strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
-                strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
-                strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
-                strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
+                //strncpy(namelist+8 ,const_cast<char*>(n_NameAll[0]),8);
+                //strncpy(namelist+16,const_cast<char*>(n_NameAll[1]),8);
+                //strncpy(namelist+24,const_cast<char*>(n_NameAll[2]),8);
+                //strncpy(namelist+32,const_cast<char*>(n_NameAll[3]),8);
+                char* p = NULL;
+                p = (char*)(n_NameAll[0]);
+                strncpy(namelist+8 ,p,8);
+                p = (char*)(n_NameAll[1]);
+                strncpy(namelist+16 ,p,8);
+                p = (char*)(n_NameAll[2]);
+                strncpy(namelist+24 ,p,8);
+                p = (char*)(n_NameAll[3]);
+                strncpy(namelist+32 ,p,8);
                 for (int i=0;i<n_TCPnet->GetConnectionNumber();i++)
                 {
                     n_TCPnet->SendServer(i,namelist,sizeof(namelist));
@@ -585,7 +625,30 @@ void Quoridor_Network::OnServerStatus( char* data, int length )
 
 void Quoridor_Network::OnClientStatus( char* data, int length )
 {
+    // 客户端接收数据格式：
+    // 00000000001111111111222222
+    // 01234567890123456789012345
+    // CD
+    // CZ
+    char status=*(data+1);
+    if (status=='D')
+    {
+        if (iGameState==GAME_NETWORK || iGameState==GAME_NET_CONFIG)
+        {
+            char tmpstr[32];
+            sprintf(tmpstr,"服务器已经退出！");
+            MessageBox(hWnd, tmpstr, "Quoridor_Network",MB_OK);
 
+            n_TCPnet->Close();
+            iGameState=GAME_MENU;
+            // 以后考虑是否统一复位操作
+            pgm->resetGameData();
+            // 照理说，这里应该跟上resetGameData()
+            // 但是原来我写的逻辑是，进入一个状态复位，
+            // 但后来发现，处理网络断开时有问题，
+            // 所以，目前保留了复位函数里关闭网络的设定，这块代码可以再优化
+        }
+    }
 }
 
 void Quoridor_Network::OnNetStatus( char* data, int length, DWORD userdata )
