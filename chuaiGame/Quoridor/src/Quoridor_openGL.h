@@ -184,7 +184,8 @@ public:
 
     //------------------------------------
     // 游戏随时间计数的变量
-    unsigned int tcounter;
+    int counter_down;  // 倒计时器计数器
+    DWORD oldTM;                // 计时器上一次的值，用于判断时间间隔
 
     char n_loaclIP[16];         // 本机IP
     int n_netWorkStatus;        // 网络联机时的状态，0:未选择，1:服务器，2:客户端

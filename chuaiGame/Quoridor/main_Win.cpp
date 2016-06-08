@@ -31,6 +31,10 @@ int WinHeight= WIN_HEIGHT;
 int g_refresh_rate = 40;
 // 是否开启音乐
 int g_sound = 1;
+// 是否开启倒计时控制
+int g_time_limit = 1;
+// 倒计时限制时间为多少
+int g_count_down = 60;
 
 // 目前游戏框架中，主要代码(全局)
 CQuoridor gm;
@@ -183,13 +187,13 @@ int APIENTRY WinMain(HINSTANCE hInst,
     //--------------------------------------------------
     // 加载配置文件
     char tmpstr[64];
-    if (CFG_OK != ConfigGetKeyValue("config.ini", "Window_Resolution", "width", tmpstr))
+    if (CFG_OK != ConfigGetKeyValue("config.ini", "Display", "width", tmpstr))
     {
         MessageBox(NULL, "无法正常读取配置文件,主进程即将退出", "Quoridor_Game",MB_OK);
         return 0;
     }
     WinWidth=atoi(tmpstr);
-    ConfigGetKeyValue("config.ini", "Window_Resolution", "height", tmpstr);
+    ConfigGetKeyValue("config.ini", "Display", "height", tmpstr);
     WinHeight=atoi(tmpstr);
     if (WinWidth<800 || WinHeight<600||WinWidth-WinHeight<100)
     {
@@ -197,7 +201,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
         WinWidth = WIN_WIDTH;
         WinHeight= WIN_HEIGHT;
     }
-    ConfigGetKeyValue("config.ini", "Refresh_Rate", "refresh_rate", tmpstr);
+    ConfigGetKeyValue("config.ini", "Display", "refresh_rate", tmpstr);
     g_refresh_rate=atoi(tmpstr);
     if (g_refresh_rate<1||g_refresh_rate>100)
     {
@@ -208,6 +212,16 @@ int APIENTRY WinMain(HINSTANCE hInst,
     g_sound=atoi(tmpstr);
     if (g_sound!=1){
         g_sound=0;
+    }
+    ConfigGetKeyValue("config.ini", "Game_config", "time_limit", tmpstr);
+    g_time_limit=atoi(tmpstr);
+    if (g_time_limit!=1){
+        g_time_limit=0;
+    }
+    ConfigGetKeyValue("config.ini", "Game_config", "count_down", tmpstr);
+    g_count_down=atoi(tmpstr);
+    if (g_count_down < 3){
+        g_time_limit=3;
     }
     //ConfigGetKeyValue("config.ini", "Debug", "debug", tmpstr);
     //int idebug=atoi(tmpstr);

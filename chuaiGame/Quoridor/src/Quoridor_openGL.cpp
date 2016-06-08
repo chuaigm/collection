@@ -26,6 +26,9 @@ extern int WinWidth;
 extern int WinHeight;
 // 是否开启音乐标记
 extern int g_sound;
+// 是否限制时间
+extern int g_time_limit;
+extern int g_count_down;
 // 配置文件操作
 extern int ConfigGetKeyValue(const char *CFG_file, const char *section, const char *key, char *buf);
 extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
@@ -102,7 +105,9 @@ CQuoridor::CQuoridor()
     HintFlag=HINT_NULL;
 
     // 时间计数器
-    tcounter=0;
+    counter_down=60;
+    // 计时器旧值
+    oldTM=GetTickCount();
 
     // 网络相关
     memset(n_loaclIP,0,sizeof(n_loaclIP));
@@ -312,6 +317,8 @@ void CQuoridor::check()
     iButton=-1;
     arr.x=-1;
     arr.y=-1;
+    // 用于判断定时器
+    static DWORD newTM=0;
 
     switch(iGameState)
     {
@@ -356,9 +363,25 @@ void CQuoridor::check()
             ai.AI_action();
             break;
         }
-        else if (ply_head->id==ID_NET_PLAYER)
+        else if (g_time_limit == 1 && (ply_head->id==ID_NET_PLAYER || ply_head->id==ID_HUMAN))
         {
-            break;
+            Quoridor_ComputerAI ai;
+            newTM=GetTickCount();
+            // 考虑刷新的频率的影响
+            if (newTM-oldTM > 1000 - 1000/(DWORD)g_refresh_rate)
+            {
+                counter_down--;
+                oldTM=newTM;
+            }
+            if (counter_down==0)
+            {
+                ai.RandomMove();
+                // 这里也许还有未想到的，需要初始化的变量
+                pickup.x = -1;
+                pickup.y = -1;
+                counter_down=g_count_down;
+                break;
+            }
         }
     case GAME_SENDBOX:
         // 实时检查鼠标位置
@@ -654,6 +677,10 @@ void CQuoridor::lbuttonproc(int lparam)
                 }
             }
             iGameState=GAME_SINGE;
+            if (g_time_limit==1)
+            {
+                oldTM=GetTickCount();
+            }
         }
         // 鼠标选取不同玩家的三个选项时的处理，
         // 遍历玩家
@@ -1368,6 +1395,19 @@ void CQuoridor::drawAccessory()
                 texture_select(g_cactus[8]);
                 tPicRectangle((float)lace*2.5f+player_info_w*0.5f,(3-i+1/2.0f)*player_info_h,player_info_w*0.28f,player_info_w*0.28f,layer+0.1f);
             }
+            else if (g_time_limit==1 && ply_head!=NULL)
+            {   // 如果是开启倒计时，并且是单机玩家或者网络玩家，绘制限制时钟
+                if (ply_head->color == i+1 &&(ply_head->id==ID_HUMAN||ply_head->id==ID_NET_PLAYER))
+                {
+                    sprintf(tmpstr,"%2d", counter_down);
+                    if (counter_down>5)
+                    {
+                        myfont.Print2D(int(lace*3+player_info_w*0.5f),int((3-i+1/2.0f)*player_info_h+lace*2),tmpstr,FONT3,0,0,0);
+                    } else {
+                        myfont.Print2D(int(lace*3+player_info_w*0.5f),int((3-i+1/2.0f)*player_info_h+lace*2),tmpstr,FONT3,0.5,0,0);
+                    }
+                }
+            }
             sprintf(tmpstr,"墙剩余:%u",g_player[i].wall_num_left);
             myfont.Print2D(12,(int)((3-i+1/5.0f)*player_info_h),tmpstr,FONT3,1,1,1);
             if (iGameState==GAME_NETWORK)
@@ -1659,6 +1699,9 @@ void CQuoridor::resetGameData()
     n_netWorkStatus=0;
     //清空最优路径
     best_path.swap(std::vector<pos2d>());
+
+    // 倒计时器
+    counter_down=g_count_down;
 }
 
 void CQuoridor::drawInConfig()
@@ -2000,6 +2043,13 @@ ACTION_RULE_EXIT:
     pickup.y=-1;
     // 清除玩家可走待选位置
     preselect_pos.clear();
+
+    // 玩家执行完操作后，重置定时器
+    if (g_time_limit==1)
+    {
+        counter_down=g_count_down;
+    }
+
     return ;
 }
 

@@ -17,7 +17,12 @@ public:
     {
         return (int)(start+(end-start)*rand()/(RAND_MAX + 1));
     };
+    // 只进行随机走棋子，需要考虑网络处理
+    void RandomMove();
+    // 很简单的AI
     void FoolAI();
+    // 正常的AI动作设计
     void AI_action();
+    // 测试最优路径，开始的棋盘位置，以及玩家序号
     int TestBestPath(pos2d start, int end);
 };
