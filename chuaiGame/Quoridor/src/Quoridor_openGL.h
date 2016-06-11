@@ -121,6 +121,9 @@ public:
     void playerMovablePos(pos2d selected);
     // 判断新加入的墙位置是否合法
     bool judgeWallLegal();
+    // 重置倒计时器
+    void resetCountdown();
+
 #ifdef __DEBUG__
     void drawTestOptimalPath();
     bool g_debug_flag;  // 显示调试信息

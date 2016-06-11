@@ -248,6 +248,9 @@ void Quoridor_Network::OnServerReceive(char* data, int length)
 #endif
             }
             ply_head=ply_head->next;
+
+            // 玩家执行完操作后，重置定时器
+            pgm->resetCountdown();
         }
     }
     else if (iGameState==GAME_NET_CONFIG)
@@ -412,6 +415,9 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
             MessageBox(NULL,"网络数据错误", "Quoridor_Game",MB_OK);
             exit(1);
         }
+
+        // 无论是移动还是放墙，这里都完成了操作，重置倒计时器
+        pgm->resetCountdown();
     }
     else if (strncmp(data,"Cnamelist",9)==0)
     {
@@ -496,6 +502,8 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
         }while (ply_head!=tmp_head);
 
         iGameState=GAME_NETWORK;
+        // 重置计时器
+        pgm->resetCountdown();
     }
 }
 

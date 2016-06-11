@@ -31,10 +31,12 @@ int WinHeight= WIN_HEIGHT;
 int g_refresh_rate = 40;
 // 是否开启音乐
 int g_sound = 1;
-// 是否开启倒计时控制
-int g_time_limit = 1;
+
+// 不考虑用户配置的原因是，网络对战时，不同数值，同步是个麻烦事
+//// 是否开启倒计时控制
+//int g_time_limit = 1;
 // 倒计时限制时间为多少
-int g_count_down = 60;
+int max_time_limit = 90;
 
 // 目前游戏框架中，主要代码(全局)
 CQuoridor gm;
@@ -213,16 +215,16 @@ int APIENTRY WinMain(HINSTANCE hInst,
     if (g_sound!=1){
         g_sound=0;
     }
-    ConfigGetKeyValue("config.ini", "Game_config", "time_limit", tmpstr);
-    g_time_limit=atoi(tmpstr);
-    if (g_time_limit!=1){
-        g_time_limit=0;
-    }
-    ConfigGetKeyValue("config.ini", "Game_config", "count_down", tmpstr);
-    g_count_down=atoi(tmpstr);
-    if (g_count_down < 3){
-        g_time_limit=3;
-    }
+    //ConfigGetKeyValue("config.ini", "Game_config", "time_limit", tmpstr);
+    //g_time_limit=atoi(tmpstr);
+    //if (g_time_limit!=1){
+    //    g_time_limit=0;
+    //}
+    //ConfigGetKeyValue("config.ini", "Game_config", "count_down", tmpstr);
+    //max_time_limit=atoi(tmpstr);
+    //if (max_time_limit < 3){
+    //    g_time_limit=3;
+    //}
     //ConfigGetKeyValue("config.ini", "Debug", "debug", tmpstr);
     //int idebug=atoi(tmpstr);
     //if (idebug==1){

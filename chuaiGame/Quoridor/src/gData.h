@@ -75,7 +75,7 @@ extern volatile int iGameState;
 extern volatile char gameData[GDSIZE][GDSIZE];
 // 目前所有连接的玩家名(暂时有问题?)
 // 问题就是，如果还使用cosnt_cast去转换的话，还是没解决多线程的问题
-// 所以，使用的地方，暂时都是用指针转换
+// 所以，使用的地方，暂时都是用指针转换（但是还是存在不能显示的问题，原因未知）
 extern volatile char n_NameAll[4][16];
 
 extern player g_player[4];

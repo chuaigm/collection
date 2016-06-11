@@ -27,8 +27,8 @@ extern int WinHeight;
 // 是否开启音乐标记
 extern int g_sound;
 // 是否限制时间
-extern int g_time_limit;
-extern int g_count_down;
+//extern int g_time_limit;
+extern int max_time_limit;
 // 配置文件操作
 extern int ConfigGetKeyValue(const char *CFG_file, const char *section, const char *key, char *buf);
 extern int ConfigSetKeyValue(const char *CFG_file, const char *section, const char *key, const char *buf);
@@ -133,10 +133,10 @@ int CQuoridor::haveDataFile()
         "data/images/quoridor_cover.bmp",
         "data/images/button.bmp",
         "data/images/road.bmp",
-        "data/images/bidiu1.bmp",
-        "data/images/huangshou1.bmp",
-        "data/images/diting1.bmp",
-        "data/images/xiaohei1.bmp",
+        "data/images/1p_yellow.bmp",
+        "data/images/2p_red.bmp",
+        "data/images/3p_green.bmp",
+        "data/images/4p_blue.bmp",
         "data/images/wall1.bmp",
         "data/images/computer_logo.bmp",
         "data/images/example_show_help.bmp",
@@ -187,10 +187,10 @@ void CQuoridor::init()
     g_OpenGL->LoadBMP_aux("data/images/quoridor_cover.bmp", g_cactus[0]);       // 封面
     g_OpenGL->LoadBMP_aux("data/images/chess_board_shading.bmp", g_cactus[1]);  // 棋盘底纹
     g_OpenGL->LoadBMP_aux("data/images/road.bmp", g_cactus[2]);                 // 玩家可站的位置
-    g_OpenGL->LoadBMP_aux("data/images/bidiu1.bmp", g_cactus[3]);               // 玩家1形象
-    g_OpenGL->LoadBMP_aux("data/images/huangshou1.bmp", g_cactus[4]);           // 玩家2形象
-    g_OpenGL->LoadBMP_aux("data/images/diting1.bmp", g_cactus[5]);              // 玩家3形象
-    g_OpenGL->LoadBMP_aux("data/images/xiaohei1.bmp", g_cactus[6]);             // 玩家4形象
+    g_OpenGL->LoadBMP_aux("data/images/1p_yellow.bmp", g_cactus[3]);            // 玩家1形象
+    g_OpenGL->LoadBMP_aux("data/images/2p_red.bmp", g_cactus[4]);               // 玩家2形象
+    g_OpenGL->LoadBMP_aux("data/images/3p_green.bmp", g_cactus[5]);             // 玩家3形象
+    g_OpenGL->LoadBMP_aux("data/images/4p_blue.bmp", g_cactus[6]);              // 玩家4形象
     g_OpenGL->LoadBMP_aux("data/images/wall1.bmp", g_cactus[7]);                // 墙的贴图
     g_OpenGL->LoadBMP_aux("data/images/computer_logo.bmp", g_cactus[8]);        // 电脑图标
     //button
@@ -363,7 +363,7 @@ void CQuoridor::check()
             ai.AI_action();
             break;
         }
-        else if (g_time_limit == 1 && (ply_head->id==ID_NET_PLAYER || ply_head->id==ID_HUMAN))
+        else if (/*g_time_limit == 1 && */(ply_head->id==ID_NET_PLAYER || ply_head->id==ID_HUMAN))
         {
             Quoridor_ComputerAI ai;
             newTM=GetTickCount();
@@ -379,7 +379,7 @@ void CQuoridor::check()
                 // 这里也许还有未想到的，需要初始化的变量
                 pickup.x = -1;
                 pickup.y = -1;
-                counter_down=g_count_down;
+                counter_down=max_time_limit;
                 break;
             }
         }
@@ -677,10 +677,12 @@ void CQuoridor::lbuttonproc(int lparam)
                 }
             }
             iGameState=GAME_SINGE;
-            if (g_time_limit==1)
-            {
-                oldTM=GetTickCount();
-            }
+            // 设置倒计时计算比较起点
+            oldTM=GetTickCount();
+            //if (g_time_limit==1)
+            //{
+            //    oldTM=GetTickCount();
+            //}
         }
         // 鼠标选取不同玩家的三个选项时的处理，
         // 遍历玩家
@@ -803,6 +805,8 @@ void CQuoridor::lbuttonproc(int lparam)
                 tmp_head=tmp_head->next;
             }while (ply_head!=tmp_head);
             iGameState=GAME_NETWORK;
+            // 重置定时器
+            resetCountdown();
             break;
         }
         break;
@@ -1395,17 +1399,50 @@ void CQuoridor::drawAccessory()
                 texture_select(g_cactus[8]);
                 tPicRectangle((float)lace*2.5f+player_info_w*0.5f,(3-i+1/2.0f)*player_info_h,player_info_w*0.28f,player_info_w*0.28f,layer+0.1f);
             }
-            else if (g_time_limit==1 && ply_head!=NULL)
+            else if (/*g_time_limit==1 && */ply_head!=NULL)
             {   // 如果是开启倒计时，并且是单机玩家或者网络玩家，绘制限制时钟
                 if (ply_head->color == i+1 &&(ply_head->id==ID_HUMAN||ply_head->id==ID_NET_PLAYER))
                 {
+                    int xref=int(lace*3+player_info_w*0.5f);
+                    int yref=int((3-i+1/2.0f)*player_info_h+lace*2);
                     sprintf(tmpstr,"%2d", counter_down);
                     if (counter_down>5)
                     {
-                        myfont.Print2D(int(lace*3+player_info_w*0.5f),int((3-i+1/2.0f)*player_info_h+lace*2),tmpstr,FONT3,0,0,0);
+                        myfont.Print2D(xref,yref,tmpstr,FONT3,0,0,0);
                     } else {
-                        myfont.Print2D(int(lace*3+player_info_w*0.5f),int((3-i+1/2.0f)*player_info_h+lace*2),tmpstr,FONT3,0.5,0,0);
+                        myfont.Print2D(xref,yref,tmpstr,FONT3,0.5,0,0);
                     }
+                    // 画倒计时圆
+                    float mx= xref+10.0f;
+                    float my= yref+10.0f;
+                    float r = player_info_h*0.1f;
+                    float z = layer +0.1f;
+                    float div=(float)(2*PI/max_time_limit);
+                    glPushAttrib(GL_CURRENT_BIT);
+                    glPushMatrix();
+                    glDisable(GL_TEXTURE_2D);
+                    glBegin(GL_TRIANGLE_FAN);
+
+                    glColor4f(.8f, .8f, .8f, 1.0f);
+                    glVertex3f( mx, my, z);
+                    for (int i=0;i<counter_down;i++)
+                    {
+                        glVertex3f( mx-r*sin(div*i), my+r*cos(div*i), z);
+                    }
+
+                    glEnd();
+
+                    glLineWidth(2);
+                    glBegin(GL_LINE_STRIP);
+                    glColor4f(.1f, .1f, .1f, 1.0f);
+                    for (int i=0;i<max_time_limit;i++)
+                    {
+                        glVertex3f( mx-r*sin(div*i), my+r*cos(div*i), z+0.1f);
+                    }
+                    glEnd();
+                    glEnable(GL_TEXTURE_2D);
+                    glPopMatrix();
+                    glPopAttrib();
                 }
             }
             sprintf(tmpstr,"墙剩余:%u",g_player[i].wall_num_left);
@@ -1501,9 +1538,9 @@ void CQuoridor::drawPlayerWall()
 
 void CQuoridor::drawPickMask()
 {
-    //static int det=1;
-    int det = 2;
-    //static int ctick=0;
+    static int det=2;
+    //int det = 2;
+    static int ctick=0;
 
     if (ply_head!=NULL)
     {
@@ -1540,17 +1577,17 @@ void CQuoridor::drawPickMask()
         glEnable(GL_TEXTURE_2D);
         glPopMatrix();
         glPopAttrib();
-        // 暂时注释掉动态显示
-        //if (ctick>g_refresh_rate/10)
-        //{
-        //	det++;
-        //	if (det>3)
-        //	{
-        //		det=1;
-        //	}
-        //	ctick=0;
-        //}
-        //ctick++;
+        // 动态显示
+        if (ctick>g_refresh_rate/8)
+        {
+            det++;
+            if (det>3)
+            {
+                det=1;
+            }
+            ctick=0;
+        }
+        ctick++;
     }
     if (pickup.x < 0 && pickup.y < 0)
     {
@@ -1701,7 +1738,7 @@ void CQuoridor::resetGameData()
     best_path.swap(std::vector<pos2d>());
 
     // 倒计时器
-    counter_down=g_count_down;
+    counter_down=max_time_limit;
 }
 
 void CQuoridor::drawInConfig()
@@ -2045,10 +2082,7 @@ ACTION_RULE_EXIT:
     preselect_pos.clear();
 
     // 玩家执行完操作后，重置定时器
-    if (g_time_limit==1)
-    {
-        counter_down=g_count_down;
-    }
+    resetCountdown();
 
     return ;
 }
@@ -2839,7 +2873,8 @@ void CQuoridor::drawNetworkOp()
             // 客户端显示已知的玩家名
             for (int i=0;i<4;i++)
             {
-                if (strlen(const_cast<char*>(n_NameAll[i]))==0)
+                char* tmp = (char*)n_NameAll[i];
+                if (strlen(tmp)==0)
                 {
                     sprintf(tmpstr,"[%1d] %8s ",i+1,"--[空]--");
                 }
@@ -2991,17 +3026,23 @@ void CQuoridor::drawHint()
 void CQuoridor::Hint2Line(const char* line1, const char* line2)
 {
     //char tmpstr[64]={0};
-    float layer=0.3f;
+    float layer=0.6f;
     float tri_w=g_OpenGL->RCwidth/3.0f;
     float tri_h=g_OpenGL->RCheight/3.0f;
     //绘制背景半透明底纹窗口
     tRectangle(tri_w-menu_w,tri_h,layer,tri_w+2*menu_w,tri_h,0.0f,0.0f,0.0f,0.8f);
 
     glPushMatrix();
-    glTranslatef(0,0,0.5f);
+    glTranslatef(0,0,0.8f);
     myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.628),line1,FONT8,1,0,0);
     myfont.Print2D((int)(tri_w-menu_w+20),(int)(tri_h*1.325),line2,FONT8,1,1,0);
     glPopMatrix();
+}
+// 重置倒计时器
+void CQuoridor::resetCountdown()
+{
+    counter_down = max_time_limit;
+    oldTM = GetTickCount();
 }
 
 #endif
