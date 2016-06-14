@@ -44,7 +44,7 @@ bool Quoridor_Network::startServer()
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法创建服务器，错误号: %d",err);
-        MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+        MessageBox(hWnd, tmpstr, "TcpNetwork",MB_OK);
         delete n_TCPnet;
         n_TCPnet=NULL;
         return false;
@@ -54,7 +54,7 @@ bool Quoridor_Network::startServer()
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法开启服务器，错误号: %d",err);
-        MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+        MessageBox(hWnd, tmpstr, "TcpNetwork",MB_OK);
         delete n_TCPnet;
         n_TCPnet=NULL;
         return false;
@@ -76,7 +76,7 @@ bool Quoridor_Network::startClient()
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法连接到服务器，错误号: %d",err);
-        MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+        MessageBox(hWnd, tmpstr, "TcpNetwork",MB_OK);
         delete n_TCPnet;
         n_TCPnet=NULL;
         return false;
@@ -85,7 +85,7 @@ bool Quoridor_Network::startClient()
     {
         int err=n_TCPnet->GetError();
         sprintf(tmpstr,"无法开启客户端数据接收服务，错误号: %d",err);
-        MessageBox(NULL, tmpstr, "TcpNetwork",MB_OK);
+        MessageBox(hWnd, tmpstr, "TcpNetwork",MB_OK);
         delete n_TCPnet;
         n_TCPnet=NULL;
         return false;
@@ -412,7 +412,7 @@ void Quoridor_Network::OnClientReceive(char* data, int length)
         }
         else
         {
-            MessageBox(NULL,"网络数据错误", "Quoridor_Game",MB_OK);
+            MessageBox(hWnd,"网络数据错误", "Quoridor_Game",MB_OK);
             exit(1);
         }
 

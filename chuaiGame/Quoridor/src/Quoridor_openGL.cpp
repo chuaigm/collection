@@ -204,6 +204,12 @@ void CQuoridor::init()
     //游戏状态
     iGameState=GAME_MENU;
     resetGameData();
+
+    //if (g_sound==1)
+    //{
+    //    // 玩家棋子移动音效
+    //    sndPlaySound("data/sound/20_2gei_com.wav",SND_ASYNC);
+    //}
 }
 
 //设置投影方式
@@ -1103,11 +1109,13 @@ void CQuoridor::showmenu()
 
 #ifdef __DEBUG__
     myfont.Print2D(5,5,"测试版  ,"__DATE__,FONT0,1,0.9f,0.1f);
+#else
+    myfont.Print2D(5,5,"正式版  ,"__DATE__,FONT0,1,0.9f,0.1f);
 #endif
 
     //  对应枚举关系     0          1          2          3          4
     char *menustr[]={"退    出","游戏说明","沙盒模式","联网游戏","单机游戏"};
-    //char *menustr[]={"单机游戏","联网游戏","沙盒模式","游戏帮助","退    出"};
+    // 如果想做动态拓展的菜单，可以使用vector，把菜单项push进去，但这里应该就固定了
 
     // 在glOrtho模式下绘制菜单
     // 菜单的是从下网上绘制的，所以菜单序号如上所示
@@ -1339,11 +1347,16 @@ void CQuoridor::drawAccessory()
     // 所占图层深度
     float layer=-0.5;
     float alp=0.85f;
+    // 绘制四块固定颜色固定位置的指示背景
+    tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
+    tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
+    tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
+    tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,alp);
     // 绘制玩家信息指示标志区域
     glPushAttrib(GL_CURRENT_BIT);
     glPushMatrix();
     glDisable(GL_TEXTURE_2D);
-    glBegin(GL_TRIANGLES);
+    glLineWidth(3);
     // 下面这段代码是绘制轮到的玩家的指示三角形的
     if (ply_head!=NULL)
     {
@@ -1351,42 +1364,76 @@ void CQuoridor::drawAccessory()
         {
         case GD_YELLOW:
             glColor4f(1, 1, 0, alp);
+            glBegin(GL_TRIANGLES);
             glVertex3f( player_info_w, 4.0f*player_info_h, layer);
             glVertex3f( (float)board_x, 3.5f*player_info_h, layer);
             glVertex3f( player_info_w, 3.0f*player_info_h, layer);
+            glEnd();
+            glColor4f(1, 1, 1, 1);
+            glBegin(GL_LINE_LOOP);
+            glVertex3f(             0, 3*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 3*player_info_h, layer+0.1f);
+            glVertex3f( (float)board_x, 3.5f*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 4*player_info_h, layer+0.1f);
+            glVertex3f(             0, 4*player_info_h, layer+0.1f);
+            glEnd();
             break;
         case GD_RED:
             glColor4f(1, 0, 0, alp);
+            glBegin(GL_TRIANGLES);
             glVertex3f( player_info_w, 3.0f*player_info_h, layer);
             glVertex3f( (float)board_x, 2.5f*player_info_h, layer);
             glVertex3f( player_info_w, 2.0f*player_info_h, layer);
+            glEnd();
+            glColor4f(1, 1, 1, 1);
+            glBegin(GL_LINE_LOOP);
+            glVertex3f(             0, 2*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 2*player_info_h, layer+0.1f);
+            glVertex3f( (float)board_x, 2.5f*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 3*player_info_h, layer+0.1f);
+            glVertex3f(             0, 3*player_info_h, layer+0.1f);
+            glEnd();
             break;
         case GD_GREEN:
             glColor4f(0, 1, 0, alp);
+            glBegin(GL_TRIANGLES);
             glVertex3f( player_info_w, 2.0f*player_info_h, layer);
             glVertex3f( (float)board_x, 1.5f*player_info_h, layer);
             glVertex3f( player_info_w, 1.0f*player_info_h, layer);
+            glEnd();
+            glColor4f(1, 1, 1, 1);
+            glBegin(GL_LINE_LOOP);
+            glVertex3f(             0, 1*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 1*player_info_h, layer+0.1f);
+            glVertex3f( (float)board_x, 1.5f*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, 2*player_info_h, layer+0.1f);
+            glVertex3f(             0, 2*player_info_h, layer+0.1f);
+            glEnd();
             break;
         case GD_BLUE:
             glColor4f(0, 0, 1, alp);
+            glBegin(GL_TRIANGLES);
             glVertex3f( player_info_w, 1.0f*player_info_h, layer);
             glVertex3f( (float)board_x, 0.5f*player_info_h, layer);
             glVertex3f( player_info_w, 0.0f*player_info_h, layer);
+            glEnd();
+            glColor4f(1, 1, 1, 1);
+            glBegin(GL_LINE_LOOP);
+            glVertex3f(             0, 0, layer+0.1f);
+            glVertex3f( player_info_w, 0, layer+0.1f);
+            glVertex3f( (float)board_x, 0.5f*player_info_h, layer+0.1f);
+            glVertex3f( player_info_w, player_info_h, layer+0.1f);
+            glVertex3f(             0, player_info_h, layer+0.1f);
+            glEnd();
             break;
         default:
             break;
         }
     }
-    glEnd();
     glEnable(GL_TEXTURE_2D);
     glPopMatrix();
     glPopAttrib();
-    // 绘制四块固定颜色固定位置的指示背景
-    tRectangle(0,3*player_info_h,layer,player_info_w,player_info_h,1,1,0,alp);
-    tRectangle(0,2*player_info_h,layer,player_info_w,player_info_h,1,0,0,alp);
-    tRectangle(0,1*player_info_h,layer,player_info_w,player_info_h,0,1,0,alp);
-    tRectangle(0,0,layer,(float)player_info_w,(float)player_info_h,0,0,1,alp);
-    
+
     for (int i=0; i<4; i++)
     {
         if (g_player[i].id!=ID_CLOSED)
