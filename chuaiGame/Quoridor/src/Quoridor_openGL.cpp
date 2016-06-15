@@ -93,6 +93,9 @@ CQuoridor::CQuoridor()
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
+    // 键盘光标位置
+    kb_arrow.x=-1;
+    kb_arrow.y=-1;
     // 正式游戏时，玩家轮流的顺序
     ply_head=NULL;
     // 玩家胜利标志
@@ -939,12 +942,146 @@ void CQuoridor::keyupproc(int keyparam)
     //        
     //    }
     //    break;
-    case 77:        // 'M'
-        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+    //case 77:        // 'M'
+    //    if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
+    //    {
+    //        pickup.x = 2*ply_head->x;
+    //        pickup.y = 2*ply_head->y;
+    //        playerMovablePos(pickup);
+    //    }
+    //    break;
+    case 0x57:
+    case VK_UP:
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK/* || iGameState==GAME_SENDBOX*/)
         {
-            pickup.x = 2*ply_head->x;
-            pickup.y = 2*ply_head->y;
-            playerMovablePos(pickup);
+            if (ply_head != NULL && ply_head->id == ID_HUMAN)
+            {
+                if (kb_arrow.x == -1)
+                {
+                    kb_arrow.x = ply_head->x*2;
+                    kb_arrow.y = ply_head->y*2;
+                }
+                else if (kb_arrow.y<16)
+                {
+                    if ((kb_arrow.x%2!=0&&kb_arrow.y%2==0) || 
+                        (kb_arrow.x==pickup.x&&kb_arrow.y==pickup.y&&kb_arrow.x==ply_head->x*2&&kb_arrow.y==ply_head->y*2))
+                    {
+                        kb_arrow.y+=2;
+                    }
+                    else 
+                    {
+                        kb_arrow.y++;
+                    }
+                }
+            }
+        }
+        break;
+    case 0x53:
+    case VK_DOWN:
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK/* || iGameState==GAME_SENDBOX*/)
+        {
+            if (ply_head != NULL && ply_head->id == ID_HUMAN)
+            {
+                if (kb_arrow.x == -1)
+                {
+                    kb_arrow.x = ply_head->x*2;
+                    kb_arrow.y = ply_head->y*2;
+                }
+                else if (kb_arrow.y>0)
+                {
+                    if ((kb_arrow.x%2!=0&&kb_arrow.y%2==0) || 
+                        (kb_arrow.x==pickup.x&&kb_arrow.y==pickup.y&&kb_arrow.x==ply_head->x*2&&kb_arrow.y==ply_head->y*2))
+                    {
+                        kb_arrow.y-=2;
+                    }
+                    else 
+                    {
+                        kb_arrow.y--;
+                    }
+                }
+            }
+        }
+        break;
+    case 0x41:
+    case VK_LEFT:
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK/* || iGameState==GAME_SENDBOX*/)
+        {
+            if (ply_head != NULL && ply_head->id == ID_HUMAN)
+            {
+                if (kb_arrow.x == -1)
+                {
+                    kb_arrow.x = ply_head->x*2;
+                    kb_arrow.y = ply_head->y*2;
+                }
+                else if (kb_arrow.x>0)
+                {
+                    if ((kb_arrow.x%2==0&&kb_arrow.y%2!=0) || 
+                        (kb_arrow.x==pickup.x&&kb_arrow.y==pickup.y&&kb_arrow.x==ply_head->x*2&&kb_arrow.y==ply_head->y*2))
+                    {
+                        kb_arrow.x-=2;
+                    }
+                    else 
+                    {
+                        kb_arrow.x--;
+                    }
+                }
+            }
+        }
+        break;
+    case 0x44:
+    case VK_RIGHT:
+        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK/* || iGameState==GAME_SENDBOX*/)
+        {
+            if (ply_head != NULL && ply_head->id == ID_HUMAN)
+            {
+                if (kb_arrow.x == -1)
+                {
+                    kb_arrow.x = ply_head->x*2;
+                    kb_arrow.y = ply_head->y*2;
+                }
+                else if (kb_arrow.x<16)
+                {
+                    if ((kb_arrow.x%2==0&&kb_arrow.y%2!=0) || 
+                        (kb_arrow.x==pickup.x&&kb_arrow.y==pickup.y&&kb_arrow.x==ply_head->x*2&&kb_arrow.y==ply_head->y*2))
+                    {
+                        kb_arrow.x+=2;
+                    }
+                    else 
+                    {
+                        kb_arrow.x++;
+                    }
+                }
+            }
+        }
+        break;
+    case VK_RETURN:
+    case VK_SPACE:
+        if (ply_head != NULL && ply_head->id == ID_HUMAN)
+        {
+            if (kb_arrow.x != -1)
+            {
+                arr.x = kb_arrow.x;
+                arr.y = kb_arrow.y;
+                switch (iGameState)
+                {
+                case GAME_SINGE:
+                    playerActionRule(false);
+                    break;
+                case GAME_NETWORK:
+                    playerActionRule(true);
+                    break;
+                //case GAME_SENDBOX:
+                //    freeSendBoxRule();
+                //    break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                kb_arrow.x = ply_head->x*2;
+                kb_arrow.y = ply_head->y*2;
+            }
         }
         break;
     default:
@@ -1479,7 +1616,7 @@ void CQuoridor::drawAccessory()
 
                     glEnd();
 
-                    glLineWidth(2);
+                    glLineWidth(3);
                     glBegin(GL_LINE_STRIP);
                     glColor4f(.1f, .1f, .1f, 1.0f);
                     for (int i=0;i<max_time_limit;i++)
@@ -1599,6 +1736,7 @@ void CQuoridor::drawPickMask()
         glPushMatrix();
         glDisable(GL_TEXTURE_2D);
         glColor3f(1.0f, 1.0f, 1.0f);
+        glLineWidth(2);
         glBegin(GL_LINES);
         // 左下
         glVertex3f( cx-det,  cy-det,  0.5f);
@@ -1636,19 +1774,57 @@ void CQuoridor::drawPickMask()
         }
         ctick++;
     }
+    // 绘制键盘选择指示
+    if (kb_arrow.x>-1&&kb_arrow.y>-1)
+    {
+        // 绘制键盘控制提示箭头
+        glPushAttrib(GL_CURRENT_BIT);
+        glPushMatrix();
+        glDisable(GL_TEXTURE_2D);
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glLineWidth(2);
+        glBegin(GL_LINES);
+
+        if (kb_arrow.x%2==0&&kb_arrow.y%2==0)
+        {
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+(roadw-wall_w)/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+(roadw+wall_w)/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw/2, lace+kb_arrow.y/2*(roadw+wall_w)+(roadw+wall_w)/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw/2, lace+kb_arrow.y/2*(roadw+wall_w)+(roadw-wall_w)/2, 0.7f);
+        }
+        else if (kb_arrow.x%2==0&&kb_arrow.y%2!=0)
+        {
+            // 横墙
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+(roadw-wall_w)/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw+wall_w/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+(roadw+wall_w)/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw+wall_w/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw+wall_w, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw/2, lace+kb_arrow.y/2*(roadw+wall_w)+roadw, 0.7f);
+        }
+        else if (kb_arrow.x%2!=0&&kb_arrow.y%2==0)
+        {
+            // 竖墙
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw, lace+kb_arrow.y/2*(roadw+wall_w)+roadw/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw+wall_w, lace+kb_arrow.y/2*(roadw+wall_w)+roadw/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw+wall_w/2, lace+kb_arrow.y/2*(roadw+wall_w)+(roadw+wall_w)/2, 0.7f);
+            glVertex3f(board_x+lace+kb_arrow.x/2*(roadw+wall_w)+roadw+wall_w/2, lace+kb_arrow.y/2*(roadw+wall_w)+(roadw-wall_w)/2, 0.7f);
+        }
+
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+        glPopAttrib();
+    }
+
+    // 绘制选取标志
     if (pickup.x < 0 && pickup.y < 0)
     {
         return ;
     }
     else if (pickup.x%2==0 && pickup.y%2==0)
     {
-#ifdef __DEBUG__
         if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK || iGameState==GAME_SENDBOX)
-#else
-        if (iGameState==GAME_SINGE || iGameState==GAME_NETWORK)
-#endif
         {
-            // 这里以后换个贴图
+            // 绘制半透明待选区
             tRectangle(board_x+lace+pickup.x/2*(roadw+wall_w),lace+pickup.y/2*(roadw+wall_w),0,roadw,roadw,0.1f,0.5f,1,0.6f);
             // 绘制玩家可走预选区
             for (size_t i=0; i<preselect_pos.size();i++)
@@ -1766,6 +1942,9 @@ void CQuoridor::resetGameData()
     // 鼠标选取的位置
     pickup.x=-1;
     pickup.y=-1;
+    // 键盘光标位置
+    kb_arrow.x=-1;
+    kb_arrow.y=-1;
     // 玩家环装链表头指针
     ply_head=NULL;
     // 玩家胜利标志
@@ -2125,6 +2304,9 @@ ACTION_RULE_EXIT:
     // 清空预选位置
     pickup.x=-1;
     pickup.y=-1;
+    // 清空键盘预选位置
+    kb_arrow.x=-1;
+    kb_arrow.y=-1;
     // 清除玩家可走待选位置
     preselect_pos.clear();
 
