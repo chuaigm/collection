@@ -56,6 +56,7 @@ public:
 };
 typedef BA<8> Tba;
 
+
 enum { _MAX_SIZE=8,
 	   _ttt
 	 };
@@ -72,11 +73,27 @@ int random(double start, double end)
 
 int main()
 {
+    // floating number test
+    double a=0;
+    a=1887;
+    printf("%.64f\n",a);
+    a=51*37;
+    printf("%.64f\n",a);
+    a=5.1*370; // attention here
+    printf("%.64f\n",a);
+    a=510*3.7;
+    printf("%.64f\n",a);
+    a=0.1*9+188.61*10; // attention here
+    printf("%.64f\n",a);
+
+#if 0
+    // test ramdom
 	srand(unsigned(time(0)));
 	for(int i=0; i<10;i++)
 	{
 		cout<<random(0,10)<<endl;
 	}
+#endif
 #if 0
 	char* a= (char*)malloc(24);
 	char* b= (char*)malloc(15);
