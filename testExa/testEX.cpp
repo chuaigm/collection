@@ -83,7 +83,7 @@ int main()
     printf("%.64f\n",a);
     a=510*3.7;
     printf("%.64f\n",a);
-    a=0.1*9+188.61*10; // attention here
+    a=0.9+188.61*10; // attention here
     printf("%.64f\n",a);
 
 #if 0
