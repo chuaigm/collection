@@ -4,13 +4,13 @@ cc = g++
 obj_dir = ../obj
 lib_dir = ../lib
 target_dir = ../bin
-C++FLAGS = -w
+C++FLAGS = -g -std=c++11
 
 # src directory
 src_dir   = ./
-src_file  = chuaiMain.cpp
+src_file  = chuaiMain.cpp platform_code.cpp order_handle.cpp
 src_dir1  = ./class1
-src_file1 = platform_code.cpp
+src_file1 = 
 src_dir2  = ./class2
 src_file2 = 
 # include dir

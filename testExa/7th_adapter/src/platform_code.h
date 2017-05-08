@@ -28,6 +28,7 @@ public:
 	int func1();
 	//int handle_order_req(order_req* fld, char* userdata, int cid);
 	int handle_order_req(fld_1<order_bd>* fld, char* userdata, int cid);
+	int handle_mbl_quot(fld_1pn<best_quot_bd, mbl_bd>* fld, char* userdata, int cid);
 	int run();
 public:
 	int var_c1;

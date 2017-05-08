@@ -7,6 +7,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "FTCPField.h"
+
 #define TODO \
 do {	\
 	printf ("%s:%d this function will implement in the future.\n", __FILE__, __LINE__); \
@@ -23,7 +25,7 @@ enum biz_ret
 	RET_FAILED = (1 << 31),		/// 处理错误
 };
 
-class CFTCPField;
+//class CFTCPField;
 
 /// biz_match输入输出信息
 class biz_data

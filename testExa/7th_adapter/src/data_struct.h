@@ -13,7 +13,15 @@
  */
 #ifndef _DATA_STRUCT_
 #define _DATA_STRUCT_
+
+#include "stdint.h"
+#include "FTCPField.h"
  
+////////////////////////////////////////////////////////////////////////////////////
+//class CFTCPField
+//{
+//};
+
 ////////////////////////////////////////////////////////////////////////////////////
 
 // define template
@@ -26,12 +34,19 @@ public:
 	T fld;
 };
 
-/*
 template <typename T1, typename T2>
 class fld_2
 {
 	T1 fld1;
 	T2 fld2;
+};
+
+template <typename T1, typename T2, typename T3>
+class fld_3
+{
+	T1 fld1;
+	T2 fld2;
+	T3 fld3;
 };
 
 template <typename T>
@@ -41,25 +56,39 @@ class fld_n
 	T fld[];
 };
 
-template <typename T1, typename T2>
+template <typename T1, typename Tn>
 class fld_1pn
 {
 	T1 fld1;
 	int32_t num;
-	T2 fld[];
+	Tn fld[];
 };
-*/
+
+template <typename T1, typename T2, typename Tn>
+class fld_2pn
+{
+	T1 fld1;
+	T2 fld2;
+	int32_t num;
+	Tn fld[];
+};
+
+////////////////////////////////////////////////////////////////////////////////////
 
 // define base struct
 
-struct err_bd
+//struct rsp_msg
+class rsp_msg : public CFTCPField
 {
+public:
 	int32_t err_code;
+	int64_t time_stamp;
 	char err_msg[64];
 };
 
-struct order_bd
+class order_bd : public CFTCPField
 {
+public:
 	int32_t contract;
 	int64_t seq;
 	int64_t time;
@@ -68,8 +97,9 @@ struct order_bd
 	int64_t price;
 };
 
-struct best_quot_bd
+class best_quot_bd : public CFTCPField
 {
+public:
 	int32_t contract;
 	int64_t seq;
 	int64_t time;
@@ -79,8 +109,9 @@ struct best_quot_bd
 	int64_t downlow;
 };
 
-struct mbl_bd
+class mbl_bd : public CFTCPField
 {
+public:
 	int32_t contract;
 	int64_t seq;
 	int64_t time;
@@ -92,7 +123,7 @@ struct mbl_bd
 // define package struct
 
 //fld_1<order_bd>               order_req;
-//fld_2<order_bd, err_bd>       order_rsp;
+//fld_2<order_bd, rsp_msg>       order_rsp;
 //fld_n<order_bd>               batch_order_req;
 //fld_1pn<best_quot_bd, mbl_bd> depth_quot;
 

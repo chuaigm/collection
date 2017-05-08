@@ -54,12 +54,14 @@ int main(int argc, char *argv[])
 {
 	printf("\n************chuaiTest-Begin************\n\n");
 //	std::cout<<"Greetings! let' Rock!!!"<<std::endl<<std::endl;
+
 	//////////////////////////////////////////////////////////////////////////
 	
 	Cplatform_code* plat = new Cplatform_code();
 
 	plat->run();
 
+	//////////////////////////////////////////////////////////////////////////
 
 #if 0
 	// safty method to absorb scanf buffer
