@@ -18,6 +18,40 @@
 #include "FTCPField.h"
  
 ////////////////////////////////////////////////////////////////////////////////////
+// macro
+#define DECL_OPCODE(opcode) \
+public:\
+enum { PKG_OPCODE = opcode }; \
+	static int get_opcode() \
+		{ \
+		return PKG_OPCODE; \
+		}
+
+////////////////////////////////////////////////////////////////////////////////////
+// Tid define
+const int tid_begin = 9000;
+enum _opcode_tid_:int32_t
+{
+	tid_order_req = tid_begin,
+	tid_order_rsp = tid_begin + 1,
+	tid_best_quot = tid_begin + 2,
+};
+
+////////////////////////////////////////////////////////////////////////////////////
+// original define
+class t_order_req_fld
+{
+	DECL_OPCODE(tid_order_req);
+
+	int32_t contract;
+	int64_t seq;
+	int64_t time;
+	int8_t bs_flag;
+	int8_t eo_flag;
+	int64_t price;
+};
+
+////////////////////////////////////////////////////////////////////////////////////
 //class CFTCPField
 //{
 //};
@@ -29,14 +63,13 @@ template <typename T>
 class fld_1
 {
 public:
-//	fld_1(){};
-//	~fld_1(){};
 	T fld;
 };
 
 template <typename T1, typename T2>
 class fld_2
 {
+public:
 	T1 fld1;
 	T2 fld2;
 };
@@ -44,6 +77,7 @@ class fld_2
 template <typename T1, typename T2, typename T3>
 class fld_3
 {
+public:
 	T1 fld1;
 	T2 fld2;
 	T3 fld3;
@@ -52,6 +86,7 @@ class fld_3
 template <typename T>
 class fld_n
 {
+public:
 	int32_t num;
 	T fld[];
 };
@@ -59,6 +94,7 @@ class fld_n
 template <typename T1, typename Tn>
 class fld_1pn
 {
+public:
 	T1 fld1;
 	int32_t num;
 	Tn fld[];
@@ -67,6 +103,7 @@ class fld_1pn
 template <typename T1, typename T2, typename Tn>
 class fld_2pn
 {
+public:
 	T1 fld1;
 	T2 fld2;
 	int32_t num;

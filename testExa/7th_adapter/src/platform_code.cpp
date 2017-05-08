@@ -66,6 +66,36 @@ int Cplatform_code::handle_order_req(fld_1<order_bd>* fld_ptr, char* userdata, i
 	Corder_handle ord_handle;
 	ord_handle.handle_order_biz(&data, userdata, cid);
 
+	// a best field with 2 mbl
+	uint32_t len = sizeof(best_quot_bd)+2*sizeof(mbl_bd);
+	fld_1pn<best_quot_bd, mbl_bd>* quot_ptr = (fld_1pn<best_quot_bd, mbl_bd>*) new char[len];
+	quot_ptr->num=2;
+	quot_ptr->fld1.contract = fld_ptr->fld.contract;
+	quot_ptr->fld1.seq      = 2;
+	quot_ptr->fld1.time     = 3;
+	quot_ptr->fld1.price    = 4;
+	quot_ptr->fld1.vol      = 5;
+	quot_ptr->fld1.uphigh   = 6;
+	quot_ptr->fld1.downlow  = 7;
+
+	quot_ptr->fld[0].contract = quot_ptr->fld1.contract;
+	quot_ptr->fld[0].seq      = 2;
+	quot_ptr->fld[0].time     = 3;
+	quot_ptr->fld[0].price    = 1111;
+	quot_ptr->fld[0].vol      = 11;
+
+	quot_ptr->fld[1].contract = quot_ptr->fld1.contract;
+	quot_ptr->fld[1].seq      = 2;
+	quot_ptr->fld[1].time     = 3;
+	quot_ptr->fld[1].price    = 2222;
+	quot_ptr->fld[1].vol      = 2222;
+
+	// send package
+	pub_data(quot_ptr, len, 25, cid);
+
+	// code just for test below, simulate when got the package
+	handle_mbl_quot(quot_ptr, userdata, cid);
+
 	return 0;
 }
 
@@ -73,8 +103,43 @@ int Cplatform_code::handle_mbl_quot(fld_1pn<best_quot_bd, mbl_bd>* fld_ptr, char
 {
 	printf("handle best mbl quot\n");
 
+	best_quot_bd* best_ptr = &(fld_ptr->fld1);
+	if(best_ptr->downlow == 7) {
+		printf("\t->in plat best quot right!\n");
+	}
+	else {
+		printf("\t->[xxx] in plat best quot wrong!\n");
+	}
+
+	mbl_bd* mbl_ptr = NULL;
+	for(int i=0; i<fld_ptr->num; ++i)
+	{
+		mbl_ptr = &(fld_ptr->fld[i]);
+		if (i==0) {
+		if (mbl_ptr->price == 1111) {
+			printf("\t->in plat mbl[%d] right!\n", i);
+		}
+		else {
+			printf("\t->[xxx] in plat mbl[%d] wrong!\n", i);
+		}
+		}
+
+		if (i==1) {
+		if (mbl_ptr->price == 2222) {
+			printf("\t->in plat mbl[%d] right!\n", i);
+		}
+		else {
+			printf("\t->[xxx] in plat mbl[%d] wrong!\n", i);
+		}
+		}
+	}
+
 	return 0;
 }
 
+int Cplatform_code::pub_data(fld_1pn<best_quot_bd, mbl_bd>* fld, uint32_t len,uint32_t opcode, int cid)
+{
+
+}
 ////////////////////////////////////////////////////////////////////////////////////
 
