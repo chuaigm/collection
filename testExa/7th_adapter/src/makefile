@@ -4,7 +4,8 @@ cc = g++
 obj_dir = ../obj
 lib_dir = ../lib
 target_dir = ../bin
-C++FLAGS = -g -std=c++11
+#C++FLAGS = -Wall -Wextra -g -std=c++11
+C++FLAGS = -Wall -Wextra -g -std=c++11
 
 # src directory
 src_dir   = ./

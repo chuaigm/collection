@@ -16,6 +16,7 @@
 
 #include "stdint.h"
 #include "FTCPField.h"
+#include "pkg.h"
  
 ////////////////////////////////////////////////////////////////////////////////////
 // macro
@@ -164,6 +165,29 @@ public:
 //fld_n<order_bd>               batch_order_req;
 //fld_1pn<best_quot_bd, mbl_bd> depth_quot;
 
+// define package struct
+class n_order_req : public Cpkg
+{
+	DECL_OPCODE(tid_order_req);
 
+	order_bd order;
+};
+
+class n_order_rsq : public Cpkg
+{
+	DECL_OPCODE(tid_order_rsp);
+
+	order_bd order;
+	rsp_msg msg;
+};
+
+class n_best_quot : public Cpkg
+{
+	DECL_OPCODE(tid_best_quot);
+
+	best_quot_bd best;
+	int32_t num;
+	mbl_bd mbl;
+};
 ////////////////////////////////////////////////////////////////////////////////////
 #endif
