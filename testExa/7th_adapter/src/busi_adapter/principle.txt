@@ -1,0 +1,22 @@
+
+总体设计：
+	fld_def.h   ->   FTCPField.h(空基类)
+	pkg_def.h   ->   pkg_base.h(空基类) 需要包含fld_def.h
+	gen_TID.sh   生成  tid_def.h  定义TID，（TODO,考虑加入数值与TID名字对应的数组，方便解析时对应）
+	gen_pkg.sh   生成  pkg_def.h  定义数据包，（TODO,考虑加入智能分词方法）
+	gen_func.sh  生成  busi_XXX.h & busi_XXX.cpp
+
+业务域定义原则：
+		1. 名字构成fld_xxx_xxx，fld_后，最大不超过四个分词
+		2. 分词内容目前直接直接来自于六期原定义的名字
+		3. 
+
+业务包定义原则：
+		1. 名字构成pkg_xxx_xxx，pkg_后，最大不超过四个分词
+		2. 分词内容目前直接来自于TID名字的定义
+		3. (未实现)分词方法，解析原TID名字，将一些关键字进行剥离，如ORDER,MATCH,TRADER
+		4. (未实现)由3中所述的分词方法加下划线大写字母加TID前缀，得到TID名字定义
+		5. (未实现)由3中所述的分词方法加下划线小写字母加pkg前缀，得到包结构定义
+		6. (未实现)由3中所述的分词方法加下划线小写字母加handle前缀，得到处理函数定义
+		7. 
+
