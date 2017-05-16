@@ -50,6 +50,8 @@ do
 	# 这行有多种写法
 	tid=`expr "$aline" : '\s*{\(TID_.*\),{'`
 	if [[ "$tid" != "" ]]; then
+		busi_name=`echo ${tid#*_}`
+#		echo $busi_name
 		cmnt=`echo "$aline" | cut -d '"' -f 2`
 #		echo $cmnt
 		printf "    $tid,\t\t//$cmnt\n" >> $targe_file
@@ -63,9 +65,10 @@ do
 done < $src_file
 
 echo "};" >> $targe_file
-
-echo "// There are $total_tid TID in total" >> $targe_file
+echo "" >>  $targe_file
+echo "// There are $total_tid package define in total" >> $targe_file
 echo "// Attention! This number is reliable depens on nobody modify this file manually!" >> $targe_file
-
-
+echo "" >>  $targe_file
 echo '#endif' >>  $targe_file
+echo "" >>  $targe_file
+

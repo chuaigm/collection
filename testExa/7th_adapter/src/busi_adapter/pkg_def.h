@@ -32,4 +32,13 @@ public: \
 		return 0; \
 	}
 
+class pkg_name : public Cpkg
+{
+	DECL_TID(TID_PKG_NAME);
+	DECL_LABEL_MOCK();
+
+	fld_type1 type1;
+	fld_type2 type2;
+};
+
 #endif
