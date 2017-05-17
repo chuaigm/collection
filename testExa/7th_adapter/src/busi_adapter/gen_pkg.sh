@@ -8,6 +8,8 @@
 #       对于包内结构定义，可以手动进一步修改    
 ##################################################
 
+#<<"XXX"
+
 src_file="./desc.cpp"
 tmp_file="./tmp.tmp"
 targe_file="./pkg_def_gen_by_tool.h"
@@ -50,11 +52,48 @@ do
 	# 这行有多种写法
 	tid=`expr "$aline" : '\s*{\(TID_.*\),{'`
 	if [[ "$tid" != "" ]]; then
+		# 对于函数名、包名，未来应该还有进一步的裁剪以及分词的方法，
+		# TODO 以后再补充
+		# 下面这行，是将下划线'-'前的内容全部去除掉
 		busi_name=`echo ${tid#*_}`
+		# 大写转小写
+		busi_name_lower=`echo $busi_name | tr [A-Z] [a-z]`
 #		echo $busi_name
 		cmnt=`echo "$aline" | cut -d '"' -f 2`
 #		echo $cmnt
-		printf "    $tid,\t\t//$cmnt\n" >> $targe_file
+		# 获得域的数量
+		field_num=`expr "$aline" : '.*,\([0-9]*\),'`
+#		echo $field_num
+		# 循环创建sed所用的正则表达式序列
+		one_regl='CFld\(.*\)::.*'
+		regx=".*"
+		for((i=0;i<$field_num;i++));
+		do
+			regx=${regx}${one_regl}
+		done
+#		echo $regx
+		# 循环获取域名
+		for((i=1;i<=$field_num;i++));
+		do
+			fld_name[$i]=`echo $aline | sed 's/'"$regx"'/\'"$i"'/g'`
+#			echo ${fld_name[$i]}
+		done
+
+		# 开始拼包体结构
+		printf "// $cmnt\n" >> $targe_file
+		printf "class $busi_name_lower : public Cpkg\n" >> $targe_file
+		printf "{\n" >> $targe_file
+		printf "    DECL_TID(TID_$busi_name);\n" >> $targe_file
+		# 用不用mock, 未来再进行一下判断区别写出
+		printf "    DECL_LABEL_MOCK();\n" >> $targe_file
+		printf "\n" >> $targe_file
+		for((i=1;i<=$field_num;i++));
+		do
+		printf "    fld_${fld_name[$i]}\t\t${fld_name[$i]};\n" >> $targe_file
+		done
+		printf "};\n" >> $targe_file
+		printf "\n" >> $targe_file
+		# TID计数
 		let total_tid++
 	fi
 
@@ -62,9 +101,14 @@ do
 	let percent=0
 	percent=`awk -v x=$line_num -v y=$total_line 'BEGIN{printf "%02d",x/y*100}'`
 	printf " [In process]:$line_num/$total_line ($percent%%)\r"
+<<"XXX"
+if [ $total_tid -gt 3 ]; then
+	exit -1
+fi
+XXX
+
 done < $src_file
 
-echo "};" >> $targe_file
 echo "" >>  $targe_file
 echo "// There are $total_tid package define in total" >> $targe_file
 echo "// Attention! This number is reliable depens on nobody modify this file manually!" >> $targe_file
@@ -72,3 +116,4 @@ echo "" >>  $targe_file
 echo '#endif' >>  $targe_file
 echo "" >>  $targe_file
 
+#XXX
