@@ -15,7 +15,7 @@
 XX="XXXX"
 
 if [ $# -eq 0 ]; then
-	src_file="./desc.cpp"
+	src_file="./desc_sample.cpp"
 elif [ $# -eq 1 ]; then
 	src_file=$1
 else

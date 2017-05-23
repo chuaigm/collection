@@ -10,7 +10,7 @@
 #<<"XXX"
 
 if [ $# -eq 0 ]; then
-	src_file="./desc.cpp"
+	src_file="./desc_sample.cpp"
 elif [ $# -eq 1 ]; then
 	src_file=$1
 else
@@ -38,7 +38,11 @@ rm -f $targe_file
 # 把需要的行先拿出来
 grep "\s*{\(TID_.*\),{" $src_file > $target_file
 
-sed "s///g;
+#sed "s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4_\l\5\6_\l\7\8_\l\9\10/g;
+
+sed "s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4_\l\5\6_\l\7\8/g;
+s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4_\l\5\6/g;
+s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4/g;
 " $target_file > $tmp_file
 mv $tmp_file $target_file
 
