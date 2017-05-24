@@ -43,26 +43,33 @@ grep "\s*{\(TID_.*\),{" $src_file > $target_file
 sed "s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4_\l\5\6_\l\7\8/g;
 s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4_\l\5\6/g;
 s/CFld\([A-Z]\)\([a-z]\+\)\([A-Z]\)\([a-z]\+\)/fld_\l\1\2_\l\3\4/g;
-s/\([A-Z]\)TRADER\([A-Z]\)/\1_TRADER_\2/g;
-s/\([A-Z]\)TRADER,/\1_TRADER,/g;
-s/\([A-Z]\)ORDER\([A-Z]\)/\1_ORDER_\2/g;
-s/\([A-Z]\)ORDER,/\1_ORDER,/g;
-s/\([A-Z]\)CONTRACT\([A-Z]\)/\1_CONTRACT_\2/g;
-s/\([A-Z]\)CONTRACT,/\1_CONTRACT,/g;
-s/\([A-Z]\)CLIENT\([A-Z]\)/\1_CLIENT_\2/g;
-s/\([A-Z]\)CLIENT,/\1_CLIENT,/g;
-s/\([A-Z]\)MEMBER\([A-Z]\)/\1_MEMBER_\2/g;
-s/\([A-Z]\)MEMBER,/\1_MEMBER,/g;
-s/\([A-Z]\)MATCH\([A-Z]\)/\1_MATCH_\2/g;
-s/\([A-Z]\)MATCH,/\1_MATCH,/g;
-s/\([A-Z]\)ARBI\([A-Z]\)/\1_ARBI_\2/g;
-s/\([A-Z]\)ARBI,/\1_ARBI,/g;
-s/\([A-Z]\)FTR\([A-Z]\)/\1_FTR_\2/g;
-s/\([A-Z]\)OPT\([A-Z]\)/\1_OPT_\2/g;
-s/TID_REQ\([A-Z]\)/TID_REQ_\1/g;
-s/TID_RSP\([A-Z]\)/TID_RSP_\1/g;
+s/CFld\([A-Z]\)\([a-z]\+\)/fld_\l\1\2/g;
+s/\([^_,]\)TRADER/\1_TRADER/g;
+s/TRADER\([^_,]\)/TRADER_\1/g;
+s/\([^_,]\)ORDER/\1_ORDER/g;
+s/ORDER\([^_,]\)/ORDER_\1/g;
+s/\([^_,]\)CONTRACT/\1_CONTRACT/g;
+s/CONTRACT\([^_,]\)/CONTRACT_\1/g;
 " $target_file > $tmp_file
 mv $tmp_file $target_file
 
 #XXX
 
+#s/\([A-Z]\)TRADER\([A-Z]\)/\1_TRADER_\2/g;
+#s/\([A-Z]\)TRADER,/\1_TRADER,/g;
+#s/\([A-Z]\)ORDER\([A-Z]\)/\1_ORDER_\2/g;
+#s/\([A-Z]\)ORDER,/\1_ORDER,/g;
+#s/\([A-Z]\)CONTRACT\([A-Z]\)/\1_CONTRACT_\2/g;
+#s/\([A-Z]\)CONTRACT,/\1_CONTRACT,/g;
+#s/\([A-Z]\)CLIENT\([A-Z]\)/\1_CLIENT_\2/g;
+#s/\([A-Z]\)CLIENT,/\1_CLIENT,/g;
+#s/\([A-Z]\)MEMBER\([A-Z]\)/\1_MEMBER_\2/g;
+#s/\([A-Z]\)MEMBER,/\1_MEMBER,/g;
+#s/\([A-Z]\)MATCH\([A-Z]\)/\1_MATCH_\2/g;
+#s/\([A-Z]\)MATCH,/\1_MATCH,/g;
+#s/\([A-Z]\)ARBI\([A-Z]\)/\1_ARBI_\2/g;
+#s/\([A-Z]\)ARBI,/\1_ARBI,/g;
+#s/\([A-Z]\)FTR\([A-Z]\)/\1_FTR_\2/g;
+#s/\([A-Z]\)OPT\([A-Z]\)/\1_OPT_\2/g;
+#s/TID_REQ\([A-Z]\)/TID_REQ_\1/g;
+#s/TID_RSP\([A-Z]\)/TID_RSP_\1/g;
