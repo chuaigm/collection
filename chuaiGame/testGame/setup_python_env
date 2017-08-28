@@ -1,0 +1,12 @@
+
+install python 2.7
+添加环境变量，win系统
+环境变量，C:\python27;
+
+install pip
+下载: https://pypi.python.org/pypi/pip#downloads
+python setup.py install
+环境变量，C:\python27\Script;
+
+pip list
+pip install pyinstaller
