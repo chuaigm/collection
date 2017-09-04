@@ -2,26 +2,47 @@
 import pygame
 import math
 import random
-#import sys
 import string
 from pygame.locals import *
 
 # 2 - Read conf & set var
+is_debug=1
+
+# 按钮类
+class button(object):
+    def __init__(self, desc, x, y, width=100, height=30):
+        self.desc = desc
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+btn=[]
+btn.append(button("start", 600, 400)) # 1, start button
+btn.append(button("exit", 600, 400))  # 2, xxx button
+
 arr=[]
 pos=0
-file = open("./con/sss") 
+file = open("./cof/sss") 
 while 1:
-	line = file.readline()
-	if not line:
-		break
-	arr.append(line)
-
-#print arr[0], arr[1]
-# width, height = 800,600 
-width  = string.atoi(arr[0])
-height = string.atoi(arr[1])
+    line = file.readline()
+    if not line:
+        break
+    arr.append(string.atoi(line))
+if is_debug:
+    print arr[0]
+# width, height = 800,600
+if arr[0] == 2: 
+    ww, hh = 1024, 200
+#elif arr[0] == 3:
+#    ww, hh = 1280, 800
+else:
+    ww, hh = 800, 600
+#ww = string.atoi(arr[0])
+#hh = string.atoi(arr[1])
 
 keys = [False, False, False, False]
+ms_pos =[0,0]
 playerpos=[100,100]
 acc=[0,0]
 arrows=[]
@@ -32,6 +53,7 @@ healthvalue=194
 
 
 # 3 - Load images
+bg_title = pygame.image.load("res/pic/bg_title.jpg")
 player = pygame.image.load("res/pic/dude.png")
 grass  = pygame.image.load("res/pic/grass.png")
 home   = pygame.image.load("res/pic/home.png")
@@ -44,12 +66,90 @@ youwin = pygame.image.load("res/pic/youwin.png")
 
 # 3 - Initialize the game
 pygame.init()
-screen=pygame.display.set_mode((width, height))
+screen=pygame.display.set_mode((ww, hh))
+pygame.display.set_caption("Tank War -- by cgm")
+pygame.font.init()
+font = pygame.font.Font(None, 20)
 
-while 1:
-	screen.fill(0)
-	screen.blit(home,(50,50))
-	pygame.display.flip()
+# 4 - keep looping
+while True:
+    # 5 - clear the screen before drawing it again
+    screen.fill(0)
+
+    # 6 - loop through the events
+    for event in pygame.event.get():
+        # check if the event is the X button
+        if event.type==pygame.QUIT:
+            # if it is quit the game
+            pygame.quit()
+            exit(0)
+        if event.type == pygame.KEYDOWN:
+            if event.key==pygame.K_w:
+                keys[0]=True
+            elif event.key==pygame.K_a:
+                keys[1]=True
+            elif event.key==pygame.K_s:
+                keys[2]=True
+            elif event.key==pygame.K_d:
+                keys[3]=True
+        if event.type == pygame.KEYUP:
+            if event.key==pygame.K_w:
+                keys[0]=False
+            elif event.key==pygame.K_a:
+                keys[1]=False
+            elif event.key==pygame.K_s:
+                keys[2]=False
+            elif event.key==pygame.K_d:
+                keys[3]=False
+        if event.type==pygame.MOUSEBUTTONDOWN:
+            ms_pos=pygame.mouse.get_pos()
+        if event.type==pygame.MOUSEBUTTONDOWN and btn[0].x<event.pos[0]<btn[0].x+btn[0].width and \
+                btn[0].y<event.pos[1]<btn[0].y+btn[0].height:
+            pygame.quit()
+            exit(0)
+    # ===== event over =====
+
+    # 7 - draw the screen elements
+    # draw background
+    screen.blit(bg_title,(0,0))
+    pygame.draw.rect(screen, (60,0,250),[btn[0].x, btn[0].y, btn[0].width, btn[0].height], 0)
+    text = font.render(btn[0].desc, True, (255,255,0))
+    screen.blit(text, [btn[0].x, btn[0].y])
+
+    if is_debug:
+        # version
+        text = font.render("pygame_version="+pygame.version.ver, True, (255,255,255))
+        textRect = text.get_rect()
+        textRect.bottomleft = (0, hh)
+        screen.blit(text, textRect)
+        # key code
+        if keys[0]:
+            test = font.render("W", True, (255,255,255))
+            screen.blit(test, (0,0))
+        if keys[1]:
+            test = font.render("A", True, (255,255,255))
+            screen.blit(test, (12,0))
+        if keys[2]:
+            test = font.render("S", True, (255,255,255))
+            screen.blit(test, (12*2,0))
+        if keys[3]:
+            test = font.render("D", True, (255,255,255))
+            screen.blit(test, (12*3,0))
+        # mouse position
+        text = font.render("ms_pos="+str(ms_pos[0])+", "+str(ms_pos[1]), True, (255,255,240))
+        screen.blit(text, (0,12))
+        # test clock
+        text = font.render("tick="+str(pygame.time.get_ticks()), True, (255,255,240))
+        screen.blit(text, (0,12*2))
+    # debug code above ^^^
+ 
+    # === draw over ===
+
+    # 8 - update the screen
+    #pygame.display.flip()
+    pygame.display.update()
+            
+ 
 
 """
 
