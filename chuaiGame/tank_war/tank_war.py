@@ -8,7 +8,7 @@ from pygame.locals import *
 # 2 - Read conf & set var
 is_debug=1
 
-# 按钮类
+# 
 class button(object):
     def __init__(self, desc, x, y, width=100, height=30):
         self.desc = desc
