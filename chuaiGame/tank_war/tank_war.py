@@ -69,21 +69,21 @@ youwin = pygame.image.load("res/pic/youwin.png")
 pygame.init()
 screen=pygame.display.set_mode((ww, hh))
 pygame.display.set_caption("Tank War -- by cgm")
-pygame.font.init()
-font = pygame.font.Font(None, 20)
+FPSClock = pygame.time.Clock()
+#pygame.font.init()
+font = pygame.font.Font("res/font/Droid Sans Mono.ttf", 12)
 
 # 4 - keep looping
-while True:
+running=True
+while running:
     # 5 - clear the screen before drawing it again
     screen.fill(0)
-
     # 6 - loop through the events
     for event in pygame.event.get():
         # check if the event is the X button
         if event.type==pygame.QUIT:
             # if it is quit the game
-            pygame.quit()
-            exit(0)
+            running=False
         if event.type == pygame.KEYDOWN:
             if event.key==pygame.K_ESCAPE:
                 keys[0]=True
@@ -127,8 +127,7 @@ while True:
                     elif btn[2].y<event.pos[1]<btn[2].y+btn[2].height:
                         g_status=3
                     elif btn[3].y<event.pos[1]<btn[3].y+btn[3].height:
-                        pygame.quit()
-                        exit(0)
+                        running=False
     # ===== event over =====
 
     # 7 - draw the screen elements
@@ -148,7 +147,7 @@ while True:
         #    screen.blit(text, textRect)
         for i in btn:
             pygame.draw.rect(screen, (70,0,200),[i.x, i.y, i.width, i.height], 0)
-            font = pygame.font.Font(None, 30)
+            font = pygame.font.Font("res/font/Droid Sans Mono.ttf", 24)
             text = font.render(i.desc, True, (255,255,0))
             textRect = text.get_rect()
             textRect.centerx = i.x+i.width/2
@@ -167,7 +166,7 @@ while True:
 
     if is_debug:
         # version
-        font = pygame.font.Font(None, 20)
+        font = pygame.font.Font("res/font/Droid Sans Mono.ttf", 12)
         text = font.render("pygame_version="+pygame.version.ver, True, (255,255,255))
         textRect = text.get_rect()
         textRect.bottomleft = (0, hh)
@@ -198,7 +197,9 @@ while True:
     # 8 - update the screen
     #pygame.display.flip()
     pygame.display.update()
+    FPSClock.tick(60)
 # main loop over====================
+pygame.quit()
  
 
 """
