@@ -6,23 +6,22 @@ import string
 from pygame.locals import *
 
 # 2 - Read conf & set var
+# if debug output info
 is_debug=1
-
+# 0:title, 1:original game, 2: advance game, 3: about, 4: exit
+g_status=0
 # 
 class button(object):
-    def __init__(self, desc, x, y, width=100, height=30):
+    def __init__(self, desc, x, y, width=160, height=30):
         self.desc = desc
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-
+# button array
 btn=[]
-btn.append(button("start", 600, 400)) # 1, start button
-btn.append(button("exit", 600, 400))  # 2, xxx button
-
+# param array
 arr=[]
-pos=0
 file = open("./cof/sss") 
 while 1:
     line = file.readline()
@@ -41,15 +40,17 @@ else:
 #ww = string.atoi(arr[0])
 #hh = string.atoi(arr[1])
 
-keys = [False, False, False, False]
+#define buttons
+btn.append(button("classic", ww-200, hh-250))  # 1, classic game button
+btn.append(button("advance", ww-200, hh-200))  # 2, modify game button
+btn.append(button(" about ", ww-200, hh-150))  # 3, about button
+btn.append(button(" exit  ", ww-200, hh-100))  # 4, exit button
+# keyboard detect
+#        0     1      2      3      4      5      6
+#        esc   enter  space  w      s      a      d
+keys = [False, False, False, False, False, False, False]
+# mouse position
 ms_pos =[0,0]
-playerpos=[100,100]
-acc=[0,0]
-arrows=[]
-badtimer=100
-badtimer1=0
-badguys=[[640,100]]
-healthvalue=194
 
 
 # 3 - Load images
@@ -84,55 +85,104 @@ while True:
             pygame.quit()
             exit(0)
         if event.type == pygame.KEYDOWN:
-            if event.key==pygame.K_w:
+            if event.key==pygame.K_ESCAPE:
                 keys[0]=True
-            elif event.key==pygame.K_a:
+                if g_status!=0:
+                    g_status=0
+            elif event.key==pygame.K_RETURN:
                 keys[1]=True
-            elif event.key==pygame.K_s:
+            elif event.key==pygame.K_SPACE:
                 keys[2]=True
-            elif event.key==pygame.K_d:
+            elif event.key==pygame.K_w:
                 keys[3]=True
-        if event.type == pygame.KEYUP:
-            if event.key==pygame.K_w:
-                keys[0]=False
-            elif event.key==pygame.K_a:
-                keys[1]=False
             elif event.key==pygame.K_s:
-                keys[2]=False
+                keys[4]=True
+            elif event.key==pygame.K_a:
+                keys[5]=True
             elif event.key==pygame.K_d:
+                keys[6]=True
+        if event.type == pygame.KEYUP:
+            if event.key==pygame.K_ESCAPE:
+                keys[0]=False
+            elif event.key==pygame.K_RETURN:
+                keys[1]=False
+            elif event.key==pygame.K_SPACE:
+                keys[2]=False
+            elif event.key==pygame.K_w:
                 keys[3]=False
+            elif event.key==pygame.K_s:
+                keys[4]=False
+            elif event.key==pygame.K_a:
+                keys[5]=False
+            elif event.key==pygame.K_d:
+                keys[6]=False
         if event.type==pygame.MOUSEBUTTONDOWN:
             ms_pos=pygame.mouse.get_pos()
-        if event.type==pygame.MOUSEBUTTONDOWN and btn[0].x<event.pos[0]<btn[0].x+btn[0].width and \
-                btn[0].y<event.pos[1]<btn[0].y+btn[0].height:
-            pygame.quit()
-            exit(0)
+            if g_status==0:
+                if btn[0].x<event.pos[0]<btn[0].x+btn[0].width:
+                    if btn[0].y<event.pos[1]<btn[0].y+btn[0].height:
+                        g_status=1
+                    elif btn[1].y<event.pos[1]<btn[1].y+btn[1].height:
+                        g_status=2
+                    elif btn[2].y<event.pos[1]<btn[2].y+btn[2].height:
+                        g_status=3
+                    elif btn[3].y<event.pos[1]<btn[3].y+btn[3].height:
+                        pygame.quit()
+                        exit(0)
     # ===== event over =====
 
     # 7 - draw the screen elements
-    # draw background
-    screen.blit(bg_title,(0,0))
-    pygame.draw.rect(screen, (60,0,250),[btn[0].x, btn[0].y, btn[0].width, btn[0].height], 0)
-    text = font.render(btn[0].desc, True, (255,255,0))
-    screen.blit(text, [btn[0].x, btn[0].y])
+    # in title
+# ==========status=0:title==========
+    if g_status==0:
+        # draw background
+        screen.blit(bg_title,(0,0))
+        # draw button
+        #for i in range(0, len(btn)):
+        #    pygame.draw.rect(screen, (70,0,200),[btn[i].x, btn[i].y, btn[i].width, btn[i].height], 0)
+        #    font = pygame.font.Font(None, 30)
+        #    text = font.render(btn[i].desc, True, (255,255,0))
+        #    textRect = text.get_rect()
+        #    textRect.centerx = btn[i].x+btn[i].width/2
+        #    textRect.centery = btn[i].y+btn[i].height/2
+        #    screen.blit(text, textRect)
+        for i in btn:
+            pygame.draw.rect(screen, (70,0,200),[i.x, i.y, i.width, i.height], 0)
+            font = pygame.font.Font(None, 30)
+            text = font.render(i.desc, True, (255,255,0))
+            textRect = text.get_rect()
+            textRect.centerx = i.x+i.width/2
+            textRect.centery = i.y+i.height/2
+            screen.blit(text, textRect)
+# ==========status=1:classic game==========
+    elif g_status==1:
+        screen.blit(home,(300,300))
+# ==========status=2:advance game==========
+    elif g_status==2:
+        screen.blit(player,(300,300))
+# ==========status=3:about page==========
+    elif g_status==3:
+        screen.blit(grass,(300,300))
+# ==========status    over==========
 
     if is_debug:
         # version
+        font = pygame.font.Font(None, 20)
         text = font.render("pygame_version="+pygame.version.ver, True, (255,255,255))
         textRect = text.get_rect()
         textRect.bottomleft = (0, hh)
         screen.blit(text, textRect)
         # key code
-        if keys[0]:
+        if keys[3]:
             test = font.render("W", True, (255,255,255))
             screen.blit(test, (0,0))
-        if keys[1]:
+        if keys[4]:
             test = font.render("A", True, (255,255,255))
             screen.blit(test, (12,0))
-        if keys[2]:
+        if keys[5]:
             test = font.render("S", True, (255,255,255))
             screen.blit(test, (12*2,0))
-        if keys[3]:
+        if keys[6]:
             test = font.render("D", True, (255,255,255))
             screen.blit(test, (12*3,0))
         # mouse position
@@ -148,7 +198,7 @@ while True:
     # 8 - update the screen
     #pygame.display.flip()
     pygame.display.update()
-            
+# main loop over====================
  
 
 """
