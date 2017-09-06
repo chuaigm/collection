@@ -1,0 +1,11 @@
+
+1. install python
+
+
+2. install pip
+
+
+3. install pygame
+
+
+4. install pyinstaller
