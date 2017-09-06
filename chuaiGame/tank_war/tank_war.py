@@ -20,6 +20,7 @@ class button(object):
         self.height = height
 # button array
 btn=[]
+
 # param array
 arr=[]
 file = open("./cof/sss") 
@@ -52,10 +53,32 @@ keys = [False, False, False, False, False, False, False]
 # mouse position
 ms_pos =[0,0]
 
+class player_cls(object):
+    def __init__(self, posi_id):
+        self.posi_id = posi_id
+# player obj
+player=player_cls(5)
+# player position array
+ply_pos = []
+ply_pos.append((0,hh/2))
+ply_pos.append((ww/4,hh/2))
+ply_pos.append((ww/4*2,hh/2))
+ply_pos.append((ww/4*3,hh/2))
+ply_pos.append((0,hh*3/4))
+ply_pos.append((ww/4,hh*3/4))
+ply_pos.append((ww/4*2,hh*3/4))
+ply_pos.append((ww/4*3,hh*3/4))
+#
+#    0   1   2   3
+#    4   5   6   7
+#
+# define function
+def init_game():
+    player.posi_id=5
 
 # 3 - Load images
 bg_title = pygame.image.load("res/pic/bg_title.jpg")
-player = pygame.image.load("res/pic/dude.png")
+player_p = pygame.image.load("res/pic/player_tank.jpg")
 grass  = pygame.image.load("res/pic/grass.png")
 home   = pygame.image.load("res/pic/home.png")
 arrow  = pygame.image.load("res/pic/arrow.png")
@@ -93,14 +116,24 @@ while running:
                 keys[1]=True
             elif event.key==pygame.K_SPACE:
                 keys[2]=True
+            #   0   1   2   3
+            #   4   5   6   7
             elif event.key==pygame.K_w:
                 keys[3]=True
+                if player.posi_id>3:
+                    player.posi_id-=4
             elif event.key==pygame.K_s:
                 keys[4]=True
+                if player.posi_id<4:
+                    player.posi_id+=4
             elif event.key==pygame.K_a:
                 keys[5]=True
+                if player.posi_id>0 and player.posi_id!=4:
+                    player.posi_id-=1
             elif event.key==pygame.K_d:
                 keys[6]=True
+                if player.posi_id<7 and player.posi_id!=3:
+                    player.posi_id+=1
         if event.type == pygame.KEYUP:
             if event.key==pygame.K_ESCAPE:
                 keys[0]=False
@@ -155,10 +188,10 @@ while running:
             screen.blit(text, textRect)
 # ==========status=1:classic game==========
     elif g_status==1:
-        screen.blit(home,(300,300))
+        screen.blit(player_p,(ply_pos[player.posi_id][0],ply_pos[player.posi_id][1]))
 # ==========status=2:advance game==========
     elif g_status==2:
-        screen.blit(player,(300,300))
+        screen.blit(home,(300,300))
 # ==========status=3:about page==========
     elif g_status==3:
         screen.blit(grass,(300,300))
