@@ -60,23 +60,49 @@ class player_cls(object):
 player=player_cls(5)
 # player position array
 tank_draw_pos = []
-tank_draw_pos.append((0,hh/2))
-tank_draw_pos.append((ww/4,hh/2))
-tank_draw_pos.append((ww/4*2,hh/2))
-tank_draw_pos.append((ww/4*3,hh/2))
 tank_draw_pos.append((0,hh*3/4))
 tank_draw_pos.append((ww/4,hh*3/4))
 tank_draw_pos.append((ww/4*2,hh*3/4))
 tank_draw_pos.append((ww/4*3,hh*3/4))
+tank_draw_pos.append((0,hh/2))
+tank_draw_pos.append((ww/4,hh/2))
+tank_draw_pos.append((ww/4*2,hh/2))
+tank_draw_pos.append((ww/4*3,hh/2))
 #    -------------
 #
 #
-#    0   1   2   3
 #    4   5   6   7
+#    0   1   2   3
 #    -------------
+
+# player position array
+terrain_draw_pos = []
+terrain_draw_pos.append((0,hh*3/4))
+terrain_draw_pos.append((ww/4,hh*3/4))
+terrain_draw_pos.append((ww/4*2,hh*3/4))
+terrain_draw_pos.append((ww/4*3,hh*3/4))
+terrain_draw_pos.append((0,hh/2))
+terrain_draw_pos.append((ww/4,hh/2))
+terrain_draw_pos.append((ww/4*2,hh/2))
+terrain_draw_pos.append((ww/4*3,hh/2))
+terrain_draw_pos.append((0,hh/4))
+terrain_draw_pos.append((ww/4,hh/4))
+terrain_draw_pos.append((ww/4*2,hh/4))
+terrain_draw_pos.append((ww/4*3,hh/4))
+terrain_draw_pos.append((0,0))
+terrain_draw_pos.append((ww/4,0))
+terrain_draw_pos.append((ww/4*2,0))
+terrain_draw_pos.append((ww/4*3,0))
+#    -------------
+#   12  13  14  15
+#    8   9  10  11
+#    4   5   6   7
+#    0   1   2   3
+#    -------------
+
 # define function
 def init_game():
-    player.posi_id=5
+    player.posi_id=1
 
 # 3 - Load images
 bg_title = pygame.image.load("res/pic/bg_title.jpg")
