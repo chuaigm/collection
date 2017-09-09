@@ -138,16 +138,16 @@ while running:
                 keys[1]=True
             elif event.key==pygame.K_SPACE:
                 keys[2]=True
-            #   0   1   2   3
             #   4   5   6   7
+            #   0   1   2   3
             elif event.key==pygame.K_w:
                 keys[3]=True
-                if player.posi_id>3:
-                    player.posi_id-=4
-            elif event.key==pygame.K_s:
-                keys[4]=True
                 if player.posi_id<4:
                     player.posi_id+=4
+            elif event.key==pygame.K_s:
+                keys[4]=True
+                if player.posi_id>3:
+                    player.posi_id-=4
             elif event.key==pygame.K_a:
                 keys[5]=True
                 if player.posi_id>0 and player.posi_id!=4:
