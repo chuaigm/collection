@@ -41,6 +41,15 @@ else:
 #ww = string.atoi(arr[0])
 #hh = string.atoi(arr[1])
 
+# in pygame coordinate
+# (0,0)-------------------> x
+# |
+# |
+# |
+# |
+# V                   (800,600)
+# y
+
 #define buttons
 btn.append(button("classic", ww-200, hh-250))  # 1, classic game button
 btn.append(button("advance", ww-200, hh-200))  # 2, modify game button
@@ -58,16 +67,51 @@ class player_cls(object):
         self.posi_id = posi_id
 # player obj
 player=player_cls(5)
+
+# define function
+def init_game():
+    player.posi_id=1
+
+# print text in pygame draw
+def print_text(tt, font_size, color, pos):
+    font = pygame.font.Font("res/font/Droid Sans Mono.ttf", font_size)
+    text = font.render(tt, True, color)
+    screen.blit(text, pos)
+
+# 3 - Load images
+bg_title = pygame.image.load("res/pic/bg_title.jpg")
+player_p = pygame.image.load("res/pic/tank.png")
+terrain_p= pygame.image.load("res/pic/terrain.png")
+#terrain_p= pygame.image.load("res/pic/qwe.png")
+grass  = pygame.image.load("res/pic/grass.png")
+home   = pygame.image.load("res/pic/home.png")
+
+# zoom coefficient
+z_coef=0.9
+# in this game, a tank and terrain resource need to be 150x150 pixel
+w_p,h_p = terrain_p.get_size()  # 150x150
+draw_unit=w_p # 150
+terrain_p1 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = terrain_p1.get_size()
+terrain_p2 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = terrain_p2.get_size()
+terrain_p3 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
+
+x_shift=(ww-hh)/2
+x_w=hh/4
+y_h=hh/4
+scale_shift=int(draw_unit*(1-z_coef))
+
 # player position array
 tank_draw_pos = []
-tank_draw_pos.append((0,hh*3/4))
-tank_draw_pos.append((ww/4,hh*3/4))
-tank_draw_pos.append((ww/4*2,hh*3/4))
-tank_draw_pos.append((ww/4*3,hh*3/4))
-tank_draw_pos.append((0,hh/2))
-tank_draw_pos.append((ww/4,hh/2))
-tank_draw_pos.append((ww/4*2,hh/2))
-tank_draw_pos.append((ww/4*3,hh/2))
+tank_draw_pos.append((x_shift,y_h*3))
+tank_draw_pos.append((x_shift+x_w,y_h*3))
+tank_draw_pos.append((x_shift+x_w*2,y_h*3))
+tank_draw_pos.append((x_shift+x_w*3,y_h*3))
+tank_draw_pos.append((x_shift+scale_shift*2,y_h*2+scale_shift))
+tank_draw_pos.append((x_shift+x_w+scale_shift,y_h*2+scale_shift))
+tank_draw_pos.append((x_shift+x_w*2,y_h*2+scale_shift))
+tank_draw_pos.append((x_shift+x_w*3-scale_shift,y_h*2+scale_shift))
 #    -------------
 #
 #
@@ -75,24 +119,25 @@ tank_draw_pos.append((ww/4*3,hh/2))
 #    0   1   2   3
 #    -------------
 
-# player position array
+# terrain position array
+# terrain is 150x150 pixel, in 800x600 screen
 terrain_draw_pos = []
-terrain_draw_pos.append((0,hh*3/4))
-terrain_draw_pos.append((ww/4,hh*3/4))
-terrain_draw_pos.append((ww/4*2,hh*3/4))
-terrain_draw_pos.append((ww/4*3,hh*3/4))
-terrain_draw_pos.append((0,hh/2))
-terrain_draw_pos.append((ww/4,hh/2))
-terrain_draw_pos.append((ww/4*2,hh/2))
-terrain_draw_pos.append((ww/4*3,hh/2))
-terrain_draw_pos.append((0,hh/4))
-terrain_draw_pos.append((ww/4,hh/4))
-terrain_draw_pos.append((ww/4*2,hh/4))
-terrain_draw_pos.append((ww/4*3,hh/4))
-terrain_draw_pos.append((0,0))
-terrain_draw_pos.append((ww/4,0))
-terrain_draw_pos.append((ww/4*2,0))
-terrain_draw_pos.append((ww/4*3,0))
+terrain_draw_pos.append((x_shift,y_h*3))
+terrain_draw_pos.append((x_shift+x_w,y_h*3))
+terrain_draw_pos.append((x_shift+x_w*2,y_h*3))
+terrain_draw_pos.append((x_shift+x_w*3,y_h*3))
+terrain_draw_pos.append((x_shift+scale_shift*2,y_h*2+scale_shift))
+terrain_draw_pos.append((x_shift+x_w+scale_shift,y_h*2+scale_shift))
+terrain_draw_pos.append((x_shift+x_w*2,y_h*2+scale_shift))
+terrain_draw_pos.append((x_shift+x_w*3-scale_shift,y_h*2+scale_shift))
+terrain_draw_pos.append((x_shift+scale_shift*4,y_h+scale_shift*3))
+terrain_draw_pos.append((x_shift+x_w+scale_shift*2,y_h+scale_shift*3))
+terrain_draw_pos.append((x_shift+x_w*2,y_h+scale_shift*3))
+terrain_draw_pos.append((x_shift+x_w*3-scale_shift*2,y_h+scale_shift*3))
+terrain_draw_pos.append((x_shift+scale_shift*6,scale_shift*6))
+terrain_draw_pos.append((x_shift+x_w+scale_shift*3,scale_shift*6))
+terrain_draw_pos.append((x_shift+x_w*2,scale_shift*6))
+terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 #    -------------
 #   12  13  14  15
 #    8   9  10  11
@@ -100,15 +145,6 @@ terrain_draw_pos.append((ww/4*3,0))
 #    0   1   2   3
 #    -------------
 
-# define function
-def init_game():
-    player.posi_id=1
-
-# 3 - Load images
-bg_title = pygame.image.load("res/pic/bg_title.jpg")
-player_p = pygame.image.load("res/pic/player_tank.jpg")
-grass  = pygame.image.load("res/pic/grass.png")
-home   = pygame.image.load("res/pic/home.png")
 
 # 3 - Initialize the game
 pygame.init()
@@ -202,6 +238,22 @@ while running:
             screen.blit(text, textRect)
 # ==========status=1:classic game==========
     elif g_status==1:
+        # terrain draw first
+        l_pos=0
+        for i in terrain_draw_pos:
+            if l_pos<4:
+                screen.blit(terrain_p, i)
+            elif l_pos<8:
+                # can replace by smoothscale
+                screen.blit(terrain_p1, i)
+            elif l_pos<12:
+                # can replace by smoothscale
+                screen.blit(terrain_p2, i)
+            else:
+                # can replace by smoothscale
+                screen.blit(terrain_p3, i)
+            l_pos+=1
+        # player tank draw
         screen.blit(player_p,(tank_draw_pos[player.posi_id][0],tank_draw_pos[player.posi_id][1]))
 # ==========status=2:advance game==========
     elif g_status==2:
