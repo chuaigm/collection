@@ -66,7 +66,7 @@ class player_cls(object):
     def __init__(self, posi_id):
         self.posi_id = posi_id
 # player obj
-player=player_cls(5)
+player=player_cls(1)
 
 # define function
 def init_game():
@@ -79,23 +79,35 @@ def print_text(tt, font_size, color, pos):
     screen.blit(text, pos)
 
 # 3 - Load images
-bg_title = pygame.image.load("res/pic/bg_title.jpg")
-player_p = pygame.image.load("res/pic/tank.png")
-terrain_p= pygame.image.load("res/pic/terrain.png")
-#terrain_p= pygame.image.load("res/pic/qwe.png")
-grass  = pygame.image.load("res/pic/grass.png")
-home   = pygame.image.load("res/pic/home.png")
+bg_title   = pygame.image.load("res/pic/bg_title.jpg")
+pic_player = pygame.image.load("res/pic/tank.png")
+pic_terrain= pygame.image.load("res/pic/terrain.png")
+pic_mine   = pygame.image.load("res/pic/mine.png")
+pic_grass  = pygame.image.load("res/pic/grass.png")
+pic_home   = pygame.image.load("res/pic/home.png")
 
 # zoom coefficient
 z_coef=0.9
 # in this game, a tank and terrain resource need to be 150x150 pixel
-w_p,h_p = terrain_p.get_size()  # 150x150
+w_p,h_p = pic_terrain.get_size()  # 150x150
 draw_unit=w_p # 150
-terrain_p1 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = terrain_p1.get_size()
-terrain_p2 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = terrain_p2.get_size()
-terrain_p3 = pygame.transform.scale(terrain_p,(int(w_p*z_coef),int(h_p*z_coef)))
+pic_terrain1 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = pic_terrain1.get_size()
+pic_terrain2 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = pic_terrain2.get_size()
+pic_terrain3 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
+#    p3    p3
+#   p2      p2
+#  p1        p1
+# p            p
+w_p,h_p = pic_mine.get_size()  # 150x150
+draw_unit=w_p # 150
+pic_mine1 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = pic_mine1.get_size()
+pic_mine2 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
+w_p,h_p = pic_mine2.get_size()
+pic_mine3 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
+
 
 x_shift=(ww-hh)/2
 x_w=hh/4
@@ -145,6 +157,27 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 #    0   1   2   3
 #    -------------
 
+#
+# random a map
+# 20
+# ...
+# 4
+# 3
+# 2
+# 1 2 3 4
+map_x=4
+map_y=20
+game_map=[[0 for i in range(map_y)] for i in range(map_x)]
+for j in range(20):
+    for i in range(4):
+        game_map[i][j]=random.randint(0,1)
+game_map[0][0]=0
+game_map[1][0]=0
+game_map[2][0]=0
+game_map[3][0]=0
+tank_in_map=[1,0]
+ref_pos_in_map=[0,0]
+#
 
 # 3 - Initialize the game
 pygame.init()
@@ -180,18 +213,30 @@ while running:
                 keys[3]=True
                 if player.posi_id<4:
                     player.posi_id+=4
+                elif ref_pos_in_map[1]<map_y-4:
+                    ref_pos_in_map[1]+=1
+                if tank_in_map[1]<map_y-3:
+                    tank_in_map[1]+=1
             elif event.key==pygame.K_s:
                 keys[4]=True
                 if player.posi_id>3:
                     player.posi_id-=4
+                elif ref_pos_in_map[1]>0:
+                    ref_pos_in_map[1]-=1
+                if tank_in_map[1]>0:
+                    tank_in_map[1]-=1
             elif event.key==pygame.K_a:
                 keys[5]=True
                 if player.posi_id>0 and player.posi_id!=4:
                     player.posi_id-=1
+                if tank_in_map[0]>0:
+                    tank_in_map[0]-=1
             elif event.key==pygame.K_d:
                 keys[6]=True
                 if player.posi_id<7 and player.posi_id!=3:
                     player.posi_id+=1
+                if tank_in_map[0]<map_x-1:
+                    tank_in_map[0]+=1
         if event.type == pygame.KEYUP:
             if event.key==pygame.K_ESCAPE:
                 keys[0]=False
@@ -242,25 +287,33 @@ while running:
         l_pos=0
         for i in terrain_draw_pos:
             if l_pos<4:
-                screen.blit(terrain_p, i)
+                if game_map[ref_pos_in_map[0]+l_pos][ref_pos_in_map[1]] == 1:
+                    screen.blit(pic_terrain, i)
+                    screen.blit(pic_mine, i)
             elif l_pos<8:
-                # can replace by smoothscale
-                screen.blit(terrain_p1, i)
+                if game_map[ref_pos_in_map[0]+l_pos-4][ref_pos_in_map[1]+1] == 1:
+                    # can replace by smoothscale
+                    screen.blit(pic_terrain1, i)
+                    screen.blit(pic_mine1, i)
             elif l_pos<12:
-                # can replace by smoothscale
-                screen.blit(terrain_p2, i)
+                if game_map[ref_pos_in_map[0]+l_pos-8][ref_pos_in_map[1]+2] == 1:
+                    # can replace by smoothscale
+                    screen.blit(pic_terrain2, i)
+                    screen.blit(pic_mine2, i)
             else:
+                if game_map[ref_pos_in_map[0]+l_pos-12][ref_pos_in_map[1]+3] == 1:
                 # can replace by smoothscale
-                screen.blit(terrain_p3, i)
+                    screen.blit(pic_terrain3, i)
+                    screen.blit(pic_mine3, i)
             l_pos+=1
         # player tank draw
-        screen.blit(player_p,(tank_draw_pos[player.posi_id][0],tank_draw_pos[player.posi_id][1]))
+        screen.blit(pic_player,(tank_draw_pos[player.posi_id][0],tank_draw_pos[player.posi_id][1]))
 # ==========status=2:advance game==========
     elif g_status==2:
-        screen.blit(home,(300,300))
+        screen.blit(pic_home,(300,300))
 # ==========status=3:about page==========
     elif g_status==3:
-        screen.blit(grass,(300,300))
+        screen.blit(pic_grass,(300,300))
 # ==========status    over==========
 
     if is_debug:
@@ -289,6 +342,19 @@ while running:
         # test clock
         text = font.render("tick="+str(pygame.time.get_ticks()), True, (255,255,240))
         screen.blit(text, (0,12*2))
+
+        # test output map array
+        for j in range(20):
+            for i in range(4):
+                if i == tank_in_map[0] and j==tank_in_map[1]:
+                    text = font.render("T", True, (255,255,255))
+                else:
+                    text = font.render(str(game_map[i][j]), True, (255,255,255))
+                screen.blit(text, (i*12, 2*hh/3-j*12))
+
+        # test tmp
+        text = font.render(str(player.posi_id), True, (255,255,240))
+        screen.blit(text, (0,100))
     # debug code above ^^^
  
     # === draw over ===
