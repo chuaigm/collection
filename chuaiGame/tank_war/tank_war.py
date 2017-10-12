@@ -351,10 +351,11 @@ while running:
                 else:
                     text = font.render(str(game_map[i][j]), True, (255,255,255))
                 screen.blit(text, (i*12, 2*hh/3-j*12))
+        pygame.draw.rect(screen, (255,0,0), (0, 2*hh/3-12*(ref_pos_in_map[1]+3),12*4,12*4),1)
 
         # test tmp
-        text = font.render(str(player.posi_id), True, (255,255,240))
-        screen.blit(text, (0,100))
+        #text = font.render(str(player.posi_id), True, (255,255,240))
+        #screen.blit(text, (0,100))
     # debug code above ^^^
  
     # === draw over ===
