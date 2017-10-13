@@ -168,15 +168,14 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 map_x=4
 map_y=20
 game_map=[[0 for i in range(map_y)] for i in range(map_x)]
-for j in range(20):
-    for i in range(4):
+for j in range(1, map_y):
+    for i in range(map_x):
         game_map[i][j]=random.randint(0,1)
-game_map[0][0]=0
-game_map[1][0]=0
-game_map[2][0]=0
-game_map[3][0]=0
-tank_in_map=[1,0]
-ref_pos_in_map=[0,0]
+# 
+tank_in_map=[map_x/2-1,0]
+ref_pos_in_map=[map_x/2-2,0]
+# ramdom a path
+
 #
 
 # 3 - Initialize the game
