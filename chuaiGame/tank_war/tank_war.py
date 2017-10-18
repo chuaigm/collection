@@ -173,15 +173,116 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 map_x=8
 map_y=20
 game_map=[[0 for i in range(map_y)] for i in range(map_x)]
-for j in range(1, map_y):
-    for i in range(map_x):
-        game_map[i][j]=random.randint(0,1)
+#for j in range(1, map_y):
+#    for i in range(map_x):
+#        game_map[i][j]=random.randint(0,1)
 # 
 tank_in_map=[map_x/2-1,0]
 ref_pos_in_map=[map_x/2-2,0]
-# ramdom a path
 
+# ramdom a path
+path_map=[[0 for i in range(map_y)] for i in range(map_x)]
+flo_pos=tank_in_map[:]
+path_map[flo_pos[0]][flo_pos[1]]=1
+# last position:
+#   0       3
+# 1   2   2   1
+#   3       0
 #
+#   0
+# 1   2
+#   x
+#while flo_pos[1]<map_y-1:
+test_cnt=0
+while test_cnt<100:
+    rdm_direc=random.randint(1,4)
+    if rdm_direc<2 \
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+        flo_pos[1]+=1
+    elif rdm_direc==2 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 \
+    and flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
+        flo_pos[0]-=1
+    elif rdm_direc==3 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0\
+    and flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+        flo_pos[0]+=1
+    elif rdm_direc==4 \
+    and flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+        flo_pos[1]-=1
+    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+
+    if flo_pos[0]==0:
+        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
+            flo_pos[0]+=1
+        elif flo_pos[1]<map_y-1:
+            flo_pos[1]+=1
+    elif flo_pos[0]==map_x-1:
+        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
+            flo_pos[0]-=1
+        elif flo_pos[1]<map_y-1:
+            flo_pos[1]+=1
+    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+    test_cnt+=1
+
+game_map=path_map
+
+# this method hehe
+"""
+# ramdom a path
+path_map=[[0 for i in range(map_y)] for i in range(map_x)]
+flo_pos=tank_in_map[:]
+path_map[flo_pos[0]][flo_pos[1]]=1
+#  01
+# 2   3
+#   4
+#while flo_pos[1]<map_y-1:
+test_cnt=0
+while test_cnt<100:
+    rdm_direc=random.randint(1,4)
+    if rdm_direc<2 \
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+        flo_pos[1]+=1
+    elif rdm_direc==2 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 \
+    and flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
+        flo_pos[0]-=1
+    elif rdm_direc==3 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0\
+    and flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
+    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+        flo_pos[0]+=1
+    elif rdm_direc==4 \
+    and flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
+    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+        flo_pos[1]-=1
+    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+
+    if flo_pos[0]==0:
+        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
+            flo_pos[0]+=1
+        elif flo_pos[1]<map_y-1:
+            flo_pos[1]+=1
+    elif flo_pos[0]==map_x-1:
+        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
+            flo_pos[0]-=1
+        elif flo_pos[1]<map_y-1:
+            flo_pos[1]+=1
+    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+    test_cnt+=1
+
+game_map=path_map
+"""
 
 # 3 - Initialize the game
 pygame.init()
