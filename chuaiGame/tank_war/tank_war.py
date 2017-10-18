@@ -1,6 +1,9 @@
+# coding by cgm
+# 2017-10-18
+
 # 1 - Import library
 import pygame
-import math
+#import math
 import random
 import string
 from pygame.locals import *
@@ -159,13 +162,15 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 
 #
 # random a map
+# y
 # 20
 # ...
+# 5
 # 4
 # 3
 # 2
-# 1 2 3 4
-map_x=4
+# 1 2 3 4 x
+map_x=8
 map_y=20
 game_map=[[0 for i in range(map_y)] for i in range(map_x)]
 for j in range(1, map_y):
@@ -220,22 +225,26 @@ while running:
                 keys[4]=True
                 if player.posi_id>3:
                     player.posi_id-=4
+                    tank_in_map[1]-=1
                 elif ref_pos_in_map[1]>0:
                     ref_pos_in_map[1]-=1
-                if tank_in_map[1]>0:
-                    tank_in_map[1]-=1
+                    player.posi_id+=4
             elif event.key==pygame.K_a:
                 keys[5]=True
                 if player.posi_id>0 and player.posi_id!=4:
                     player.posi_id-=1
-                if tank_in_map[0]>0:
                     tank_in_map[0]-=1
+                elif ref_pos_in_map[0]>0:
+                    ref_pos_in_map[0]-=1
+                    player.posi_id+=1
             elif event.key==pygame.K_d:
                 keys[6]=True
                 if player.posi_id<7 and player.posi_id!=3:
                     player.posi_id+=1
-                if tank_in_map[0]<map_x-1:
                     tank_in_map[0]+=1
+                elif ref_pos_in_map[0]<map_x-4:
+                    ref_pos_in_map[0]+=1
+                    player.posi_id-=1
         if event.type == pygame.KEYUP:
             if event.key==pygame.K_ESCAPE:
                 keys[0]=False
@@ -291,17 +300,14 @@ while running:
                     screen.blit(pic_mine, i)
             elif l_pos<8:
                 if game_map[ref_pos_in_map[0]+l_pos-4][ref_pos_in_map[1]+1] == 1:
-                    # can replace by smoothscale
                     screen.blit(pic_terrain1, i)
                     screen.blit(pic_mine1, i)
             elif l_pos<12:
                 if game_map[ref_pos_in_map[0]+l_pos-8][ref_pos_in_map[1]+2] == 1:
-                    # can replace by smoothscale
                     screen.blit(pic_terrain2, i)
                     screen.blit(pic_mine2, i)
             else:
                 if game_map[ref_pos_in_map[0]+l_pos-12][ref_pos_in_map[1]+3] == 1:
-                # can replace by smoothscale
                     screen.blit(pic_terrain3, i)
                     screen.blit(pic_mine3, i)
             l_pos+=1
@@ -343,14 +349,14 @@ while running:
         screen.blit(text, (0,12*2))
 
         # test output map array
-        for j in range(20):
-            for i in range(4):
+        for j in range(map_y):
+            for i in range(map_x):
                 if i == tank_in_map[0] and j==tank_in_map[1]:
                     text = font.render("T", True, (255,255,255))
                 else:
                     text = font.render(str(game_map[i][j]), True, (255,255,255))
                 screen.blit(text, (i*12, 2*hh/3-j*12))
-        pygame.draw.rect(screen, (255,0,0), (0, 2*hh/3-12*(ref_pos_in_map[1]+3),12*4,12*4),1)
+        pygame.draw.rect(screen, (255,0,0), (0+ref_pos_in_map[0]*12, 2*hh/3-12*(ref_pos_in_map[1]+3),12*4,12*4),1)
 
         # test tmp
         #text = font.render(str(player.posi_id), True, (255,255,240))
