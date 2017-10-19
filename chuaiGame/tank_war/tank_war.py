@@ -168,24 +168,23 @@ game_map=[[0 for i in range(map_y)] for i in range(map_x)]
 #
 # random a map
 # y
-# 20
+# 19
 # ...
 # 5
 # 4
 # 3
 # 2
-# 1 2 3 4 x
-def random_a_map(map_x, map_y, tank_in_map):
+# 0 1 2 3 x
+def random_a_path(map_x, map_y):
     global game_map
-    #for j in range(1, map_y):
-    #    for i in range(map_x):
-    #        game_map[i][j]=random.randint(0,1)
-    # 
-    
-    # ramdom a path
+
     path_map=[[0 for i in range(map_y)] for i in range(map_x)]
-    flo_pos=tank_in_map[:]
-    path_map[flo_pos[0]][flo_pos[1]]=1
+    for j in range(1, map_y):
+        for i in range(map_x):
+            path_map[i][j]=1
+
+    flo_pos=[map_x/2-1,0]
+    path_map[flo_pos[0]][flo_pos[1]]=0
     # direction:
     #   0
     # 1   2
@@ -198,6 +197,12 @@ def random_a_map(map_x, map_y, tank_in_map):
     last_pos=3
     rollback_pos=flo_pos[:]
     rollback_map=path_map[:]
+    rollback_last=3
+    #for debug
+    vec_rollback=[]
+    vec_rollback.append(rollback_pos[:])
+    vec_trig_roll=[]
+    vec_trig_roll.append(rollback_pos[:])
     turn_from=0
     #while flo_pos[1]<map_y-1:
     test_cnt=0
@@ -212,9 +217,9 @@ def random_a_map(map_x, map_y, tank_in_map):
             print "%02d:%d:(%d,%d):(%d,%d)" %(test_cnt, rdm_direc, flo_pos[0], flo_pos[1],rollback_pos[0], rollback_pos[1])
             if rdm_direc==0:
                 if flo_pos[0]>0 and flo_pos[0]<map_x-1:
-                    if flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
-                    and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
-                    and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+                    if flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==1 \
+                    and path_map[flo_pos[0]-1][flo_pos[1]+1]==1 \
+                    and path_map[flo_pos[0]+1][flo_pos[1]+1]==1 :
                         flo_pos[1]+=1
                         last_pos=3
                 else: # in left edge or right edge
@@ -222,29 +227,32 @@ def random_a_map(map_x, map_y, tank_in_map):
                     last_pos=3
             elif rdm_direc==1:
                 if turn_from==1:
-                    if flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0 :
+                    if flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==1 :
                         flo_pos[0]+=1
                         last_pos=1
                         turn_from=0
                     else:
+                        vec_trig_roll.append(flo_pos[:])
                         flo_pos=rollback_pos[:]
                         path_map=rollback_map[:]
+                        last_pos=rollback_last
+                        vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-                    continue
-                if flo_pos[0]>0:
-                    if path_map[flo_pos[0]-1][flo_pos[1]]==0 :
-                        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
+                elif flo_pos[0]>0:
+                    if path_map[flo_pos[0]-1][flo_pos[1]]==1 :
+                        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
+                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==1 :
                             flo_pos[0]-=1
                             last_pos=2
                     else: # path conflict
+                        vec_trig_roll.append(flo_pos[:])
                         flo_pos=rollback_pos[:]
                         path_map=rollback_map[:]
+                        last_pos=rollback_last
+                        vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                        continue
                 else: # flo_pos[0]==0
-                    if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
+                    if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 and path_map[flo_pos[0]+1][flo_pos[1]]==1:
                         flo_pos[0]+=1
                         last_pos=1
                     elif flo_pos[1]<map_y-1:
@@ -252,29 +260,32 @@ def random_a_map(map_x, map_y, tank_in_map):
                         last_pos=3
             elif rdm_direc==2:
                 if turn_from==2:
-                    if flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 :
+                    if flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==1 :
                         flo_pos[0]-=1
                         last_pos=2
                         turn_from=0
                     else:
+                        vec_trig_roll.append(flo_pos[:])
                         flo_pos=rollback_pos[:]
                         path_map=rollback_map[:]
+                        last_pos=rollback_last
+                        vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-                    continue
-                if flo_pos[0]<map_x-1:
-                    if path_map[flo_pos[0]+1][flo_pos[1]]==0 :
-                        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
-                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+                elif flo_pos[0]<map_x-1:
+                    if path_map[flo_pos[0]+1][flo_pos[1]]==1 :
+                        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 \
+                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==1 :
                             flo_pos[0]+=1
                             last_pos=1
                     else: # path conflict
+                        vec_trig_roll.append(flo_pos[:])
                         flo_pos=rollback_pos[:]
                         path_map=rollback_map[:]
+                        last_pos=rollback_last
+                        vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                        continue
                 else: # flo_pos[0]==map_x-1
-                    if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
+                    if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 and path_map[flo_pos[0]-1][flo_pos[1]]==1:
                         flo_pos[0]-=1
                         last_pos=2
                     elif flo_pos[1]<map_y-1:
@@ -282,96 +293,60 @@ def random_a_map(map_x, map_y, tank_in_map):
                         last_pos=3
             elif rdm_direc==3:
                 if last_pos==0: # continue downward
-                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0:
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==1:
                         flo_pos[1]-=1
                         last_pos=0
                     else:
+                        vec_trig_roll.append(flo_pos[:])
                         flo_pos=rollback_pos[:]
                         path_map=rollback_map[:]
+                        last_pos=rollback_last
+                        vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                        continue
                 elif last_pos==1: # from left
-                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
-                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==1 \
+                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
+                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
                         if turn_from==0:
                             rollback_pos=flo_pos[:]
                             rollback_map=path_map[:]
+                            rollback_last=last_pos
                         turn_from=1
                         flo_pos[1]-=1
                         last_pos=0
                 elif last_pos==2: # from right
-                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
-                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==1 \
+                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
+                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
                         if turn_from==0:
                             rollback_pos=flo_pos[:]
                             rollback_map=path_map[:]
+                            rollback_last=last_pos
                         turn_from=2
                         flo_pos[1]-=1
                         last_pos=0
-        if flo_pos[0]==rollback_pos[0] and flo_pos[1]==rollback_pos[1]:
-            path_map[flo_pos[0]][flo_pos[1]]='R'
-        else:
-            #path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-            path_map[flo_pos[0]][flo_pos[1]]=1
+        #path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+        path_map[flo_pos[0]][flo_pos[1]]=0
         test_cnt+=1
+    #for i in range(len(vec_rollback)):
+    #    path_map[vec_rollback[i][0]][vec_rollback[i][1]]='Z'
+    #    path_map[vec_trig_roll[i][0]][vec_trig_roll[i][1]]='R'
+    print vec_rollback
 
-    game_map=path_map[:]
+    #pick a good path
+    if flo_pos[1]==map_y-1 and test_cnt>40 and test_cnt<80:
+        game_map=path_map[:]
+        return 0
+    else:
+        return 1
 
 # 
-random_a_map(map_x, map_y, tank_in_map)
+def random_a_map(map_x, map_y):
+    remap=1
+    while 1==remap:
+        remap=random_a_path(map_x, map_y)
 
-# this method hehe
-"""
-# ramdom a path
-path_map=[[0 for i in range(map_y)] for i in range(map_x)]
-flo_pos=tank_in_map[:]
-path_map[flo_pos[0]][flo_pos[1]]=1
-#  01
-# 2   3
-#   4
-#while flo_pos[1]<map_y-1:
-test_cnt=0
-while test_cnt<100:
-    rdm_direc=random.randint(1,4)
-    if rdm_direc<2 \
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
-        flo_pos[1]+=1
-    elif rdm_direc==2 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 \
-    and flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
-        flo_pos[0]-=1
-    elif rdm_direc==3 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0\
-    and flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
-        flo_pos[0]+=1
-    elif rdm_direc==4 \
-    and flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
-        flo_pos[1]-=1
-    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-
-    if flo_pos[0]==0:
-        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
-            flo_pos[0]+=1
-        elif flo_pos[1]<map_y-1:
-            flo_pos[1]+=1
-    elif flo_pos[0]==map_x-1:
-        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
-            flo_pos[0]-=1
-        elif flo_pos[1]<map_y-1:
-            flo_pos[1]+=1
-    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-    test_cnt+=1
-
-game_map=path_map
-"""
+random_a_map(map_x, map_y)
 
 # 3 - Initialize the game
 pygame.init()
@@ -402,7 +377,7 @@ while running:
             elif event.key==pygame.K_SPACE:
                 keys[2]=True
                 # for debug
-                random_a_map(map_x, map_y, tank_in_map)
+                random_a_map(map_x, map_y)
             #   4   5   6   7
             #   0   1   2   3
             elif event.key==pygame.K_w:
@@ -563,6 +538,6 @@ while running:
     # 8 - update the screen
     #pygame.display.flip()
     pygame.display.update()
-    FPSClock.tick(60)
+    FPSClock.tick(30)
 # main loop over====================
 pygame.quit()
