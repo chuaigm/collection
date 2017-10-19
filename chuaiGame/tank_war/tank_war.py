@@ -160,6 +160,11 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 #    0   1   2   3
 #    -------------
 
+map_x=8
+map_y=20
+tank_in_map=[map_x/2-1,0]
+ref_pos_in_map=[map_x/2-2,0]
+game_map=[[0 for i in range(map_y)] for i in range(map_x)]
 #
 # random a map
 # y
@@ -170,68 +175,152 @@ terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 # 3
 # 2
 # 1 2 3 4 x
-map_x=8
-map_y=20
-game_map=[[0 for i in range(map_y)] for i in range(map_x)]
-#for j in range(1, map_y):
-#    for i in range(map_x):
-#        game_map[i][j]=random.randint(0,1)
+def random_a_map(map_x, map_y, tank_in_map):
+    global game_map
+    #for j in range(1, map_y):
+    #    for i in range(map_x):
+    #        game_map[i][j]=random.randint(0,1)
+    # 
+    
+    # ramdom a path
+    path_map=[[0 for i in range(map_y)] for i in range(map_x)]
+    flo_pos=tank_in_map[:]
+    path_map[flo_pos[0]][flo_pos[1]]=1
+    # direction:
+    #   0
+    # 1   2
+    #   3
+    # last position:
+    #   0
+    # 1   2
+    #   3
+    #
+    last_pos=3
+    rollback_pos=flo_pos[:]
+    rollback_map=path_map[:]
+    turn_from=0
+    #while flo_pos[1]<map_y-1:
+    test_cnt=0
+    # for debug
+    print "test_cnt:rdm_direc:(flo_x,flo_y):(roll_x,roll_y)"
+    while test_cnt<100 and flo_pos[1]<map_y-1:
+        rdm_direc=random.randint(0,3)
+        if rdm_direc==last_pos:
+            continue
+        else:
+            # for debug
+            print "%02d:%d:(%d,%d):(%d,%d)" %(test_cnt, rdm_direc, flo_pos[0], flo_pos[1],rollback_pos[0], rollback_pos[1])
+            if rdm_direc==0:
+                if flo_pos[0]>0 and flo_pos[0]<map_x-1:
+                    if flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
+                    and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
+                    and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+                        flo_pos[1]+=1
+                        last_pos=3
+                else: # in left edge or right edge
+                    flo_pos[1]+=1
+                    last_pos=3
+            elif rdm_direc==1:
+                if turn_from==1:
+                    if flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0 :
+                        flo_pos[0]+=1
+                        last_pos=1
+                        turn_from=0
+                    else:
+                        flo_pos=rollback_pos[:]
+                        path_map=rollback_map[:]
+                        turn_from=0
+                    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+                    continue
+                if flo_pos[0]>0:
+                    if path_map[flo_pos[0]-1][flo_pos[1]]==0 :
+                        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
+                            flo_pos[0]-=1
+                            last_pos=2
+                    else: # path conflict
+                        flo_pos=rollback_pos[:]
+                        path_map=rollback_map[:]
+                        turn_from=0
+                        continue
+                else: # flo_pos[0]==0
+                    if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
+                        flo_pos[0]+=1
+                        last_pos=1
+                    elif flo_pos[1]<map_y-1:
+                        flo_pos[1]+=1
+                        last_pos=3
+            elif rdm_direc==2:
+                if turn_from==2:
+                    if flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 :
+                        flo_pos[0]-=1
+                        last_pos=2
+                        turn_from=0
+                    else:
+                        flo_pos=rollback_pos[:]
+                        path_map=rollback_map[:]
+                        turn_from=0
+                    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+                    continue
+                if flo_pos[0]<map_x-1:
+                    if path_map[flo_pos[0]+1][flo_pos[1]]==0 :
+                        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
+                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
+                            flo_pos[0]+=1
+                            last_pos=1
+                    else: # path conflict
+                        flo_pos=rollback_pos[:]
+                        path_map=rollback_map[:]
+                        turn_from=0
+                        continue
+                else: # flo_pos[0]==map_x-1
+                    if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
+                        flo_pos[0]-=1
+                        last_pos=2
+                    elif flo_pos[1]<map_y-1:
+                        flo_pos[1]+=1
+                        last_pos=3
+            elif rdm_direc==3:
+                if last_pos==0: # continue downward
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0:
+                        flo_pos[1]-=1
+                        last_pos=0
+                    else:
+                        flo_pos=rollback_pos[:]
+                        path_map=rollback_map[:]
+                        turn_from=0
+                        continue
+                elif last_pos==1: # from left
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
+                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+                        if turn_from==0:
+                            rollback_pos=flo_pos[:]
+                            rollback_map=path_map[:]
+                        turn_from=1
+                        flo_pos[1]-=1
+                        last_pos=0
+                elif last_pos==2: # from right
+                    if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
+                    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
+                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
+                        if turn_from==0:
+                            rollback_pos=flo_pos[:]
+                            rollback_map=path_map[:]
+                        turn_from=2
+                        flo_pos[1]-=1
+                        last_pos=0
+        if flo_pos[0]==rollback_pos[0] and flo_pos[1]==rollback_pos[1]:
+            path_map[flo_pos[0]][flo_pos[1]]='R'
+        else:
+            #path_map[flo_pos[0]][flo_pos[1]]=test_cnt
+            path_map[flo_pos[0]][flo_pos[1]]=1
+        test_cnt+=1
+
+    game_map=path_map[:]
+
 # 
-tank_in_map=[map_x/2-1,0]
-ref_pos_in_map=[map_x/2-2,0]
-
-# ramdom a path
-path_map=[[0 for i in range(map_y)] for i in range(map_x)]
-flo_pos=tank_in_map[:]
-path_map[flo_pos[0]][flo_pos[1]]=1
-# last position:
-#   0       3
-# 1   2   2   1
-#   3       0
-#
-#   0
-# 1   2
-#   x
-#while flo_pos[1]<map_y-1:
-test_cnt=0
-while test_cnt<100:
-    rdm_direc=random.randint(1,4)
-    if rdm_direc<2 \
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==0 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
-        flo_pos[1]+=1
-    elif rdm_direc==2 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]]==0 \
-    and flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==0 :
-        flo_pos[0]-=1
-    elif rdm_direc==3 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==0\
-    and flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0\
-    and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==0 :
-        flo_pos[0]+=1
-    elif rdm_direc==4 \
-    and flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==0 \
-    and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 \
-    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 :
-        flo_pos[1]-=1
-    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-
-    if flo_pos[0]==0:
-        if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==0 and path_map[flo_pos[0]+1][flo_pos[1]]==0:
-            flo_pos[0]+=1
-        elif flo_pos[1]<map_y-1:
-            flo_pos[1]+=1
-    elif flo_pos[0]==map_x-1:
-        if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==0 and path_map[flo_pos[0]-1][flo_pos[1]]==0:
-            flo_pos[0]-=1
-        elif flo_pos[1]<map_y-1:
-            flo_pos[1]+=1
-    path_map[flo_pos[0]][flo_pos[1]]=test_cnt
-    test_cnt+=1
-
-game_map=path_map
+random_a_map(map_x, map_y, tank_in_map)
 
 # this method hehe
 """
@@ -312,6 +401,8 @@ while running:
                 keys[1]=True
             elif event.key==pygame.K_SPACE:
                 keys[2]=True
+                # for debug
+                random_a_map(map_x, map_y, tank_in_map)
             #   4   5   6   7
             #   0   1   2   3
             elif event.key==pygame.K_w:
@@ -458,6 +549,9 @@ while running:
                     text = font.render(str(game_map[i][j]), True, (255,255,255))
                 screen.blit(text, (i*12, 2*hh/3-j*12))
         pygame.draw.rect(screen, (255,0,0), (0+ref_pos_in_map[0]*12, 2*hh/3-12*(ref_pos_in_map[1]+3),12*4,12*4),1)
+
+        #text = font.render("rollback_pos="+str(rollback_pos[0])+","+str(rollback_pos[1]), True, (255,255,240))
+        #screen.blit(text, (0,12*9))
 
         # test tmp
         #text = font.render(str(player.posi_id), True, (255,255,240))
