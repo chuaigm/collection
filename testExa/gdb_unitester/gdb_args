@@ -1,0 +1,15 @@
+
+gdb --args ./exe -d xxx -c xxx
+
+gdb ./exe
+>> set args -d xxx -c xxx
+or
+>> r -d xxx -c xxx
+
+gdb exe
+(gdb) set breakpoint pending on
+(gdb) source gdb-script-file
+
+b nm_space::class1::func1
+directory ../../../src/
+
