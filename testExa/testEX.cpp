@@ -73,6 +73,30 @@ int random(double start, double end)
 
 int main()
 {
+#if 0
+	//2018-3-27
+	// multimap order test
+	multimap<int, int> mmp;
+	for(int i = 1; i<10; ++i) {
+	//	for(int j = 1; j<10; ++j) {
+	//		mmp.insert(make_pair(i,j));
+			mmp.insert(make_pair(i,2));
+			mmp.insert(make_pair(i,4));
+			mmp.insert(make_pair(i,6));
+			mmp.insert(make_pair(i,8));
+			mmp.insert(make_pair(i,1));
+			mmp.insert(make_pair(i,3));
+			mmp.insert(make_pair(i,9));
+			mmp.insert(make_pair(i,7));
+			mmp.insert(make_pair(i,5));
+		//}
+	}
+	for(auto itr=mmp.begin(); itr!=mmp.end(); ++itr) {
+		cout<<itr->first<<":"<<itr->second<<endl;
+	}
+#endif
+
+#if 0
     // floating number test
     double a=0;
     a=1887;
@@ -85,6 +109,7 @@ int main()
     printf("%.64f\n",a);
     a=0.9+188.61*10; // attention here
     printf("%.64f\n",a);
+#endif
 
 #if 0
     // test ramdom
