@@ -73,6 +73,25 @@ int random(double start, double end)
 
 int main()
 {
+#if 1
+    // 20190620
+    // gdb 并列条件测试
+    for(int i = 0; i<10; i++)
+    {
+        for(int j = 0; j<10; j++)
+        {
+            if(j==0)
+            {
+                printf("%d, ",i);
+            } else {
+                printf("%d, ",j);
+            }
+        }
+        printf("\n");
+    }
+
+#endif
+
 #if 0
 	//2018-3-27
 	// multimap order test
