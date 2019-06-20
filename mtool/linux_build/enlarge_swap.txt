@@ -1,0 +1,4 @@
+
+dd if=/dev/zero of=/media/swap bs=1024 count=2048000
+/sbin/mkswap /media/swap
+/sbin/swapon /media/swap
