@@ -14,8 +14,9 @@ def text_reply(msg):
 itchat.auto_login(hotReload=True, enableCmdQR=True)
 i=1
 while True:
-    itchat.send('Hello, just a test' + i, toUserName='filehelper')
-    time.sleep(5)
+    itchat.send('Hello, just a test' + str(i), toUserName='filehelper')
+    time.sleep(60)
+    i=i+1
 
 
 
