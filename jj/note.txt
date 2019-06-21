@@ -1,0 +1,22 @@
+
+2019-6-21
+1. 遇到问题，python2和python3怎么共存的问题？
+    保留python2 作为默认python
+    独立安装python3, python3.7.3 中包含了pip3 
+    依赖：
+    yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+    yum install libffi-devel
+
+2. 在win下调好的itchat，登录微信，到linux这边就遇到了ssl问题，而且pip3 list 也提示了ssl警告？
+    在python3编译安装目录下，重新执行：
+    ./configure --with-ssl
+    make && make install
+    重新安装
+
+3. 调好QR扫码登录，字符的二维码格式不对？
+    通过改  itchat.auto_login(hotReload=True, enableCmdQR=2)
+    后面的数字调格式
+
+2019-6-20
+1. 购买了腾讯云，重庆节点3年
+2. 搭建软环境
