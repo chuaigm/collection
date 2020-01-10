@@ -31,9 +31,9 @@ while 1:
     line = file.readline()
     if not line:
         break
-    arr.append(string.atoi(line))
+    arr.append(int(line))
 if is_debug:
-    print arr[0]
+    print(arr[0])
 # width, height = 800,600
 if arr[0] == 2: 
     ww, hh = 1024, 200
@@ -83,88 +83,80 @@ def print_text(tt, font_size, color, pos):
 
 # 3 - Load images
 bg_title   = pygame.image.load("res/pic/bg_title.jpg")
-pic_player = pygame.image.load("res/pic/tank.png")
+pic_tank   = pygame.image.load("res/pic/tank.png")
 pic_terrain= pygame.image.load("res/pic/terrain.png")
 pic_mine   = pygame.image.load("res/pic/mine.png")
 pic_grass  = pygame.image.load("res/pic/grass.png")
 pic_home   = pygame.image.load("res/pic/home.png")
 
 # zoom coefficient
-z_coef=0.9
+z_coef=0.85
 # in this game, a tank and terrain resource need to be 150x150 pixel
+# TODO, make sure the res the same size
 w_p,h_p = pic_terrain.get_size()  # 150x150
 draw_unit=w_p # 150
-pic_terrain1 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = pic_terrain1.get_size()
-pic_terrain2 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = pic_terrain2.get_size()
-pic_terrain3 = pygame.transform.scale(pic_terrain,(int(w_p*z_coef),int(h_p*z_coef)))
+
+p_tank=[]
+for i in range(4):
+    c=z_coef**i
+    p_tank.append(pygame.transform.scale(pic_tank,(int(w_p*c),int(h_p*c))))
+
 #    p3    p3
 #   p2      p2
 #  p1        p1
 # p            p
-w_p,h_p = pic_mine.get_size()  # 150x150
-draw_unit=w_p # 150
-pic_mine1 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = pic_mine1.get_size()
-pic_mine2 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
-w_p,h_p = pic_mine2.get_size()
-pic_mine3 = pygame.transform.scale(pic_mine,(int(w_p*z_coef),int(h_p*z_coef)))
 
+p_terrain=[]
+for i in range(4):
+    c=z_coef**i
+    p_terrain.append(pygame.transform.scale(pic_terrain,(int(w_p*c),int(h_p*c))))
 
+p_mine=[]
+for i in range(4):
+    c=z_coef**i
+    p_mine.append(pygame.transform.scale(pic_mine,(int(w_p*c),int(h_p*c))))
+
+#here want to give draw terrian and player in the screen
 x_shift=(ww-hh)/2
 x_w=hh/4
 y_h=hh/4
 scale_shift=int(draw_unit*(1-z_coef))
 
-# player position array
-tank_draw_pos = []
-tank_draw_pos.append((x_shift,y_h*3))
-tank_draw_pos.append((x_shift+x_w,y_h*3))
-tank_draw_pos.append((x_shift+x_w*2,y_h*3))
-tank_draw_pos.append((x_shift+x_w*3,y_h*3))
-tank_draw_pos.append((x_shift+scale_shift*2,y_h*2+scale_shift))
-tank_draw_pos.append((x_shift+x_w+scale_shift,y_h*2+scale_shift))
-tank_draw_pos.append((x_shift+x_w*2,y_h*2+scale_shift))
-tank_draw_pos.append((x_shift+x_w*3-scale_shift,y_h*2+scale_shift))
-#    -------------
-#
-#
-#    4   5   6   7
-#    0   1   2   3
-#    -------------
-
-# terrain position array
 # terrain is 150x150 pixel, in 800x600 screen
-terrain_draw_pos = []
-terrain_draw_pos.append((x_shift,y_h*3))
-terrain_draw_pos.append((x_shift+x_w,y_h*3))
-terrain_draw_pos.append((x_shift+x_w*2,y_h*3))
-terrain_draw_pos.append((x_shift+x_w*3,y_h*3))
-terrain_draw_pos.append((x_shift+scale_shift*2,y_h*2+scale_shift))
-terrain_draw_pos.append((x_shift+x_w+scale_shift,y_h*2+scale_shift))
-terrain_draw_pos.append((x_shift+x_w*2,y_h*2+scale_shift))
-terrain_draw_pos.append((x_shift+x_w*3-scale_shift,y_h*2+scale_shift))
-terrain_draw_pos.append((x_shift+scale_shift*4,y_h+scale_shift*3))
-terrain_draw_pos.append((x_shift+x_w+scale_shift*2,y_h+scale_shift*3))
-terrain_draw_pos.append((x_shift+x_w*2,y_h+scale_shift*3))
-terrain_draw_pos.append((x_shift+x_w*3-scale_shift*2,y_h+scale_shift*3))
-terrain_draw_pos.append((x_shift+scale_shift*6,scale_shift*6))
-terrain_draw_pos.append((x_shift+x_w+scale_shift*3,scale_shift*6))
-terrain_draw_pos.append((x_shift+x_w*2,scale_shift*6))
-terrain_draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
+# player and terrain position array
 #    -------------
 #   12  13  14  15
 #    8   9  10  11
 #    4   5   6   7
 #    0   1   2   3
 #    -------------
+draw_pos = []
+draw_pos.append((x_shift,y_h*3))
+draw_pos.append((x_shift+x_w,y_h*3))
+draw_pos.append((x_shift+x_w*2,y_h*3))
+draw_pos.append((x_shift+x_w*3,y_h*3))
+draw_pos.append((x_shift+scale_shift*2,y_h*2+scale_shift))
+draw_pos.append((x_shift+x_w+scale_shift,y_h*2+scale_shift))
+draw_pos.append((x_shift+x_w*2,y_h*2+scale_shift))
+draw_pos.append((x_shift+x_w*3-scale_shift,y_h*2+scale_shift))
+draw_pos.append((x_shift+scale_shift*4,y_h+scale_shift*3))
+draw_pos.append((x_shift+x_w+scale_shift*2,y_h+scale_shift*3))
+draw_pos.append((x_shift+x_w*2,y_h+scale_shift*3))
+draw_pos.append((x_shift+x_w*3-scale_shift*2,y_h+scale_shift*3))
+draw_pos.append((x_shift+scale_shift*6,scale_shift*6))
+draw_pos.append((x_shift+x_w+scale_shift*3,scale_shift*6))
+draw_pos.append((x_shift+x_w*2,scale_shift*6))
+draw_pos.append((x_shift+x_w*3-scale_shift*3,scale_shift*6))
 
-map_x=8
-map_y=20
-tank_in_map=[map_x/2-1,0]
-ref_pos_in_map=[map_x/2-2,0]
-game_map=[[0 for i in range(map_y)] for i in range(map_x)]
+#map scale
+map_scale_x=8
+map_scale_y=20
+#tank in total map relative position, for draw
+tank_in_map=[int(map_scale_x/2)-1,0]
+#total map can only draw a small part in screen, the relative posion left bottem corner
+ref_pos_in_map=[int(map_scale_x/2)-2,0]
+#this sentence means scale_x is the outer loop, then in every x, has scale_y space
+game_map=[[0 for i in range(map_scale_y)] for i in range(map_scale_x)]
 #
 # random a map
 # y
@@ -175,15 +167,15 @@ game_map=[[0 for i in range(map_y)] for i in range(map_x)]
 # 3
 # 2
 # 0 1 2 3 x
-def random_a_path(map_x, map_y):
+def random_a_path(map_scale_x, map_scale_y):
     global game_map
 
-    path_map=[[0 for i in range(map_y)] for i in range(map_x)]
-    for j in range(1, map_y):
-        for i in range(map_x):
+    path_map=[[0 for i in range(map_scale_y)] for i in range(map_scale_x)]
+    for j in range(1, map_scale_y):
+        for i in range(map_scale_x):
             path_map[i][j]=1
 
-    flo_pos=[map_x/2-1,0]
+    flo_pos=[int(map_scale_x/2)-1,0]
     path_map[flo_pos[0]][flo_pos[1]]=0
     # direction:
     #   0
@@ -204,20 +196,20 @@ def random_a_path(map_x, map_y):
     vec_trig_roll=[]
     vec_trig_roll.append(rollback_pos[:])
     turn_from=0
-    #while flo_pos[1]<map_y-1:
+    #while flo_pos[1]<map_scale_y-1:
     test_cnt=0
     # for debug
-    print "test_cnt:rdm_direc:(flo_x,flo_y):(roll_x,roll_y)"
-    while test_cnt<100 and flo_pos[1]<map_y-1:
+    print("test_cnt:rdm_direc:(flo_x,flo_y):(roll_x,roll_y)")
+    while test_cnt<100 and flo_pos[1]<map_scale_y-1:
         rdm_direc=random.randint(0,3)
         if rdm_direc==last_pos:
             continue
         else:
             # for debug
-            print "%02d:%d:(%d,%d):(%d,%d)" %(test_cnt, rdm_direc, flo_pos[0], flo_pos[1],rollback_pos[0], rollback_pos[1])
+            print("%02d:%d:(%d,%d):(%d,%d)" %(test_cnt, rdm_direc, flo_pos[0], flo_pos[1],rollback_pos[0], rollback_pos[1]))
             if rdm_direc==0:
-                if flo_pos[0]>0 and flo_pos[0]<map_x-1:
-                    if flo_pos[1]<map_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==1 \
+                if flo_pos[0]>0 and flo_pos[0]<map_scale_x-1:
+                    if flo_pos[1]<map_scale_y-1 and path_map[flo_pos[0]][flo_pos[1]+1]==1 \
                     and path_map[flo_pos[0]-1][flo_pos[1]+1]==1 \
                     and path_map[flo_pos[0]+1][flo_pos[1]+1]==1 :
                         flo_pos[1]+=1
@@ -227,7 +219,7 @@ def random_a_path(map_x, map_y):
                     last_pos=3
             elif rdm_direc==1:
                 if turn_from==1:
-                    if flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==1 :
+                    if flo_pos[0]<map_scale_x-1 and path_map[flo_pos[0]+1][flo_pos[1]]==1 :
                         flo_pos[0]+=1
                         last_pos=1
                         turn_from=0
@@ -241,7 +233,7 @@ def random_a_path(map_x, map_y):
                 elif flo_pos[0]>0:
                     if path_map[flo_pos[0]-1][flo_pos[1]]==1 :
                         if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
-                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==1 :
+                        and flo_pos[1]<map_scale_y-1 and path_map[flo_pos[0]-1][flo_pos[1]+1]==1 :
                             flo_pos[0]-=1
                             last_pos=2
                     else: # path conflict
@@ -255,7 +247,7 @@ def random_a_path(map_x, map_y):
                     if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 and path_map[flo_pos[0]+1][flo_pos[1]]==1:
                         flo_pos[0]+=1
                         last_pos=1
-                    elif flo_pos[1]<map_y-1:
+                    elif flo_pos[1]<map_scale_y-1:
                         flo_pos[1]+=1
                         last_pos=3
             elif rdm_direc==2:
@@ -271,10 +263,10 @@ def random_a_path(map_x, map_y):
                         last_pos=rollback_last
                         vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                elif flo_pos[0]<map_x-1:
+                elif flo_pos[0]<map_scale_x-1:
                     if path_map[flo_pos[0]+1][flo_pos[1]]==1 :
                         if flo_pos[1]>0 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 \
-                        and flo_pos[1]<map_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==1 :
+                        and flo_pos[1]<map_scale_y-1 and path_map[flo_pos[0]+1][flo_pos[1]+1]==1 :
                             flo_pos[0]+=1
                             last_pos=1
                     else: # path conflict
@@ -284,11 +276,11 @@ def random_a_path(map_x, map_y):
                         last_pos=rollback_last
                         vec_rollback.append(rollback_pos[:])
                         turn_from=0
-                else: # flo_pos[0]==map_x-1
+                else: # flo_pos[0]==map_scale_x-1
                     if flo_pos[1]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 and path_map[flo_pos[0]-1][flo_pos[1]]==1:
                         flo_pos[0]-=1
                         last_pos=2
-                    elif flo_pos[1]<map_y-1:
+                    elif flo_pos[1]<map_scale_y-1:
                         flo_pos[1]+=1
                         last_pos=3
             elif rdm_direc==3:
@@ -306,7 +298,7 @@ def random_a_path(map_x, map_y):
                 elif last_pos==1: # from left
                     if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==1 \
                     and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
-                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
+                    and flo_pos[0]<map_scale_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
                         if turn_from==0:
                             rollback_pos=flo_pos[:]
                             rollback_map=path_map[:]
@@ -317,7 +309,7 @@ def random_a_path(map_x, map_y):
                 elif last_pos==2: # from right
                     if flo_pos[1]>0 and path_map[flo_pos[0]][flo_pos[1]-1]==1 \
                     and flo_pos[0]>0 and path_map[flo_pos[0]-1][flo_pos[1]-1]==1 \
-                    and flo_pos[0]<map_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
+                    and flo_pos[0]<map_scale_x-1 and path_map[flo_pos[0]+1][flo_pos[1]-1]==1 :
                         if turn_from==0:
                             rollback_pos=flo_pos[:]
                             rollback_map=path_map[:]
@@ -331,22 +323,22 @@ def random_a_path(map_x, map_y):
     #for i in range(len(vec_rollback)):
     #    path_map[vec_rollback[i][0]][vec_rollback[i][1]]='Z'
     #    path_map[vec_trig_roll[i][0]][vec_trig_roll[i][1]]='R'
-    print vec_rollback
+    print(vec_rollback)
 
     #pick a good path
-    if flo_pos[1]==map_y-1 and test_cnt>40 and test_cnt<80:
+    if flo_pos[1]==map_scale_y-1 and test_cnt>40 and test_cnt<80:
         game_map=path_map[:]
         return 0
     else:
         return 1
 
 # 
-def random_a_map(map_x, map_y):
+def random_a_map(map_scale_x, map_scale_y):
     remap=1
     while 1==remap:
-        remap=random_a_path(map_x, map_y)
+        remap=random_a_path(map_scale_x, map_scale_y)
 
-random_a_map(map_x, map_y)
+random_a_map(map_scale_x, map_scale_y)
 
 # 3 - Initialize the game
 pygame.init()
@@ -377,18 +369,27 @@ while running:
             elif event.key==pygame.K_SPACE:
                 keys[2]=True
                 # for debug
-                random_a_map(map_x, map_y)
-            #   4   5   6   7
-            #   0   1   2   3
-            elif event.key==pygame.K_w:
+                random_a_map(map_scale_x, map_scale_y)
+            #    -------------
+            #   12  13  14  15
+            #    8   9  10  11
+            #    4   5   6   7
+            #    0   1   2   3
+            #    -------------
+            elif event.key==pygame.K_w or event.key==pygame.K_UP:
                 keys[3]=True
-                if player.posi_id<4:
-                    player.posi_id+=4
-                elif ref_pos_in_map[1]<map_y-4:
-                    ref_pos_in_map[1]+=1
-                if tank_in_map[1]<map_y-3:
+                # not at the top of the map
+                if ref_pos_in_map[1]<map_scale_y-4:
+                    if player.posi_id<4:
+                        player.posi_id+=4
+                    else:
+                        ref_pos_in_map[1]+=1
+                else:
+                    if player.posi_id<12:
+                        player.posi_id+=4
+                if tank_in_map[1]<map_scale_y-1:
                     tank_in_map[1]+=1
-            elif event.key==pygame.K_s:
+            elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
                 keys[4]=True
                 if player.posi_id>3:
                     player.posi_id-=4
@@ -396,20 +397,20 @@ while running:
                 elif ref_pos_in_map[1]>0:
                     ref_pos_in_map[1]-=1
                     player.posi_id+=4
-            elif event.key==pygame.K_a:
+            elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
                 keys[5]=True
-                if player.posi_id>0 and player.posi_id!=4:
+                if player.posi_id not in (0,4,8,12):
                     player.posi_id-=1
                     tank_in_map[0]-=1
                 elif ref_pos_in_map[0]>0:
                     ref_pos_in_map[0]-=1
                     player.posi_id+=1
-            elif event.key==pygame.K_d:
+            elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
                 keys[6]=True
-                if player.posi_id<7 and player.posi_id!=3:
+                if player.posi_id not in (3,7,11,15):
                     player.posi_id+=1
                     tank_in_map[0]+=1
-                elif ref_pos_in_map[0]<map_x-4:
+                elif ref_pos_in_map[0]<map_scale_x-4:
                     ref_pos_in_map[0]+=1
                     player.posi_id-=1
         if event.type == pygame.KEYUP:
@@ -419,13 +420,13 @@ while running:
                 keys[1]=False
             elif event.key==pygame.K_SPACE:
                 keys[2]=False
-            elif event.key==pygame.K_w:
+            elif event.key==pygame.K_w or event.key==pygame.K_UP:
                 keys[3]=False
-            elif event.key==pygame.K_s:
+            elif event.key==pygame.K_s or event.key==pygame.K_DOWN:
                 keys[4]=False
-            elif event.key==pygame.K_a:
+            elif event.key==pygame.K_a or event.key==pygame.K_LEFT:
                 keys[5]=False
-            elif event.key==pygame.K_d:
+            elif event.key==pygame.K_d or event.key==pygame.K_RIGHT:
                 keys[6]=False
         if event.type==pygame.MOUSEBUTTONDOWN:
             ms_pos=pygame.mouse.get_pos()
@@ -460,26 +461,33 @@ while running:
     elif g_status==1:
         # terrain draw first
         l_pos=0
-        for i in terrain_draw_pos:
+        for i in draw_pos:
             if l_pos<4:
                 if game_map[ref_pos_in_map[0]+l_pos][ref_pos_in_map[1]] == 1:
-                    screen.blit(pic_terrain, i)
-                    screen.blit(pic_mine, i)
+                    screen.blit(p_terrain[0], i)
+                    screen.blit(p_mine[0], i)
             elif l_pos<8:
                 if game_map[ref_pos_in_map[0]+l_pos-4][ref_pos_in_map[1]+1] == 1:
-                    screen.blit(pic_terrain1, i)
-                    screen.blit(pic_mine1, i)
+                    screen.blit(p_terrain[1], i)
+                    screen.blit(p_mine[1], i)
             elif l_pos<12:
                 if game_map[ref_pos_in_map[0]+l_pos-8][ref_pos_in_map[1]+2] == 1:
-                    screen.blit(pic_terrain2, i)
-                    screen.blit(pic_mine2, i)
+                    screen.blit(p_terrain[2], i)
+                    screen.blit(p_mine[2], i)
             else:
                 if game_map[ref_pos_in_map[0]+l_pos-12][ref_pos_in_map[1]+3] == 1:
-                    screen.blit(pic_terrain3, i)
-                    screen.blit(pic_mine3, i)
+                    screen.blit(p_terrain[3], i)
+                    screen.blit(p_mine[3], i)
             l_pos+=1
         # player tank draw
-        screen.blit(pic_player,(tank_draw_pos[player.posi_id][0],tank_draw_pos[player.posi_id][1]))
+        if player.posi_id<4:
+            screen.blit(p_tank[0], draw_pos[player.posi_id])
+        elif player.posi_id<8:
+            screen.blit(p_tank[1], draw_pos[player.posi_id])
+        elif player.posi_id<12:
+            screen.blit(p_tank[2], draw_pos[player.posi_id])
+        else:
+            screen.blit(p_tank[3], draw_pos[player.posi_id])
 # ==========status=2:advance game==========
     elif g_status==2:
         screen.blit(pic_home,(300,300))
@@ -497,16 +505,16 @@ while running:
         screen.blit(text, textRect)
         # key code
         if keys[3]:
-            test = font.render("W", True, (255,255,255))
+            test = font.render("^", True, (255,255,255))
             screen.blit(test, (0,0))
         if keys[4]:
-            test = font.render("A", True, (255,255,255))
+            test = font.render("v", True, (255,255,255))
             screen.blit(test, (12,0))
         if keys[5]:
-            test = font.render("S", True, (255,255,255))
+            test = font.render("<", True, (255,255,255))
             screen.blit(test, (12*2,0))
         if keys[6]:
-            test = font.render("D", True, (255,255,255))
+            test = font.render(">", True, (255,255,255))
             screen.blit(test, (12*3,0))
         # mouse position
         text = font.render("ms_pos="+str(ms_pos[0])+", "+str(ms_pos[1]), True, (255,255,240))
@@ -516,8 +524,8 @@ while running:
         screen.blit(text, (0,12*2))
 
         # test output map array
-        for j in range(map_y):
-            for i in range(map_x):
+        for j in range(map_scale_y):
+            for i in range(map_scale_x):
                 if i == tank_in_map[0] and j==tank_in_map[1]:
                     text = font.render("T", True, (255,255,255))
                 else:
