@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "math.h"
+#include <stdint.h>
+#include <sys/time.h>
 //#include "cgmtoolbox.h"
 #include <iostream>
 #include <iomanip>
@@ -74,6 +76,44 @@ int random(double start, double end)
 int main()
 {
 #if 1
+    int tot = 100;
+    int cnt = 0;
+    while(tot--)
+    {
+        printf("cnt = %d\n", cnt);
+        if(++cnt > 8)
+        {
+            printf("do\n");
+            cnt = 0;
+        }
+    }
+#endif
+
+#if 0
+    uint64_t i=0xFFFFFFFFFFFFFFFF;
+    printf("i=%lu\n", i);
+#endif
+
+#if 0
+    // 20191209
+    struct  timeval    tv;
+    struct  timezone   tz;
+    gettimeofday(&tv,&tz);
+    printf("tv_sec:%d\n", tv.tv_sec);
+    printf("tv_usec:%d\n", tv.tv_usec);
+    printf("tz_minuteswest:%d\n",tz.tz_minuteswest);
+    printf("tz_dsttime:%d\n",tz.tz_dsttime);
+
+    printf("==============\n");
+    struct timespec tsp;
+    clock_gettime(CLOCK_REALTIME, &tsp);
+    printf("tv_sec:%d\n", tsp.tv_sec);
+    printf("tv_nsec:%d\n", tsp.tv_nsec);
+    printf("==============\n");
+    printf("UINT64_MAX = %lu\n", UINT64_MAX);   // compile need --std=c++11
+#endif
+
+#if 0
     // 20190620
     // gdb 并列条件测试
     for(int i = 0; i<10; i++)

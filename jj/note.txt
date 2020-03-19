@@ -1,4 +1,17 @@
 
+2019-12-4
+    vim /etc/mail.rc 编辑邮箱的配置
+    set smtp=smtps://smtp.qq.com:465
+    set smtp-auth=login
+    set smtp-auth-user=523867149@qq.com
+    set smtp-auth-password=utfgxwksigbobgid
+    set ssl-verify=ignore
+    set nss-config-dir=/etc/pki/nssdb
+    set from=523867149@qq.com
+    测试发送邮件：
+    echo "content" | mail -v -s "Title" 15998539660@139.com
+    为黄金小于280的条件，加入一个短信提醒测试
+
 2019-11-12
     配置可以通过发送邮件来达到提醒的功能。
     参考：

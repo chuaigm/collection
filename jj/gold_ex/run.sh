@@ -21,5 +21,12 @@ $pyexe ./get_bosera_gold_price.py | tee -a $gold_price_file
 sort -u $gold_price_file -o $gold_price_file
 
 # 调用数据分析脚本
+# 这里临时写一个测试用
+now=`awk '{print $3}' ./2019_gold_price.txt |tail -n 1 |cut -f 1 -d "."`
+limit=280
+if [ $now -lt $limit ]; then
+    echo "gold=$now, less than $limit" | mail -v -s "gold_ex" 15998539660@139.com
+fi
+
 
 
